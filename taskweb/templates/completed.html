@@ -5,9 +5,8 @@
 {% block content %}
 <div class="window">
   <div class="titlebar">
-    <div class="dot close"></div><div class="dot min"></div><div class="dot max"></div>
-    <div class="win-title">completed — {{ counts.completed }} tasks</div>
-    <div class="spacer"></div>
+    <div class="dots"><div class="dot close"></div><div class="dot min"></div><div class="dot max"></div></div>
+    <div class="address-bar"><span class="lock">🔒</span> localhost:5000/completed</div>
   </div>
   <div class="content">
     {% if tasks %}
