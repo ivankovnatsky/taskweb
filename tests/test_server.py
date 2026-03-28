@@ -3,26 +3,23 @@
 from unittest.mock import patch
 
 
-@patch("taskweb.server.get_task_count", return_value={"pending": 0, "completed": 0, "overdue": 0})
-@patch("taskweb.server.get_tags", return_value=[])
-@patch("taskweb.server.get_projects", return_value=[])
-@patch("taskweb.server.get_pending_tasks", return_value=[])
-def test_index_empty(mock_tasks, mock_projects, mock_tags, mock_counts, client):
+@patch(
+    "taskweb.server.get_pending_tasks",
+    return_value=[],
+)
+def test_index_empty(mock_tasks, client):
     response = client.get("/")
     assert response.status_code == 200
     assert b"No pending tasks" in response.data
 
 
-@patch("taskweb.server.get_task_count", return_value={"pending": 1, "completed": 0, "overdue": 0})
-@patch("taskweb.server.get_tags", return_value=["tag1"])
-@patch("taskweb.server.get_projects", return_value=["proj1"])
 @patch("taskweb.server.get_pending_tasks")
-def test_index_with_tasks(mock_tasks, mock_projects, mock_tags, mock_counts, client):
+def test_index_with_tasks(mock_tasks, client):
     from taskweb.tasks import Task
 
     mock_tasks.return_value = [
         Task(
-            uuid="1",
+            uuid="abc-123-def",
             id=1,
             description="Test task",
             project="proj1",
@@ -37,9 +34,9 @@ def test_index_with_tasks(mock_tasks, mock_projects, mock_tags, mock_counts, cli
     assert b"proj1" in response.data
 
 
-@patch("taskweb.server.get_task_count", return_value={"pending": 0, "completed": 0, "overdue": 0})
+@patch("taskweb.server.get_pending_tasks", return_value=[])
 @patch("taskweb.server.get_completed_tasks", return_value=[])
-def test_completed_empty(mock_tasks, mock_counts, client):
+def test_completed_empty(mock_completed, mock_pending, client):
     response = client.get("/completed")
     assert response.status_code == 200
     assert b"No completed tasks" in response.data
@@ -70,47 +67,64 @@ def test_add_task_empty_description(client):
 
 @patch("taskweb.server.complete_task", return_value=True)
 def test_done(mock_done, client):
-    response = client.post("/task/1/done")
+    response = client.post("/task/abc-123-def/done")
     assert response.status_code == 302
-    mock_done.assert_called_once_with(1)
+    mock_done.assert_called_once_with("abc-123-def")
 
 
 @patch("taskweb.server.delete_task", return_value=True)
 def test_delete(mock_delete, client):
-    response = client.post("/task/1/delete")
+    response = client.post("/task/abc-123-def/delete")
     assert response.status_code == 302
-    mock_delete.assert_called_once_with(1)
+    mock_delete.assert_called_once_with("abc-123-def")
 
 
 @patch("taskweb.server.start_task", return_value=True)
 def test_start(mock_start, client):
-    response = client.post("/task/1/start")
+    response = client.post("/task/abc-123-def/start")
     assert response.status_code == 302
-    mock_start.assert_called_once_with(1)
+    mock_start.assert_called_once_with("abc-123-def")
 
 
 @patch("taskweb.server.stop_task", return_value=True)
 def test_stop(mock_stop, client):
-    response = client.post("/task/1/stop")
+    response = client.post("/task/abc-123-def/stop")
     assert response.status_code == 302
-    mock_stop.assert_called_once_with(1)
+    mock_stop.assert_called_once_with("abc-123-def")
 
 
-@patch("taskweb.server.get_task_count", return_value={"pending": 2, "completed": 0, "overdue": 0})
-@patch("taskweb.server.get_tags", return_value=[])
-@patch("taskweb.server.get_projects", return_value=["infra"])
 @patch("taskweb.server.get_pending_tasks", return_value=[])
-def test_filter_by_project(mock_tasks, mock_projects, mock_tags, mock_counts, client):
+def test_filter_by_project(mock_tasks, client):
     response = client.get("/?project=infra")
     assert response.status_code == 200
     mock_tasks.assert_called_once_with("project:infra")
 
 
-@patch("taskweb.server.get_task_count", return_value={"pending": 2, "completed": 0, "overdue": 0})
-@patch("taskweb.server.get_tags", return_value=["next"])
-@patch("taskweb.server.get_projects", return_value=[])
 @patch("taskweb.server.get_pending_tasks", return_value=[])
-def test_filter_by_tag(mock_tasks, mock_projects, mock_tags, mock_counts, client):
+def test_filter_by_tag(mock_tasks, client):
     response = client.get("/?tag=next")
     assert response.status_code == 200
     mock_tasks.assert_called_once_with("+next")
+
+
+@patch("taskweb.server.get_task_by_uuid")
+def test_task_detail(mock_get, client):
+    from taskweb.tasks import Task
+
+    mock_get.return_value = Task(
+        uuid="abc-123-def",
+        id=1,
+        description="Test task",
+        project="proj1",
+        annotations=[{"description": "A note"}],
+    )
+    response = client.get("/task/abc-123-def")
+    assert response.status_code == 200
+    assert b"Test task" in response.data
+    assert b"A note" in response.data
+
+
+@patch("taskweb.server.get_task_by_uuid", return_value=None)
+def test_task_detail_not_found(mock_get, client):
+    response = client.get("/task/nonexistent")
+    assert response.status_code == 302

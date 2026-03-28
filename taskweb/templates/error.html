@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title_suffix %} — Error{% endblock %}
+
+{% block content %}
+<div class="window">
+  <div class="titlebar">
+    <div class="address-bar"><span class="lock">🔒</span> localhost:5000</div>
+  </div>
+  <div class="content">
+    <div class="empty">
+      Something went wrong.<br>
+      <span class="age">{{ error }}</span>
+    </div>
+  </div>
+</div>
+{% endblock %}

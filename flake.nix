@@ -35,6 +35,7 @@
               pkgs.ruff
               pkgs.treefmt
               pkgs.nixfmt-rfc-style
+              pkgs.nodePackages.prettier
               pkgs.go-task
               pkgs.taskwarrior3
             ];
