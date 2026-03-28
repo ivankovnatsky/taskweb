@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Add Task -->
+<div class="add-form">
+  <div class="window form-window">
+    <div class="titlebar">
+      <div class="dot close"></div><div class="dot min"></div><div class="dot max"></div>
+      <div class="win-title">add task</div>
+      <div class="spacer"></div>
+    </div>
+    <div class="content">
+      <form method="POST" action="{{ url_for('add') }}">
+        <div class="form-grid">
+          <div class="full">
+            <label for="description">Description</label>
+            <input type="text" id="description" name="description" placeholder="What needs to be done?" required>
+          </div>
+          <div>
+            <label for="project">Project</label>
+            <input type="text" id="project" name="project" placeholder="e.g. infra.kafka" list="project-list">
+            <datalist id="project-list">
+              {% for p in projects %}
+              <option value="{{ p }}">
+              {% endfor %}
+            </datalist>
+          </div>
+          <div>
+            <label for="tags">Tags</label>
+            <input type="text" id="tags" name="tags" placeholder="comma separated">
+          </div>
+          <div>
+            <label for="priority">Priority</label>
+            <select id="priority" name="priority">
+              <option value="">None</option>
+              <option value="H">High</option>
+              <option value="M">Medium</option>
+              <option value="L">Low</option>
+            </select>
+          </div>
+          <div>
+            <label for="due">Due</label>
+            <input type="date" id="due" name="due">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">Add Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Filters -->
+{% if projects or tags %}
+<div class="filters">
+  <a href="{{ url_for('index') }}" class="filter-chip {% if not current_project and not current_tag %}active{% endif %}">all</a>
+  {% for p in projects %}
+  <a href="{{ url_for('index', project=p) }}" class="filter-chip {% if current_project == p %}active{% endif %}">{{ p }}</a>
+  {% endfor %}
+  {% for t in tags %}
+  <a href="{{ url_for('index', tag=t) }}" class="filter-chip {% if current_tag == t %}active{% endif %}">+{{ t }}</a>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- Task List -->
+<div class="window">
+  <div class="titlebar">
+    <div class="dot close"></div><div class="dot min"></div><div class="dot max"></div>
+    <div class="win-title">task next — {{ counts.pending }} pending{% if counts.overdue %} · <span style="color:var(--tw-due)">{{ counts.overdue }} overdue</span>{% endif %}</div>
+    <div class="spacer"></div>
+  </div>
+  <div class="content">
+    {% if tasks %}
+    <table class="tw">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Age</th>
+          <th>Project</th>
+          <th>Tags</th>
+          <th>Due</th>
+          <th>Urg</th>
+          <th>Description</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in tasks %}
+        <tr class="{% if task.is_active %}active-row{% endif %}">
+          <td class="{% if task.is_recurring %}recur{% else %}id{% endif %}">{{ task.id }}</td>
+          <td class="age">{{ task.age }}</td>
+          <td class="proj">{{ task.project }}</td>
+          <td class="{% if 'next' in task.tags %}tag-next{% else %}tag{% endif %}">
+            {% for t in task.tags %}+{{ t }}{% if not loop.last %} {% endif %}{% endfor %}
+          </td>
+          <td class="{% if task.is_overdue %}due{% elif task.due %}due-ok{% endif %}">{{ task.due_formatted }}</td>
+          <td class="{% if task.urgency >= 10 %}urg-hi{% elif task.urgency >= 4 %}urg{% else %}urg-lo{% endif %}">{{ "%.1f"|format(task.urgency) }}</td>
+          <td class="desc">{{ task.description }}{% if task.is_recurring %} ↻{% endif %}</td>
+          <td>
+            <div class="actions">
+              <form method="POST" action="{{ url_for('done', task_id=task.id) }}">
+                <button type="submit" class="btn btn-done" title="Complete">✓</button>
+              </form>
+              {% if task.is_active %}
+              <form method="POST" action="{{ url_for('stop', task_id=task.id) }}">
+                <button type="submit" class="btn btn-start" title="Stop">◼</button>
+              </form>
+              {% else %}
+              <form method="POST" action="{{ url_for('start', task_id=task.id) }}">
+                <button type="submit" class="btn btn-start" title="Start">▶</button>
+              </form>
+              {% endif %}
+              <form method="POST" action="{{ url_for('delete', task_id=task.id) }}">
+                <button type="submit" class="btn btn-delete" title="Delete">✕</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="tw-footer">
+      {{ tasks|length }} of {{ counts.pending }} tasks · urgency sorted
+      {% if counts.overdue %} · <span class="due">overdue: {{ counts.overdue }}</span>{% endif %}
+    </div>
+    {% else %}
+    <div class="empty">No pending tasks. Add one above.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
