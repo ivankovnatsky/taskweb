@@ -30,9 +30,7 @@ class Task:
         if not self.entry:
             return ""
         try:
-            entry_dt = datetime.strptime(self.entry, "%Y%m%dT%H%M%SZ").replace(
-                tzinfo=timezone.utc
-            )
+            entry_dt = datetime.strptime(self.entry, "%Y%m%dT%H%M%SZ").replace(tzinfo=timezone.utc)
             delta = datetime.now(timezone.utc) - entry_dt
             days = delta.days
             if days == 0:
@@ -61,9 +59,7 @@ class Task:
         if not self.due:
             return False
         try:
-            due_dt = datetime.strptime(self.due, "%Y%m%dT%H%M%SZ").replace(
-                tzinfo=timezone.utc
-            )
+            due_dt = datetime.strptime(self.due, "%Y%m%dT%H%M%SZ").replace(tzinfo=timezone.utc)
             return due_dt < datetime.now(timezone.utc)
         except (ValueError, TypeError):
             return False
@@ -148,8 +144,13 @@ def get_completed_tasks(limit: int = 20) -> list[Task]:
     return tasks[:limit]
 
 
-def add_task(description: str, project: str = "", tags: list[str] | None = None,
-             priority: str = "", due: str = "") -> bool:
+def add_task(
+    description: str,
+    project: str = "",
+    tags: list[str] | None = None,
+    priority: str = "",
+    due: str = "",
+) -> bool:
     args = ["add", description]
     if project:
         args.append(f"project:{project}")

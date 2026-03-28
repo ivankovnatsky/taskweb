@@ -67,18 +67,20 @@ def test_task_is_completed():
 
 
 def test_parse_tasks():
-    data = json.dumps([
-        {
-            "uuid": "abc-123",
-            "id": 1,
-            "description": "Test task",
-            "status": "pending",
-            "project": "test",
-            "tags": ["tag1"],
-            "urgency": 5.0,
-            "entry": "20260301T000000Z",
-        }
-    ])
+    data = json.dumps(
+        [
+            {
+                "uuid": "abc-123",
+                "id": 1,
+                "description": "Test task",
+                "status": "pending",
+                "project": "test",
+                "tags": ["tag1"],
+                "urgency": 5.0,
+                "entry": "20260301T000000Z",
+            }
+        ]
+    )
     tasks = _parse_tasks(data)
     assert len(tasks) == 1
     assert tasks[0].description == "Test task"
@@ -98,10 +100,24 @@ def test_parse_tasks_invalid():
 def test_get_pending_tasks(mock_run):
     mock_run.return_value = MagicMock(
         returncode=0,
-        stdout=json.dumps([
-            {"uuid": "1", "id": 1, "description": "Task 1", "status": "pending", "urgency": 5.0},
-            {"uuid": "2", "id": 2, "description": "Task 2", "status": "pending", "urgency": 10.0},
-        ]),
+        stdout=json.dumps(
+            [
+                {
+                    "uuid": "1",
+                    "id": 1,
+                    "description": "Task 1",
+                    "status": "pending",
+                    "urgency": 5.0,
+                },
+                {
+                    "uuid": "2",
+                    "id": 2,
+                    "description": "Task 2",
+                    "status": "pending",
+                    "urgency": 10.0,
+                },
+            ]
+        ),
     )
     tasks = get_pending_tasks()
     assert len(tasks) == 2
@@ -113,11 +129,25 @@ def test_get_pending_tasks(mock_run):
 def test_get_projects(mock_run):
     mock_run.return_value = MagicMock(
         returncode=0,
-        stdout=json.dumps([
-            {"uuid": "1", "id": 1, "description": "T1", "status": "pending", "project": "infra"},
-            {"uuid": "2", "id": 2, "description": "T2", "status": "pending", "project": "home"},
-            {"uuid": "3", "id": 3, "description": "T3", "status": "pending", "project": "infra"},
-        ]),
+        stdout=json.dumps(
+            [
+                {
+                    "uuid": "1",
+                    "id": 1,
+                    "description": "T1",
+                    "status": "pending",
+                    "project": "infra",
+                },
+                {"uuid": "2", "id": 2, "description": "T2", "status": "pending", "project": "home"},
+                {
+                    "uuid": "3",
+                    "id": 3,
+                    "description": "T3",
+                    "status": "pending",
+                    "project": "infra",
+                },
+            ]
+        ),
     )
     projects = get_projects()
     assert projects == ["home", "infra"]
@@ -127,10 +157,24 @@ def test_get_projects(mock_run):
 def test_get_tags(mock_run):
     mock_run.return_value = MagicMock(
         returncode=0,
-        stdout=json.dumps([
-            {"uuid": "1", "id": 1, "description": "T1", "status": "pending", "tags": ["a", "b"]},
-            {"uuid": "2", "id": 2, "description": "T2", "status": "pending", "tags": ["b", "c"]},
-        ]),
+        stdout=json.dumps(
+            [
+                {
+                    "uuid": "1",
+                    "id": 1,
+                    "description": "T1",
+                    "status": "pending",
+                    "tags": ["a", "b"],
+                },
+                {
+                    "uuid": "2",
+                    "id": 2,
+                    "description": "T2",
+                    "status": "pending",
+                    "tags": ["b", "c"],
+                },
+            ]
+        ),
     )
     tags = get_tags()
     assert tags == ["a", "b", "c"]
