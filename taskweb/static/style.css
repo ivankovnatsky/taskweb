@@ -234,6 +234,30 @@ tr.active-row .id { color: var(--tw-act) }
 .block { color: var(--tw-block) }
 .tw-footer { margin-top: 6px; color: var(--tw-cnt); font-size: 11px }
 
+/* Annotations */
+.has-annotations {
+  cursor: pointer;
+}
+.annotation-count {
+  color: var(--dim);
+  font-size: 10px;
+}
+.annotations {
+  display: none;
+  margin-top: 4px;
+}
+.annotations.show {
+  display: block;
+}
+.annotation {
+  color: var(--dim);
+  font-size: 10.5px;
+  font-style: italic;
+  padding-left: 8px;
+  border-left: 2px solid var(--border);
+  margin-top: 2px;
+}
+
 /* Actions */
 .actions {
   display: flex;
