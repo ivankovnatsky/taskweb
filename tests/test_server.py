@@ -116,7 +116,7 @@ def test_task_detail(mock_get, client):
         id=1,
         description="Test task",
         project="proj1",
-        annotations=[{"description": "A note"}],
+        annotations=[{"entry": "1709251200", "description": "A note"}],
     )
     response = client.get("/task/abc-123-def")
     assert response.status_code == 200

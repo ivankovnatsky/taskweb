@@ -212,6 +212,11 @@ tr.active-row .id { color: var(--tw-act) }
   border-left: 2px solid var(--border);
   margin-top: 2px;
 }
+.annotation-date {
+  font-style: normal;
+  opacity: 0.7;
+  margin-right: 6px;
+}
 
 /* Actions */
 .actions {
