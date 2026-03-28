@@ -58,7 +58,10 @@
       <div class="detail-annotations">
         <span class="detail-label">Annotations</span>
         {% for ann in task.annotations %}
-        <div class="annotation">{{ ann.description }}</div>
+        <div class="annotation">
+          <span class="annotation-date">{{ ann.entry | format_timestamp }}</span>
+          {{ ann.description }}
+        </div>
         {% endfor %}
       </div>
       {% endif %}

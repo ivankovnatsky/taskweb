@@ -1,6 +1,7 @@
 """Flask web application for TaskWeb."""
 
 import os
+from datetime import datetime, timezone
 
 from flask import Flask, flash, redirect, render_template, request, url_for
 
@@ -24,6 +25,15 @@ def create_app() -> Flask:
         static_folder=os.path.join(os.path.dirname(__file__), "static"),
     )
     app.secret_key = os.environ.get("TASKWEB_SECRET_KEY", "taskweb-dev-key")
+
+    @app.template_filter("format_timestamp")
+    def format_timestamp(ts: str) -> str:
+        """Convert a Unix epoch string to 'YYYY-MM-DD HH:MM' in UTC."""
+        try:
+            dt = datetime.fromtimestamp(int(ts), tz=timezone.utc)
+            return dt.strftime("%Y-%m-%d %H:%M")
+        except (ValueError, TypeError, OSError):
+            return ts
 
     @app.route("/")
     def index():
