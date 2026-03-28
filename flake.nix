@@ -36,7 +36,7 @@
               pkgs.treefmt
               pkgs.nixfmt-rfc-style
               pkgs.nodePackages.prettier
-              pkgs.task
+              pkgs.taskwarrior3
             ];
 
             shellHook = ''
