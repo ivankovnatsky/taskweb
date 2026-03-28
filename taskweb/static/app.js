@@ -8,22 +8,16 @@ function apply(dark) {
   toggle.checked = dark;
 }
 
-// Initialize from saved preference or system
-const saved = localStorage.getItem('taskweb-theme');
-if (saved) {
-  apply(saved === 'dark');
-} else {
-  apply(mq.matches);
-}
+// Always follow system preference on load (no localStorage persistence)
+// The toggle is a session-only override
+apply(mq.matches);
 
-mq.addEventListener('change', e => {
-  if (!localStorage.getItem('taskweb-theme')) apply(e.matches);
-});
+// Auto-follow system preference changes
+mq.addEventListener('change', e => apply(e.matches));
 
+// Manual toggle overrides for current session
 toggle.addEventListener('change', () => {
-  const dark = toggle.checked;
-  root.setAttribute('data-theme', dark ? 'dark' : 'light');
-  localStorage.setItem('taskweb-theme', dark ? 'dark' : 'light');
+  root.setAttribute('data-theme', toggle.checked ? 'dark' : 'light');
 });
 
 // Auto-dismiss flash messages
