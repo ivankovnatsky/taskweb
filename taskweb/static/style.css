@@ -159,17 +159,6 @@ nav a.active {
   transition: background .2s, border-color .2s;
 }
 
-.dots {
-  display: flex;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.dot { width: 12px; height: 12px; border-radius: 50% }
-.dot.close { background: #ff5f57 }
-.dot.min { background: #febc2e }
-.dot.max { background: #28c840 }
-
 .address-bar {
   flex: 1;
   background: var(--bg);
