@@ -21,8 +21,15 @@ def test_index_with_tasks(mock_tasks, mock_projects, mock_tags, mock_counts, cli
     from taskweb.tasks import Task
 
     mock_tasks.return_value = [
-        Task(uuid="1", id=1, description="Test task", project="proj1",
-             tags=["tag1"], urgency=5.0, entry="20260301T000000Z"),
+        Task(
+            uuid="1",
+            id=1,
+            description="Test task",
+            project="proj1",
+            tags=["tag1"],
+            urgency=5.0,
+            entry="20260301T000000Z",
+        ),
     ]
     response = client.get("/")
     assert response.status_code == 200
@@ -40,13 +47,16 @@ def test_completed_empty(mock_tasks, mock_counts, client):
 
 @patch("taskweb.server.add_task", return_value=True)
 def test_add_task(mock_add, client):
-    response = client.post("/add", data={
-        "description": "New task",
-        "project": "test",
-        "tags": "a,b",
-        "priority": "H",
-        "due": "2026-04-01",
-    })
+    response = client.post(
+        "/add",
+        data={
+            "description": "New task",
+            "project": "test",
+            "tags": "a,b",
+            "priority": "H",
+            "due": "2026-04-01",
+        },
+    )
     assert response.status_code == 302
     mock_add.assert_called_once_with(
         "New task", project="test", tags=["a", "b"], priority="H", due="2026-04-01"
