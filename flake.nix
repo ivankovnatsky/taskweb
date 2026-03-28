@@ -35,15 +35,15 @@
               pkgs.ruff
               pkgs.treefmt
               pkgs.nixfmt-rfc-style
-              pkgs.nodePackages.prettier
+              pkgs.go-task
               pkgs.taskwarrior3
             ];
 
             shellHook = ''
               echo "taskweb dev shell"
-              echo "  make serve  - start the server"
-              echo "  make test   - run tests"
-              echo "  make format - format code"
+              echo "  task serve  - start the server"
+              echo "  task test   - run tests"
+              echo "  task format - format code"
             '';
           };
         }

@@ -1,0 +1,54 @@
+version: "3"
+
+tasks:
+  dev:
+    desc: Enter nix development shell
+    cmd: nix develop
+
+  serve:
+    desc: Start the web server
+    cmd: python -m taskweb serve
+
+  test:
+    desc: Run tests
+    cmd: pytest -v
+
+  format:
+    desc: Format and lint code
+    cmds:
+      - ruff format .
+      - ruff check --fix .
+
+  clean:
+    desc: Remove build artifacts
+    cmds:
+      - find . -type d -name __pycache__ -exec rm -rf {} +
+      - find . -type d -name "*.egg-info" -exec rm -rf {} +
+      - rm -rf dist build .pytest_cache .coverage htmlcov
+
+  update:
+    desc: Update nix flake inputs
+    cmd: nix flake update
+
+  bump:
+    desc: Increment patch version
+    cmd: |
+      current=$(grep 'version' pyproject.toml | head -1 | sed 's/.*"\(.*\)"/\1/')
+      major=$(echo $current | cut -d. -f1)
+      minor=$(echo $current | cut -d. -f2)
+      patch=$(echo $current | cut -d. -f3)
+      new_patch=$((patch + 1))
+      new_version="${major}.${minor}.${new_patch}"
+      sed -i "s/version = \"${current}\"/version = \"${new_version}\"/" pyproject.toml
+      echo "Bumped version: ${current} -> ${new_version}"
+
+  release:
+    desc: Bump version and create GitHub release
+    deps: [bump]
+    cmd: |
+      version=$(grep 'version' pyproject.toml | head -1 | sed 's/.*"\(.*\)"/\1/')
+      git add pyproject.toml
+      git commit -m "Bump version to ${version}"
+      git tag "v${version}"
+      git push origin main --tags
+      gh release create "v${version}" --generate-notes
