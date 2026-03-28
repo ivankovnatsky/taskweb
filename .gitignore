@@ -32,5 +32,3 @@ htmlcov/
 # Nix
 result
 
-# Taskwarrior local data
-data/

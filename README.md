@@ -37,7 +37,7 @@ A web interface for [Taskwarrior 3](https://taskwarrior.org/).
 ## Quick Start
 
 ```sh
-make serve
+task serve
 ```
 
 Or with custom host/port:
@@ -55,22 +55,24 @@ export TASKDATA=~/.local/share/task
 export TASKRC=~/.config/task/taskrc
 ```
 
+A demo database with sample tasks is included in `data/` for development.
+
 Example config in `configs/example.yaml`.
 
 ## Development
 
 ```sh
 # Enter nix dev shell
-make dev
+task dev
 
 # Run tests
-make test
+task test
 
 # Format code
-make format
+task format
 
 # Start dev server
-make serve
+task serve
 ```
 
 ## Stack
