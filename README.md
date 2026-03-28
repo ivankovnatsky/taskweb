@@ -12,6 +12,14 @@ A web interface for [Taskwarrior](https://taskwarrior.org/).
 
 ![Dark Mode](screenshots/dark-mode.png)
 
+### Annotations (Light)
+
+![Annotations Light](screenshots/annotations-light.png)
+
+### Annotations (Dark)
+
+![Annotations Dark](screenshots/annotations-dark.png)
+
 ### Completed Tasks
 
 ![Completed Tasks](screenshots/completed.png)
