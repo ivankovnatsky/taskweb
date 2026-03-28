@@ -1,6 +1,6 @@
 # TaskWeb
 
-A web interface for [Taskwarrior](https://taskwarrior.org/).
+A web interface for [Taskwarrior 3](https://taskwarrior.org/).
 
 ## Screenshots
 
@@ -48,14 +48,12 @@ python -m taskweb serve --host 0.0.0.0 --port 8080
 
 ## Configuration
 
-TaskWeb reads from your system Taskwarrior configuration by default. You can override the data location with environment variables:
+TaskWeb reads from your Taskwarrior 3 configuration by default. You can override the data location with environment variables:
 
 ```sh
-export TASKRC=./data/taskrc
-export TASKDATA=./data/task
+export TASKDATA=~/.local/share/task
+export TASKRC=~/.config/task/taskrc
 ```
-
-A local development database is included in `data/` for testing.
 
 Example config in `configs/example.yaml`.
 
@@ -79,7 +77,7 @@ make serve
 
 - Python 3.10+
 - Flask
-- Taskwarrior (via subprocess)
+- Taskwarrior 3 (via subprocess)
 - Nix flakes for development environment
 
 ## License
