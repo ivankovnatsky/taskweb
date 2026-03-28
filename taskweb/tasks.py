@@ -1,10 +1,13 @@
-"""Interface to Taskwarrior 3 via subprocess."""
+"""Interface to Taskwarrior 3 via direct SQLite access."""
 
 import json
 import os
-import subprocess
+import sqlite3
+import time
+import uuid as uuid_mod
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from pathlib import Path
 
 
 @dataclass
@@ -34,8 +37,8 @@ class Task:
         if not self.entry:
             return ""
         try:
-            entry_dt = datetime.strptime(self.entry, "%Y%m%dT%H%M%SZ").replace(tzinfo=timezone.utc)
-            delta = datetime.now(timezone.utc) - entry_dt
+            entry_ts = int(self.entry)
+            delta = datetime.now(timezone.utc) - datetime.fromtimestamp(entry_ts, tz=timezone.utc)
             days = delta.days
             if days == 0:
                 hours = delta.seconds // 3600
@@ -53,8 +56,8 @@ class Task:
         if not self.due:
             return ""
         try:
-            due_dt = datetime.strptime(self.due, "%Y%m%dT%H%M%SZ")
-            return due_dt.strftime("%Y-%m-%d")
+            due_ts = int(self.due)
+            return datetime.fromtimestamp(due_ts, tz=timezone.utc).strftime("%Y-%m-%d")
         except (ValueError, TypeError):
             return self.due
 
@@ -63,8 +66,8 @@ class Task:
         if not self.due:
             return False
         try:
-            due_dt = datetime.strptime(self.due, "%Y%m%dT%H%M%SZ").replace(tzinfo=timezone.utc)
-            return due_dt < datetime.now(timezone.utc)
+            due_ts = int(self.due)
+            return due_ts < time.time()
         except (ValueError, TypeError):
             return False
 
@@ -81,88 +84,157 @@ class Task:
         return self.status == "completed"
 
 
-class TaskError(Exception):
-    pass
+def _db_path() -> Path:
+    data_dir = os.environ.get("TASKDATA", os.path.expanduser("~/.local/share/task"))
+    return Path(data_dir) / "taskchampion.sqlite3"
 
 
-def _run_task(*args: str) -> subprocess.CompletedProcess:
-    cmd = ["task", "rc.confirmation=off", "rc.bulk=0"]
-    data_dir = os.environ.get("TASKDATA")
-    taskrc = os.environ.get("TASKRC")
-    if data_dir:
-        cmd.append(f"rc.data.location={data_dir}")
-    if taskrc:
-        cmd.insert(1, f"rc:{taskrc}")
-    cmd.extend(args)
+def _connect() -> sqlite3.Connection:
+    return sqlite3.connect(str(_db_path()))
+
+
+def _parse_task_data(uuid: str, data: dict, working_set: dict[str, int]) -> Task:
+    """Parse a task's JSON data dict into a Task object."""
+    tags_str = data.get("tags", "")
+    tags = [t.strip() for t in tags_str.split(",") if t.strip()] if tags_str else []
+
+    annotations = []
+    for key, value in data.items():
+        if key.startswith("annotation_"):
+            ts = key[len("annotation_") :]
+            annotations.append({"entry": ts, "description": value})
+    annotations.sort(key=lambda a: a["entry"])
+
+    entry = data.get("entry", "")
+    due = data.get("due", "")
+    start = data.get("start", "")
+    priority = data.get("priority", "")
+    status = data.get("status", "pending")
+
+    urgency = _calculate_urgency(
+        due=due,
+        priority=priority,
+        start=start,
+        tags=tags,
+        status=status,
+    )
+
+    return Task(
+        uuid=uuid,
+        id=working_set.get(uuid, 0),
+        description=data.get("description", ""),
+        status=status,
+        project=data.get("project", ""),
+        tags=tags,
+        priority=priority,
+        due=due,
+        entry=entry,
+        modified=data.get("modified", ""),
+        urgency=urgency,
+        start=start,
+        end=data.get("end", ""),
+        recur=data.get("recur", ""),
+        annotations=annotations,
+    )
+
+
+def _calculate_urgency(due: str, priority: str, start: str, tags: list[str], status: str) -> float:
+    """Calculate urgency score similar to Taskwarrior."""
+    urg = 0.0
+
+    if due:
+        try:
+            days_until = (int(due) - time.time()) / 86400
+            if days_until < 0:
+                urg += 12.0
+            elif days_until < 7:
+                urg += 8.0
+            elif days_until < 14:
+                urg += 4.0
+            else:
+                urg += 1.0
+        except (ValueError, TypeError):
+            pass
+
+    if priority == "H":
+        urg += 6.0
+    elif priority == "M":
+        urg += 3.9
+    elif priority == "L":
+        urg += 1.8
+
+    if start:
+        urg += 4.0
+
+    if tags:
+        urg += min(len(tags), 3) * 0.6
+
+    return round(urg, 1)
+
+
+def _get_working_set(conn: sqlite3.Connection) -> dict[str, int]:
+    """Get the working set mapping uuid -> id."""
+    c = conn.cursor()
+    c.execute("SELECT id, uuid FROM working_set")
+    return {uuid: id_ for id_, uuid in c.fetchall()}
+
+
+def get_tasks(status_filter: str = "") -> list[Task]:
+    conn = _connect()
     try:
-        return subprocess.run(cmd, capture_output=True, text=True, timeout=10)
-    except FileNotFoundError:
-        raise TaskError("Taskwarrior binary not found. Is 'task' installed?")
-    except subprocess.TimeoutExpired:
-        raise TaskError("Taskwarrior command timed out.")
-
-
-def _parse_tasks(json_str: str) -> list[Task]:
-    try:
-        data = json.loads(json_str)
-    except json.JSONDecodeError:
-        return []
-    tasks = []
-    for item in data:
-        tasks.append(
-            Task(
-                uuid=item.get("uuid", ""),
-                id=item.get("id", 0),
-                description=item.get("description", ""),
-                status=item.get("status", "pending"),
-                project=item.get("project", ""),
-                tags=item.get("tags", []),
-                priority=item.get("priority", ""),
-                due=item.get("due", ""),
-                entry=item.get("entry", ""),
-                modified=item.get("modified", ""),
-                urgency=item.get("urgency", 0.0),
-                start=item.get("start", ""),
-                end=item.get("end", ""),
-                recur=item.get("recur", ""),
-                annotations=item.get("annotations", []),
-            )
-        )
-    return tasks
-
-
-def get_tasks(filter_str: str = "") -> list[Task]:
-    args = []
-    if filter_str:
-        args.extend(filter_str.split())
-    args.append("export")
-    try:
-        result = _run_task(*args)
-    except TaskError:
-        return []
-    if result.returncode != 0:
-        return []
-    tasks = _parse_tasks(result.stdout)
-    tasks.sort(key=lambda t: t.urgency, reverse=True)
-    return tasks
+        working_set = _get_working_set(conn)
+        c = conn.cursor()
+        c.execute("SELECT uuid, data FROM tasks")
+        tasks = []
+        for uuid, data_str in c.fetchall():
+            data = json.loads(data_str)
+            if status_filter and data.get("status", "pending") != status_filter:
+                continue
+            tasks.append(_parse_task_data(uuid, data, working_set))
+        tasks.sort(key=lambda t: t.urgency, reverse=True)
+        return tasks
+    finally:
+        conn.close()
 
 
 def get_pending_tasks(filter_str: str = "") -> list[Task]:
-    filt = "status:pending"
-    if filter_str:
-        filt += f" {filter_str}"
-    return get_tasks(filt)
+    tasks = get_tasks("pending")
+    if not filter_str:
+        return tasks
+
+    filtered = []
+    for t in tasks:
+        match = True
+        for part in filter_str.split():
+            if part.startswith("project:"):
+                if t.project != part[len("project:") :]:
+                    match = False
+            elif part.startswith("+"):
+                if part[1:] not in t.tags:
+                    match = False
+        if match:
+            filtered.append(t)
+    return filtered
 
 
 def get_completed_tasks(limit: int = 20) -> list[Task]:
-    tasks = get_tasks("status:completed")
+    tasks = get_tasks("completed")
     tasks.sort(key=lambda t: t.end, reverse=True)
     return tasks[:limit]
 
 
 def get_task_by_uuid(uuid: str) -> Task | None:
-    tasks = get_tasks(uuid)
-    return tasks[0] if tasks else None
+    conn = _connect()
+    try:
+        working_set = _get_working_set(conn)
+        c = conn.cursor()
+        c.execute("SELECT uuid, data FROM tasks WHERE uuid = ?", (uuid,))
+        row = c.fetchone()
+        if not row:
+            return None
+        return _parse_task_data(row[0], json.loads(row[1]), working_set)
+    finally:
+        conn.close()
 
 
 def derive_from_tasks(tasks: list[Task]) -> dict:
@@ -182,6 +254,25 @@ def derive_from_tasks(tasks: list[Task]) -> dict:
     }
 
 
+def _update_task(uuid: str, updates: dict) -> bool:
+    """Update task properties in the database."""
+    conn = _connect()
+    try:
+        c = conn.cursor()
+        c.execute("SELECT data FROM tasks WHERE uuid = ?", (uuid,))
+        row = c.fetchone()
+        if not row:
+            return False
+        data = json.loads(row[0])
+        data.update(updates)
+        data["modified"] = str(int(time.time()))
+        c.execute("UPDATE tasks SET data = ? WHERE uuid = ?", (json.dumps(data), uuid))
+        conn.commit()
+        return True
+    finally:
+        conn.close()
+
+
 def add_task(
     description: str,
     project: str = "",
@@ -189,51 +280,113 @@ def add_task(
     priority: str = "",
     due: str = "",
 ) -> bool:
-    args = ["add", description]
-    if project:
-        args.append(f"project:{project}")
-    if tags:
-        for tag in tags:
-            t = tag if tag.startswith("+") else f"+{tag}"
-            args.append(t)
-    if priority:
-        args.append(f"priority:{priority}")
-    if due:
-        args.append(f"due:{due}")
+    conn = _connect()
     try:
-        result = _run_task(*args)
-    except TaskError:
+        task_uuid = str(uuid_mod.uuid4())
+        now = str(int(time.time()))
+        data: dict = {
+            "description": description,
+            "status": "pending",
+            "entry": now,
+            "modified": now,
+        }
+        if project:
+            data["project"] = project
+        if tags:
+            data["tags"] = ",".join(tags)
+            for tag in tags:
+                data[f"tag_{tag}"] = "x"
+        if priority:
+            data["priority"] = priority
+        if due:
+            try:
+                due_dt = datetime.strptime(due, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                data["due"] = str(int(due_dt.timestamp()))
+            except ValueError:
+                data["due"] = due
+
+        c = conn.cursor()
+        c.execute("INSERT INTO tasks (uuid, data) VALUES (?, ?)", (task_uuid, json.dumps(data)))
+
+        # Add to working set
+        c.execute("SELECT COALESCE(MAX(id), 0) + 1 FROM working_set")
+        next_id = c.fetchone()[0]
+        c.execute("INSERT INTO working_set (id, uuid) VALUES (?, ?)", (next_id, task_uuid))
+
+        conn.commit()
+        return True
+    except Exception:
         return False
-    return result.returncode == 0
+    finally:
+        conn.close()
 
 
 def complete_task(uuid: str) -> bool:
+    conn = _connect()
     try:
-        result = _run_task(uuid, "done")
-    except TaskError:
+        c = conn.cursor()
+        c.execute("SELECT data FROM tasks WHERE uuid = ?", (uuid,))
+        row = c.fetchone()
+        if not row:
+            return False
+        data = json.loads(row[0])
+        now = str(int(time.time()))
+        data["status"] = "completed"
+        data["end"] = now
+        data["modified"] = now
+        data.pop("start", None)
+        c.execute("UPDATE tasks SET data = ? WHERE uuid = ?", (json.dumps(data), uuid))
+        c.execute("DELETE FROM working_set WHERE uuid = ?", (uuid,))
+        conn.commit()
+        return True
+    except Exception:
         return False
-    return result.returncode == 0
+    finally:
+        conn.close()
 
 
 def delete_task(uuid: str) -> bool:
+    conn = _connect()
     try:
-        result = _run_task(uuid, "delete")
-    except TaskError:
+        c = conn.cursor()
+        c.execute("SELECT data FROM tasks WHERE uuid = ?", (uuid,))
+        row = c.fetchone()
+        if not row:
+            return False
+        data = json.loads(row[0])
+        now = str(int(time.time()))
+        data["status"] = "deleted"
+        data["end"] = now
+        data["modified"] = now
+        c.execute("UPDATE tasks SET data = ? WHERE uuid = ?", (json.dumps(data), uuid))
+        c.execute("DELETE FROM working_set WHERE uuid = ?", (uuid,))
+        conn.commit()
+        return True
+    except Exception:
         return False
-    return result.returncode == 0
+    finally:
+        conn.close()
 
 
 def start_task(uuid: str) -> bool:
-    try:
-        result = _run_task(uuid, "start")
-    except TaskError:
-        return False
-    return result.returncode == 0
+    return _update_task(uuid, {"start": str(int(time.time()))})
 
 
 def stop_task(uuid: str) -> bool:
+    conn = _connect()
     try:
-        result = _run_task(uuid, "stop")
-    except TaskError:
+        c = conn.cursor()
+        c.execute("SELECT data FROM tasks WHERE uuid = ?", (uuid,))
+        row = c.fetchone()
+        if not row:
+            return False
+        data = json.loads(row[0])
+        data.pop("start", None)
+        data["modified"] = str(int(time.time()))
+        c.execute("UPDATE tasks SET data = ? WHERE uuid = ?", (json.dumps(data), uuid))
+        conn.commit()
+        return True
+    except Exception:
         return False
-    return result.returncode == 0
+    finally:
+        conn.close()
