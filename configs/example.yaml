@@ -1,0 +1,7 @@
+server:
+  host: 127.0.0.1
+  port: 5000
+
+taskwarrior:
+  data_dir: ./data/task
+  taskrc: ./data/taskrc
