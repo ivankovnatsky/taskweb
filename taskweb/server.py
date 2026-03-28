@@ -8,11 +8,10 @@ from taskweb.tasks import (
     add_task,
     complete_task,
     delete_task,
+    derive_from_tasks,
     get_completed_tasks,
     get_pending_tasks,
-    get_projects,
-    get_tags,
-    get_task_count,
+    get_task_by_uuid,
     start_task,
     stop_task,
 )
@@ -38,16 +37,14 @@ def create_app() -> Flask:
             filter_str += f"+{tag_filter} "
 
         tasks = get_pending_tasks(filter_str.strip())
-        projects = get_projects()
-        tags = get_tags()
-        counts = get_task_count()
+        derived = derive_from_tasks(tasks)
 
         return render_template(
             "index.html",
             tasks=tasks,
-            projects=projects,
-            tags=tags,
-            counts=counts,
+            projects=derived["projects"],
+            tags=derived["tags"],
+            counts=derived["counts"],
             current_project=project_filter,
             current_tag=tag_filter,
         )
@@ -55,8 +52,21 @@ def create_app() -> Flask:
     @app.route("/completed")
     def completed():
         tasks = get_completed_tasks()
-        counts = get_task_count()
-        return render_template("completed.html", tasks=tasks, counts=counts)
+        pending = get_pending_tasks()
+        derived = derive_from_tasks(pending)
+        return render_template(
+            "completed.html",
+            tasks=tasks,
+            counts={**derived["counts"], "completed": len(tasks)},
+        )
+
+    @app.route("/task/<uuid>")
+    def task_detail(uuid):
+        task = get_task_by_uuid(uuid)
+        if not task:
+            flash("Task not found.", "error")
+            return redirect(url_for("index"))
+        return render_template("task_detail.html", task=task)
 
     @app.route("/add", methods=["POST"])
     def add():
@@ -77,36 +87,40 @@ def create_app() -> Flask:
             flash("Failed to add task.", "error")
         return redirect(url_for("index"))
 
-    @app.route("/task/<int:task_id>/done", methods=["POST"])
-    def done(task_id):
-        if complete_task(task_id):
-            flash(f"Task {task_id} completed.", "success")
+    @app.route("/task/<uuid>/done", methods=["POST"])
+    def done(uuid):
+        if complete_task(uuid):
+            flash("Task completed.", "success")
         else:
-            flash(f"Failed to complete task {task_id}.", "error")
+            flash("Failed to complete task.", "error")
         return redirect(request.referrer or url_for("index"))
 
-    @app.route("/task/<int:task_id>/delete", methods=["POST"])
-    def delete(task_id):
-        if delete_task(task_id):
-            flash(f"Task {task_id} deleted.", "success")
+    @app.route("/task/<uuid>/delete", methods=["POST"])
+    def delete(uuid):
+        if delete_task(uuid):
+            flash("Task deleted.", "success")
         else:
-            flash(f"Failed to delete task {task_id}.", "error")
+            flash("Failed to delete task.", "error")
         return redirect(request.referrer or url_for("index"))
 
-    @app.route("/task/<int:task_id>/start", methods=["POST"])
-    def start(task_id):
-        if start_task(task_id):
-            flash(f"Task {task_id} started.", "success")
+    @app.route("/task/<uuid>/start", methods=["POST"])
+    def start(uuid):
+        if start_task(uuid):
+            flash("Task started.", "success")
         else:
-            flash(f"Failed to start task {task_id}.", "error")
+            flash("Failed to start task.", "error")
         return redirect(request.referrer or url_for("index"))
 
-    @app.route("/task/<int:task_id>/stop", methods=["POST"])
-    def stop(task_id):
-        if stop_task(task_id):
-            flash(f"Task {task_id} stopped.", "success")
+    @app.route("/task/<uuid>/stop", methods=["POST"])
+    def stop(uuid):
+        if stop_task(uuid):
+            flash("Task stopped.", "success")
         else:
-            flash(f"Failed to stop task {task_id}.", "error")
+            flash("Failed to stop task.", "error")
         return redirect(request.referrer or url_for("index"))
+
+    @app.errorhandler(500)
+    def internal_error(e):
+        return render_template("error.html", error=str(e)), 500
 
     return app

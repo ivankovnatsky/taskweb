@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title_suffix %} — {{ task.description }}{% endblock %}
+
+{% block content %}
+<div class="window">
+  <div class="titlebar">
+    <div class="address-bar"><span class="lock">🔒</span> localhost:5000/task/{{ task.short_uuid }}</div>
+  </div>
+  <div class="content">
+    <div class="task-detail">
+      <div class="detail-header">
+        <span class="id">{{ task.id }}</span>
+        <span class="desc">{{ task.description }}{% if task.is_recurring %} ↻{% endif %}</span>
+        {% if task.is_active %}<span class="badge-active">active</span>{% endif %}
+      </div>
+
+      <div class="detail-grid">
+        {% if task.project %}
+        <div class="detail-row">
+          <span class="detail-label">Project</span>
+          <span class="proj">{{ task.project }}</span>
+        </div>
+        {% endif %}
+        {% if task.tags %}
+        <div class="detail-row">
+          <span class="detail-label">Tags</span>
+          <span class="tag">{% for t in task.tags %}+{{ t }}{% if not loop.last %} {% endif %}{% endfor %}</span>
+        </div>
+        {% endif %}
+        {% if task.priority %}
+        <div class="detail-row">
+          <span class="detail-label">Priority</span>
+          <span>{{ task.priority }}</span>
+        </div>
+        {% endif %}
+        {% if task.due %}
+        <div class="detail-row">
+          <span class="detail-label">Due</span>
+          <span class="{% if task.is_overdue %}due{% else %}due-ok{% endif %}">{{ task.due_formatted }}</span>
+        </div>
+        {% endif %}
+        <div class="detail-row">
+          <span class="detail-label">Urgency</span>
+          <span class="{% if task.urgency >= 10 %}urg-hi{% elif task.urgency >= 4 %}urg{% else %}urg-lo{% endif %}">{{ "%.1f"|format(task.urgency) }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Age</span>
+          <span class="age">{{ task.age }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">UUID</span>
+          <span class="age">{{ task.uuid }}</span>
+        </div>
+      </div>
+
+      {% if task.annotations %}
+      <div class="detail-annotations">
+        <span class="detail-label">Annotations</span>
+        {% for ann in task.annotations %}
+        <div class="annotation">{{ ann.description }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="detail-actions">
+        <form method="POST" action="{{ url_for('done', uuid=task.uuid) }}">
+          <button type="submit" class="btn-submit">Complete</button>
+        </form>
+        {% if task.is_active %}
+        <form method="POST" action="{{ url_for('stop', uuid=task.uuid) }}">
+          <button type="submit" class="btn-submit" style="border-color:var(--tw-urg);color:var(--tw-urg)">Stop</button>
+        </form>
+        {% else %}
+        <form method="POST" action="{{ url_for('start', uuid=task.uuid) }}">
+          <button type="submit" class="btn-submit" style="border-color:var(--tw-act);color:var(--tw-act)">Start</button>
+        </form>
+        {% endif %}
+        <form method="POST" action="{{ url_for('delete', uuid=task.uuid) }}">
+          <button type="submit" class="btn btn-delete" title="Delete">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

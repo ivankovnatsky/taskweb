@@ -26,7 +26,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
 
-      - name: Install task
+      - name: Install task (Linux)
         if: runner.os == 'Linux'
         run: |
           sudo snap install task --classic
@@ -35,15 +35,13 @@ jobs:
         if: runner.os == 'macOS'
         run: brew install taskwarrior
 
-      - name: Install dependencies
-        run: |
-          pip install flask click pytest
+      - name: Install package
+        run: pip install ".[dev]"
 
       - name: Run tests
         run: pytest -v
 
       - name: Run ruff
         run: |
-          pip install ruff
           ruff check .
           ruff format --check .

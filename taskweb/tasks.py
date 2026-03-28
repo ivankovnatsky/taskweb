@@ -1,4 +1,4 @@
-"""Interface to Taskwarrior via subprocess."""
+"""Interface to Taskwarrior 3 via subprocess."""
 
 import json
 import os
@@ -24,6 +24,10 @@ class Task:
     end: str = ""
     recur: str = ""
     annotations: list[dict] = field(default_factory=list)
+
+    @property
+    def short_uuid(self) -> str:
+        return self.uuid[:8]
 
     @property
     def age(self) -> str:
@@ -77,6 +81,10 @@ class Task:
         return self.status == "completed"
 
 
+class TaskError(Exception):
+    pass
+
+
 def _run_task(*args: str) -> subprocess.CompletedProcess:
     cmd = ["task", "rc.confirmation=off", "rc.bulk=0"]
     data_dir = os.environ.get("TASKDATA")
@@ -86,7 +94,12 @@ def _run_task(*args: str) -> subprocess.CompletedProcess:
     if taskrc:
         cmd.insert(1, f"rc:{taskrc}")
     cmd.extend(args)
-    return subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+    try:
+        return subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+    except FileNotFoundError:
+        raise TaskError("Taskwarrior binary not found. Is 'task' installed?")
+    except subprocess.TimeoutExpired:
+        raise TaskError("Taskwarrior command timed out.")
 
 
 def _parse_tasks(json_str: str) -> list[Task]:
@@ -123,7 +136,10 @@ def get_tasks(filter_str: str = "") -> list[Task]:
     if filter_str:
         args.extend(filter_str.split())
     args.append("export")
-    result = _run_task(*args)
+    try:
+        result = _run_task(*args)
+    except TaskError:
+        return []
     if result.returncode != 0:
         return []
     tasks = _parse_tasks(result.stdout)
@@ -144,6 +160,28 @@ def get_completed_tasks(limit: int = 20) -> list[Task]:
     return tasks[:limit]
 
 
+def get_task_by_uuid(uuid: str) -> Task | None:
+    tasks = get_tasks(uuid)
+    return tasks[0] if tasks else None
+
+
+def derive_from_tasks(tasks: list[Task]) -> dict:
+    """Derive projects, tags, and counts from an already-fetched task list."""
+    projects = sorted({t.project for t in tasks if t.project})
+    tags = set()
+    for t in tasks:
+        tags.update(t.tags)
+    overdue = [t for t in tasks if t.is_overdue]
+    return {
+        "projects": projects,
+        "tags": sorted(tags),
+        "counts": {
+            "pending": len(tasks),
+            "overdue": len(overdue),
+        },
+    }
+
+
 def add_task(
     description: str,
     project: str = "",
@@ -162,64 +200,40 @@ def add_task(
         args.append(f"priority:{priority}")
     if due:
         args.append(f"due:{due}")
-    result = _run_task(*args)
+    try:
+        result = _run_task(*args)
+    except TaskError:
+        return False
     return result.returncode == 0
 
 
-def complete_task(task_id: int) -> bool:
-    result = _run_task(str(task_id), "done")
+def complete_task(uuid: str) -> bool:
+    try:
+        result = _run_task(uuid, "done")
+    except TaskError:
+        return False
     return result.returncode == 0
 
 
-def delete_task(task_id: int) -> bool:
-    result = _run_task(str(task_id), "delete")
+def delete_task(uuid: str) -> bool:
+    try:
+        result = _run_task(uuid, "delete")
+    except TaskError:
+        return False
     return result.returncode == 0
 
 
-def start_task(task_id: int) -> bool:
-    result = _run_task(str(task_id), "start")
+def start_task(uuid: str) -> bool:
+    try:
+        result = _run_task(uuid, "start")
+    except TaskError:
+        return False
     return result.returncode == 0
 
 
-def stop_task(task_id: int) -> bool:
-    result = _run_task(str(task_id), "stop")
+def stop_task(uuid: str) -> bool:
+    try:
+        result = _run_task(uuid, "stop")
+    except TaskError:
+        return False
     return result.returncode == 0
-
-
-def modify_task(task_id: int, **kwargs: str) -> bool:
-    args = [str(task_id), "modify"]
-    for key, value in kwargs.items():
-        if key == "description":
-            args.append(value)
-        elif key == "tags":
-            for tag in value if isinstance(value, list) else [value]:
-                args.append(tag if tag.startswith("+") or tag.startswith("-") else f"+{tag}")
-        else:
-            args.append(f"{key}:{value}")
-    result = _run_task(*args)
-    return result.returncode == 0
-
-
-def get_projects() -> list[str]:
-    tasks = get_pending_tasks()
-    projects = sorted({t.project for t in tasks if t.project})
-    return projects
-
-
-def get_tags() -> list[str]:
-    tasks = get_pending_tasks()
-    tags = set()
-    for t in tasks:
-        tags.update(t.tags)
-    return sorted(tags)
-
-
-def get_task_count() -> dict[str, int]:
-    pending = get_pending_tasks()
-    completed = get_tasks("status:completed")
-    overdue = [t for t in pending if t.is_overdue]
-    return {
-        "pending": len(pending),
-        "completed": len(completed),
-        "overdue": len(overdue),
-    }

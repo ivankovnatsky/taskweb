@@ -94,32 +94,25 @@
           <td class="{% if task.is_overdue %}due{% elif task.due %}due-ok{% endif %}">{{ task.due_formatted }}</td>
           <td class="{% if task.urgency >= 10 %}urg-hi{% elif task.urgency >= 4 %}urg{% else %}urg-lo{% endif %}">{{ "%.1f"|format(task.urgency) }}</td>
           <td class="desc">
-            <span class="desc-text{% if task.annotations %} has-annotations{% endif %}" onclick="this.parentElement.querySelector('.annotations')?.classList.toggle('show')">
+            <a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="task-link">
               {{ task.description }}{% if task.is_recurring %} ↻{% endif %}{% if task.annotations %} <span class="annotation-count">[{{ task.annotations|length }}]</span>{% endif %}
-            </span>
-            {% if task.annotations %}
-            <div class="annotations">
-              {% for ann in task.annotations %}
-              <div class="annotation">{{ ann.description }}</div>
-              {% endfor %}
-            </div>
-            {% endif %}
+            </a>
           </td>
           <td>
             <div class="actions">
-              <form method="POST" action="{{ url_for('done', task_id=task.id) }}">
+              <form method="POST" action="{{ url_for('done', uuid=task.uuid) }}">
                 <button type="submit" class="btn btn-done" title="Complete">✓</button>
               </form>
               {% if task.is_active %}
-              <form method="POST" action="{{ url_for('stop', task_id=task.id) }}">
+              <form method="POST" action="{{ url_for('stop', uuid=task.uuid) }}">
                 <button type="submit" class="btn btn-start" title="Stop">◼</button>
               </form>
               {% else %}
-              <form method="POST" action="{{ url_for('start', task_id=task.id) }}">
+              <form method="POST" action="{{ url_for('start', uuid=task.uuid) }}">
                 <button type="submit" class="btn btn-start" title="Start">▶</button>
               </form>
               {% endif %}
-              <form method="POST" action="{{ url_for('delete', task_id=task.id) }}">
+              <form method="POST" action="{{ url_for('delete', uuid=task.uuid) }}">
                 <button type="submit" class="btn btn-delete" title="Delete">✕</button>
               </form>
             </div>
