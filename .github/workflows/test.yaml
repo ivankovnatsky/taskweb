@@ -1,0 +1,50 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install task
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y taskwarrior
+
+      - name: Install task (macOS)
+        if: runner.os == 'macOS'
+        run: brew install task
+
+      - name: Install dependencies
+        run: |
+          pip install flask click pytest
+
+      - name: Run tests
+        run: pytest -v
+
+      - name: Run ruff
+        run: |
+          pip install ruff
+          ruff check .
+          ruff format --check .
