@@ -155,8 +155,14 @@ nav a.active {
   padding: 10px 14px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   transition: background .2s, border-color .2s;
+}
+
+.dots {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .dot { width: 12px; height: 12px; border-radius: 50% }
@@ -164,16 +170,25 @@ nav a.active {
 .dot.min { background: #febc2e }
 .dot.max { background: #28c840 }
 
-.win-title {
+.address-bar {
   flex: 1;
-  text-align: center;
-  font-family: 'SF Mono', monospace;
-  font-size: 10.5px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-size: 11px;
   color: var(--dim);
-  letter-spacing: .04em;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.spacer { width: 44px }
+.lock {
+  font-size: 10px;
+  margin-right: 4px;
+}
 
 /* Content area */
 .content {

@@ -5,9 +5,8 @@
 <div class="add-form">
   <div class="window form-window">
     <div class="titlebar">
-      <div class="dot close"></div><div class="dot min"></div><div class="dot max"></div>
-      <div class="win-title">add task</div>
-      <div class="spacer"></div>
+      <div class="dots"><div class="dot close"></div><div class="dot min"></div><div class="dot max"></div></div>
+      <div class="address-bar"><span class="lock">🔒</span> localhost:5000/add</div>
     </div>
     <div class="content">
       <form method="POST" action="{{ url_for('add') }}">
@@ -67,9 +66,8 @@
 <!-- Task List -->
 <div class="window">
   <div class="titlebar">
-    <div class="dot close"></div><div class="dot min"></div><div class="dot max"></div>
-    <div class="win-title">task next — {{ counts.pending }} pending{% if counts.overdue %} · <span style="color:var(--tw-due)">{{ counts.overdue }} overdue</span>{% endif %}</div>
-    <div class="spacer"></div>
+    <div class="dots"><div class="dot close"></div><div class="dot min"></div><div class="dot max"></div></div>
+    <div class="address-bar"><span class="lock">🔒</span> localhost:5000{% if current_project %}?project={{ current_project }}{% elif current_tag %}?tag={{ current_tag }}{% endif %}</div>
   </div>
   <div class="content">
     {% if tasks %}
