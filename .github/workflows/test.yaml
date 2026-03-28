@@ -29,12 +29,11 @@ jobs:
       - name: Install task
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y taskwarrior
+          sudo snap install task --classic
 
       - name: Install task (macOS)
         if: runner.os == 'macOS'
-        run: brew install task
+        run: brew install taskwarrior
 
       - name: Install dependencies
         run: |
