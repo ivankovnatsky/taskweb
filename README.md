@@ -77,3 +77,17 @@ make serve
 ## License
 
 MIT
+
+## Repository Setup
+
+After creating the repository on GitHub:
+
+1. Set the default branch to `main`:
+   ```sh
+   gh repo edit ivankovnatsky/taskweb --default-branch main
+   ```
+
+2. Make the repository private:
+   ```sh
+   gh repo edit ivankovnatsky/taskweb --visibility private
+   ```
