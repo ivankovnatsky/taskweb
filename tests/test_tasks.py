@@ -3,7 +3,12 @@
 import json
 from unittest.mock import MagicMock, patch
 
-from taskweb.tasks import Task, _parse_tasks, get_pending_tasks, get_projects, get_tags
+from taskweb.tasks import Task, TaskError, _parse_tasks, derive_from_tasks, get_pending_tasks
+
+
+def test_task_short_uuid():
+    task = Task(uuid="abc12345-6789-0000-1111-222233334444")
+    assert task.short_uuid == "abc12345"
 
 
 def test_task_age_hours():
@@ -96,6 +101,27 @@ def test_parse_tasks_invalid():
     assert _parse_tasks("invalid json") == []
 
 
+def test_derive_from_tasks():
+    tasks = [
+        Task(uuid="1", project="infra", tags=["a", "b"], due="20200101T000000Z"),
+        Task(uuid="2", project="home", tags=["b", "c"]),
+        Task(uuid="3", project="infra", tags=["a"]),
+    ]
+    derived = derive_from_tasks(tasks)
+    assert derived["projects"] == ["home", "infra"]
+    assert derived["tags"] == ["a", "b", "c"]
+    assert derived["counts"]["pending"] == 3
+    assert derived["counts"]["overdue"] == 1
+
+
+def test_derive_from_tasks_empty():
+    derived = derive_from_tasks([])
+    assert derived["projects"] == []
+    assert derived["tags"] == []
+    assert derived["counts"]["pending"] == 0
+    assert derived["counts"]["overdue"] == 0
+
+
 @patch("taskweb.tasks._run_task")
 def test_get_pending_tasks(mock_run):
     mock_run.return_value = MagicMock(
@@ -126,55 +152,47 @@ def test_get_pending_tasks(mock_run):
 
 
 @patch("taskweb.tasks._run_task")
-def test_get_projects(mock_run):
-    mock_run.return_value = MagicMock(
-        returncode=0,
-        stdout=json.dumps(
-            [
-                {
-                    "uuid": "1",
-                    "id": 1,
-                    "description": "T1",
-                    "status": "pending",
-                    "project": "infra",
-                },
-                {"uuid": "2", "id": 2, "description": "T2", "status": "pending", "project": "home"},
-                {
-                    "uuid": "3",
-                    "id": 3,
-                    "description": "T3",
-                    "status": "pending",
-                    "project": "infra",
-                },
-            ]
-        ),
-    )
-    projects = get_projects()
-    assert projects == ["home", "infra"]
+def test_run_task_file_not_found(mock_run):
+    mock_run.side_effect = TaskError("Taskwarrior binary not found.")
+    tasks = get_pending_tasks()
+    assert tasks == []
 
 
 @patch("taskweb.tasks._run_task")
-def test_get_tags(mock_run):
-    mock_run.return_value = MagicMock(
-        returncode=0,
-        stdout=json.dumps(
-            [
-                {
-                    "uuid": "1",
-                    "id": 1,
-                    "description": "T1",
-                    "status": "pending",
-                    "tags": ["a", "b"],
-                },
-                {
-                    "uuid": "2",
-                    "id": 2,
-                    "description": "T2",
-                    "status": "pending",
-                    "tags": ["b", "c"],
-                },
-            ]
-        ),
-    )
-    tags = get_tags()
-    assert tags == ["a", "b", "c"]
+def test_complete_task_uses_uuid(mock_run):
+    from taskweb.tasks import complete_task
+
+    mock_run.return_value = MagicMock(returncode=0)
+    result = complete_task("abc-123-def")
+    assert result is True
+    mock_run.assert_called_once_with("abc-123-def", "done")
+
+
+@patch("taskweb.tasks._run_task")
+def test_delete_task_uses_uuid(mock_run):
+    from taskweb.tasks import delete_task
+
+    mock_run.return_value = MagicMock(returncode=0)
+    result = delete_task("abc-123-def")
+    assert result is True
+    mock_run.assert_called_once_with("abc-123-def", "delete")
+
+
+@patch("taskweb.tasks._run_task")
+def test_start_task_uses_uuid(mock_run):
+    from taskweb.tasks import start_task
+
+    mock_run.return_value = MagicMock(returncode=0)
+    result = start_task("abc-123-def")
+    assert result is True
+    mock_run.assert_called_once_with("abc-123-def", "start")
+
+
+@patch("taskweb.tasks._run_task")
+def test_stop_task_uses_uuid(mock_run):
+    from taskweb.tasks import stop_task
+
+    mock_run.return_value = MagicMock(returncode=0)
+    result = stop_task("abc-123-def")
+    assert result is True
+    mock_run.assert_called_once_with("abc-123-def", "stop")

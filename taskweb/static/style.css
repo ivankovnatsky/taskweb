@@ -200,19 +200,9 @@ tr.active-row .id { color: var(--tw-act) }
 .tw-footer { margin-top: 6px; color: var(--tw-cnt); font-size: 11px }
 
 /* Annotations */
-.has-annotations {
-  cursor: pointer;
-}
 .annotation-count {
   color: var(--dim);
   font-size: 10px;
-}
-.annotations {
-  display: none;
-  margin-top: 4px;
-}
-.annotations.show {
-  display: block;
 }
 .annotation {
   color: var(--dim);
@@ -398,6 +388,62 @@ tr.active-row .id { color: var(--tw-act) }
   color: var(--dim);
   font-family: 'SF Mono', monospace;
   font-size: 12px;
+}
+
+/* Task link */
+.task-link {
+  color: var(--tw-desc);
+  text-decoration: none;
+  transition: color .15s;
+}
+.task-link:hover {
+  color: var(--tw-id);
+}
+
+/* Task detail */
+.task-detail {
+  font-family: 'SF Mono', monospace;
+  font-size: 12px;
+}
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+.badge-active {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--tw-act);
+  border: 1px solid var(--tw-act);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+.detail-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 16px;
+  margin-bottom: 16px;
+}
+.detail-label {
+  color: var(--dim);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.detail-annotations {
+  margin-bottom: 16px;
+}
+.detail-annotations .detail-label {
+  display: block;
+  margin-bottom: 6px;
+}
+.detail-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
 }
 
 /* Footer */
