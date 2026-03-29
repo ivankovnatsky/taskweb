@@ -1,9 +1,0 @@
-server:
-  host: 127.0.0.1
-  port: 5000
-
-# TaskWeb reads from your Taskwarrior 3 configuration.
-# Override the data location with environment variables:
-#
-#   export TASKDATA=~/.local/share/task
-#   export TASKRC=~/.config/task/taskrc

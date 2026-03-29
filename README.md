@@ -54,8 +54,6 @@ export TASKRC=~/.config/task/taskrc
 
 A demo database with sample tasks is included in `data/` for development.
 
-Example config in `configs/example.yaml`.
-
 ## Development
 
 ```console
@@ -76,23 +74,10 @@ task serve
 
 - Python 3.10+
 - Flask
-- Taskwarrior 3 (via subprocess)
+- Taskwarrior 3 (direct SQLite access)
 - Nix flakes for development environment
 
 ## License
 
 MIT
 
-## Repository Setup
-
-After creating the repository on GitHub:
-
-1. Set the default branch to `main`:
-   ```console
-   gh repo edit ivankovnatsky/taskweb --default-branch main
-   ```
-
-2. Make the repository private:
-   ```console
-   gh repo edit ivankovnatsky/taskweb --visibility private
-   ```
