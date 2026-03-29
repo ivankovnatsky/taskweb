@@ -7,7 +7,7 @@ tasks:
 
   serve:
     desc: Start the web server with demo database
-    cmd: python -m taskweb serve
+    cmd: python -m taskweb serve --debug
     env:
       TASKDATA: ./data/task
 
