@@ -24,7 +24,7 @@ def create_app() -> Flask:
         template_folder=os.path.join(os.path.dirname(__file__), "templates"),
         static_folder=os.path.join(os.path.dirname(__file__), "static"),
     )
-    app.secret_key = os.environ.get("TASKWEB_SECRET_KEY", "taskweb-dev-key")
+    app.secret_key = os.environ.get("TASKWEB_SECRET_KEY") or os.urandom(32)
 
     @app.template_filter("format_timestamp")
     def format_timestamp(ts: str) -> str:

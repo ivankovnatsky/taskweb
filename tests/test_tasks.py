@@ -27,6 +27,11 @@ def _create_test_db(tmp_path: Path) -> Path:
     c = conn.cursor()
     c.execute("CREATE TABLE tasks (uuid STRING PRIMARY KEY, data STRING)")
     c.execute("CREATE TABLE working_set (id INTEGER PRIMARY KEY, uuid STRING)")
+    c.execute(
+        "CREATE TABLE operations ("
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "data STRING, synced bool DEFAULT false)"
+    )
     conn.commit()
     conn.close()
     return db_path
@@ -51,7 +56,7 @@ def test_task_short_uuid():
 def test_task_age_hours():
     now = str(int(time.time()))
     task = Task(uuid="test", entry=now)
-    assert task.age in ("<1h", "1h", "0h") or "h" in task.age or "<" in task.age
+    assert task.age == "<1h"
 
 
 def test_task_age_days():

@@ -1,6 +1,7 @@
 """Interface to Taskwarrior 3 via direct SQLite access."""
 
 import json
+import logging
 import os
 import sqlite3
 import time
@@ -8,6 +9,8 @@ import uuid as uuid_mod
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -90,7 +93,9 @@ def _db_path() -> Path:
 
 
 def _connect() -> sqlite3.Connection:
-    return sqlite3.connect(str(_db_path()))
+    conn = sqlite3.connect(str(_db_path()), timeout=10)
+    conn.execute("PRAGMA journal_mode=WAL")
+    return conn
 
 
 def _parse_task_data(uuid: str, data: dict, working_set: dict[str, int]) -> Task:
@@ -254,6 +259,40 @@ def derive_from_tasks(tasks: list[Task]) -> dict:
     }
 
 
+def _iso_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def _record_create(c: sqlite3.Cursor, task_uuid: str) -> None:
+    op = json.dumps({"Create": {"uuid": task_uuid}})
+    c.execute("INSERT INTO operations (data) VALUES (?)", (op,))
+
+
+def _record_update(
+    c: sqlite3.Cursor,
+    task_uuid: str,
+    prop: str,
+    old_value: str | None,
+    new_value: str | None,
+) -> None:
+    op = json.dumps(
+        {
+            "Update": {
+                "uuid": task_uuid,
+                "property": prop,
+                "old_value": old_value,
+                "value": new_value,
+                "timestamp": _iso_now(),
+            }
+        }
+    )
+    c.execute("INSERT INTO operations (data) VALUES (?)", (op,))
+
+
+def _record_undo_point(c: sqlite3.Cursor) -> None:
+    c.execute("INSERT INTO operations (data) VALUES (?)", ('"UndoPoint"',))
+
+
 def _update_task(uuid: str, updates: dict) -> bool:
     """Update task properties in the database."""
     conn = _connect()
@@ -264,8 +303,14 @@ def _update_task(uuid: str, updates: dict) -> bool:
         if not row:
             return False
         data = json.loads(row[0])
+        _record_undo_point(c)
+        for key, value in updates.items():
+            old_value = data.get(key)
+            _record_update(c, uuid, key, old_value, value)
         data.update(updates)
-        data["modified"] = str(int(time.time()))
+        now = str(int(time.time()))
+        _record_update(c, uuid, "modified", data.get("modified"), now)
+        data["modified"] = now
         c.execute("UPDATE tasks SET data = ? WHERE uuid = ?", (json.dumps(data), uuid))
         conn.commit()
         return True
@@ -308,6 +353,12 @@ def add_task(
         c = conn.cursor()
         c.execute("INSERT INTO tasks (uuid, data) VALUES (?, ?)", (task_uuid, json.dumps(data)))
 
+        # Record operations for sync
+        _record_undo_point(c)
+        _record_create(c, task_uuid)
+        for key, value in data.items():
+            _record_update(c, task_uuid, key, None, value)
+
         # Add to working set
         c.execute("SELECT COALESCE(MAX(id), 0) + 1 FROM working_set")
         next_id = c.fetchone()[0]
@@ -316,6 +367,7 @@ def add_task(
         conn.commit()
         return True
     except Exception:
+        logger.exception("Failed to add task")
         return False
     finally:
         conn.close()
@@ -331,6 +383,12 @@ def complete_task(uuid: str) -> bool:
             return False
         data = json.loads(row[0])
         now = str(int(time.time()))
+        _record_undo_point(c)
+        _record_update(c, uuid, "status", data.get("status"), "completed")
+        _record_update(c, uuid, "end", data.get("end"), now)
+        _record_update(c, uuid, "modified", data.get("modified"), now)
+        if "start" in data:
+            _record_update(c, uuid, "start", data["start"], None)
         data["status"] = "completed"
         data["end"] = now
         data["modified"] = now
@@ -340,6 +398,7 @@ def complete_task(uuid: str) -> bool:
         conn.commit()
         return True
     except Exception:
+        logger.exception("Failed to complete task %s", uuid)
         return False
     finally:
         conn.close()
@@ -355,6 +414,10 @@ def delete_task(uuid: str) -> bool:
             return False
         data = json.loads(row[0])
         now = str(int(time.time()))
+        _record_undo_point(c)
+        _record_update(c, uuid, "status", data.get("status"), "deleted")
+        _record_update(c, uuid, "end", data.get("end"), now)
+        _record_update(c, uuid, "modified", data.get("modified"), now)
         data["status"] = "deleted"
         data["end"] = now
         data["modified"] = now
@@ -363,6 +426,7 @@ def delete_task(uuid: str) -> bool:
         conn.commit()
         return True
     except Exception:
+        logger.exception("Failed to delete task %s", uuid)
         return False
     finally:
         conn.close()
@@ -381,12 +445,18 @@ def stop_task(uuid: str) -> bool:
         if not row:
             return False
         data = json.loads(row[0])
+        now = str(int(time.time()))
+        _record_undo_point(c)
+        if "start" in data:
+            _record_update(c, uuid, "start", data["start"], None)
+        _record_update(c, uuid, "modified", data.get("modified"), now)
         data.pop("start", None)
-        data["modified"] = str(int(time.time()))
+        data["modified"] = now
         c.execute("UPDATE tasks SET data = ? WHERE uuid = ?", (json.dumps(data), uuid))
         conn.commit()
         return True
     except Exception:
+        logger.exception("Failed to stop task %s", uuid)
         return False
     finally:
         conn.close()
