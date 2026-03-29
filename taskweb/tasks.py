@@ -438,5 +438,115 @@ def delete_task(uuid: str) -> bool:
         conn.close()
 
 
-def start_task(uuid: str) -> bool:
-    return _update_task(uuid, {"start": str(int(time.time()))})
+def edit_task(
+    uuid: str,
+    description: str = "",
+    project: str = "",
+    tags: list[str] | None = None,
+    priority: str = "",
+    due: str = "",
+    recur: str = "",
+    annotation: str = "",
+) -> bool:
+    """Edit a task's fields. Empty strings clear the field."""
+    conn = _connect()
+    try:
+        c = conn.cursor()
+        c.execute("SELECT data FROM tasks WHERE uuid = ?", (uuid,))
+        row = c.fetchone()
+        if not row:
+            return False
+        data = json.loads(row[0])
+        _record_undo_point(c)
+
+        # Description (required, don't clear)
+        if description and description != data.get("description", ""):
+            _record_update(c, uuid, "description", data.get("description"), description)
+            data["description"] = description
+
+        # Project
+        old_project = data.get("project", "")
+        if project != old_project:
+            _record_update(c, uuid, "project", old_project or None, project or None)
+            if project:
+                data["project"] = project
+            else:
+                data.pop("project", None)
+
+        # Tags
+        old_tags_str = data.get("tags", "")
+        old_tags = [t.strip() for t in old_tags_str.split(",") if t.strip()] if old_tags_str else []
+        new_tags = tags if tags is not None else []
+        if sorted(new_tags) != sorted(old_tags):
+            new_tags_str = ",".join(new_tags) if new_tags else None
+            _record_update(c, uuid, "tags", old_tags_str or None, new_tags_str)
+            # Remove old tag_ keys
+            for t in old_tags:
+                key = f"tag_{t}"
+                if key in data:
+                    _record_update(c, uuid, key, data[key], None)
+                    del data[key]
+            # Set new tags
+            if new_tags:
+                data["tags"] = ",".join(new_tags)
+                for t in new_tags:
+                    data[f"tag_{t}"] = "x"
+                    _record_update(c, uuid, f"tag_{t}", None, "x")
+            else:
+                data.pop("tags", None)
+
+        # Priority
+        old_priority = data.get("priority", "")
+        if priority != old_priority:
+            _record_update(c, uuid, "priority", old_priority or None, priority or None)
+            if priority:
+                data["priority"] = priority
+            else:
+                data.pop("priority", None)
+
+        # Due
+        old_due = data.get("due", "")
+        if due:
+            try:
+                due_dt = datetime.strptime(due, "%Y-%m-%d").astimezone(timezone.utc)
+                new_due = str(int(due_dt.timestamp()))
+            except ValueError:
+                new_due = due
+        else:
+            new_due = ""
+        if new_due != old_due:
+            _record_update(c, uuid, "due", old_due or None, new_due or None)
+            if new_due:
+                data["due"] = new_due
+            else:
+                data.pop("due", None)
+
+        # Recur
+        old_recur = data.get("recur", "")
+        if recur != old_recur:
+            _record_update(c, uuid, "recur", old_recur or None, recur or None)
+            if recur:
+                data["recur"] = recur
+            else:
+                data.pop("recur", None)
+
+        # Annotation (add new if provided)
+        if annotation:
+            ts = str(int(time.time()))
+            ann_key = f"annotation_{ts}"
+            data[ann_key] = annotation
+            _record_update(c, uuid, ann_key, None, annotation)
+
+        # Modified
+        now = str(int(time.time()))
+        _record_update(c, uuid, "modified", data.get("modified"), now)
+        data["modified"] = now
+
+        c.execute("UPDATE tasks SET data = ? WHERE uuid = ?", (json.dumps(data), uuid))
+        conn.commit()
+        return True
+    except Exception:
+        logger.exception("Failed to edit task %s", uuid)
+        return False
+    finally:
+        conn.close()

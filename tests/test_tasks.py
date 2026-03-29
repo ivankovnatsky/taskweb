@@ -15,7 +15,6 @@ from taskweb.tasks import (
     get_completed_tasks,
     get_pending_tasks,
     get_task_by_uuid,
-    start_task,
 )
 
 
@@ -291,32 +290,6 @@ def test_delete_task(tmp_path):
     data = json.loads(c.fetchone()[0])
     conn.close()
     assert data["status"] == "deleted"
-
-
-def test_start_task(tmp_path):
-    db_path = _create_test_db(tmp_path)
-    now = str(int(time.time()))
-    _insert_task(
-        db_path,
-        "uuid-start",
-        {
-            "description": "To start",
-            "status": "pending",
-            "entry": now,
-        },
-        ws_id=1,
-    )
-
-    with patch("taskweb.tasks._db_path", return_value=db_path):
-        result = start_task("uuid-start")
-    assert result is True
-
-    conn = sqlite3.connect(str(db_path))
-    c = conn.cursor()
-    c.execute("SELECT data FROM tasks WHERE uuid = ?", ("uuid-start",))
-    data = json.loads(c.fetchone()[0])
-    conn.close()
-    assert "start" in data
 
 
 def test_filter_by_project(tmp_path):
