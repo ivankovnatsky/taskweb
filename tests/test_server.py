@@ -19,13 +19,13 @@ def test_index_with_tasks(mock_tasks, client):
 
     mock_tasks.return_value = [
         Task(
-            uuid="abc-123-def",
+            uuid="abc12345-1234-5678-9abc-def012345678",
             id=1,
             description="Test task",
             project="proj1",
             tags=["tag1"],
             urgency=5.0,
-            entry="20260301T000000Z",
+            entry="1740787200",
         ),
     ]
     response = client.get("/")
@@ -67,16 +67,16 @@ def test_add_task_empty_description(client):
 
 @patch("taskweb.server.complete_task", return_value=True)
 def test_done(mock_done, client):
-    response = client.post("/task/abc-123-def/done")
+    response = client.post("/task/abc12345-1234-5678-9abc-def012345678/done")
     assert response.status_code == 302
-    mock_done.assert_called_once_with("abc-123-def")
+    mock_done.assert_called_once_with("abc12345-1234-5678-9abc-def012345678")
 
 
 @patch("taskweb.server.delete_task", return_value=True)
 def test_delete(mock_delete, client):
-    response = client.post("/task/abc-123-def/delete")
+    response = client.post("/task/abc12345-1234-5678-9abc-def012345678/delete")
     assert response.status_code == 302
-    mock_delete.assert_called_once_with("abc-123-def")
+    mock_delete.assert_called_once_with("abc12345-1234-5678-9abc-def012345678")
 
 
 @patch("taskweb.server.get_pending_tasks", return_value=[])
@@ -98,19 +98,24 @@ def test_task_detail(mock_get, client):
     from taskweb.tasks import Task
 
     mock_get.return_value = Task(
-        uuid="abc-123-def",
+        uuid="abc12345-1234-5678-9abc-def012345678",
         id=1,
         description="Test task",
         project="proj1",
         annotations=[{"entry": "1709251200", "description": "A note"}],
     )
-    response = client.get("/task/abc-123-def")
+    response = client.get("/task/abc12345-1234-5678-9abc-def012345678")
     assert response.status_code == 200
     assert b"Test task" in response.data
     assert b"A note" in response.data
 
 
+def test_task_detail_invalid_uuid(client):
+    response = client.get("/task/nonexistent")
+    assert response.status_code == 404
+
+
 @patch("taskweb.server.get_task_by_uuid", return_value=None)
 def test_task_detail_not_found(mock_get, client):
-    response = client.get("/task/nonexistent")
+    response = client.get("/task/abc12345-1234-5678-9abc-000000000000")
     assert response.status_code == 302

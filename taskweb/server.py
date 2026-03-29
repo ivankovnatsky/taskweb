@@ -1,10 +1,14 @@
 """Flask web application for TaskWeb."""
 
+import hashlib
+import hmac
 import os
+import re
 from datetime import datetime, timezone
 
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import Flask, abort, flash, redirect, render_template, request, session, url_for
 
+from taskweb import __version__
 from taskweb.tasks import (
     add_task,
     complete_task,
@@ -24,7 +28,10 @@ def create_app() -> Flask:
         template_folder=os.path.join(os.path.dirname(__file__), "templates"),
         static_folder=os.path.join(os.path.dirname(__file__), "static"),
     )
-    app.secret_key = os.environ.get("TASKWEB_SECRET_KEY") or os.urandom(32)
+    app.secret_key = (
+        os.environ.get("TASKWEB_SECRET_KEY")
+        or hashlib.sha256(f"taskweb-{os.path.expanduser('~')}".encode()).digest()
+    )
 
     @app.template_filter("format_timestamp")
     def format_timestamp(ts: str) -> str:
@@ -34,6 +41,26 @@ def create_app() -> Flask:
             return dt.strftime("%Y-%m-%d %H:%M:%S")
         except (ValueError, TypeError, OSError):
             return ts
+
+    uuid_re = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
+
+    def _validate_uuid(uuid: str) -> bool:
+        return bool(uuid_re.match(uuid))
+
+    def _generate_csrf_token():
+        if "_csrf_token" not in session:
+            session["_csrf_token"] = os.urandom(16).hex()
+        return session["_csrf_token"]
+
+    app.jinja_env.globals["csrf_token"] = _generate_csrf_token
+    app.jinja_env.globals["version"] = __version__
+
+    @app.before_request
+    def _check_csrf():
+        if request.method == "POST" and not app.config.get("TESTING"):
+            token = request.form.get("_csrf_token", "")
+            if not hmac.compare_digest(token, session.get("_csrf_token", "")):
+                abort(403)
 
     PER_PAGE = 40
 
@@ -104,6 +131,8 @@ def create_app() -> Flask:
 
     @app.route("/task/<uuid>")
     def task_detail(uuid):
+        if not _validate_uuid(uuid):
+            abort(404)
         task = get_task_by_uuid(uuid)
         if not task:
             flash("Task not found.", "error")
@@ -131,6 +160,8 @@ def create_app() -> Flask:
 
     @app.route("/task/<uuid>/edit", methods=["GET", "POST"])
     def edit(uuid):
+        if not _validate_uuid(uuid):
+            abort(404)
         task = get_task_by_uuid(uuid)
         if not task:
             flash("Task not found.", "error")
@@ -169,6 +200,8 @@ def create_app() -> Flask:
 
     @app.route("/task/<uuid>/done", methods=["POST"])
     def done(uuid):
+        if not _validate_uuid(uuid):
+            abort(404)
         if complete_task(uuid):
             flash("Task completed.", "success")
         else:
@@ -177,6 +210,8 @@ def create_app() -> Flask:
 
     @app.route("/task/<uuid>/delete", methods=["POST"])
     def delete(uuid):
+        if not _validate_uuid(uuid):
+            abort(404)
         if delete_task(uuid):
             flash("Task deleted.", "success")
         else:
