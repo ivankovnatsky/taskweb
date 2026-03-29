@@ -67,7 +67,6 @@
       <thead>
         <tr>
           <th></th>
-          <th></th>
           <th>ID</th>
           <th>Age</th>
           <th>Project</th>
@@ -75,12 +74,12 @@
           <th>Due</th>
           <th>Urg</th>
           <th>Description</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
         {% for task in tasks %}
         <tr class="{% if task.is_active %}active-row{% endif %}">
-          <td class="action-col"><a href="{{ url_for('edit', uuid=task.uuid) }}" class="btn btn-edit" title="Edit">✎</a></td>
           <td class="action-col">
             <form method="POST" action="{{ url_for('done', uuid=task.uuid) }}">
               <button type="submit" class="btn btn-done" title="Complete">✓</button>
@@ -99,6 +98,7 @@
               {{ task.description }}{% if task.is_recurring %} ↻{% endif %}{% if task.annotations %} <span class="annotation-count">[{{ task.annotations|length }}]</span>{% endif %}
             </a>
           </td>
+          <td class="action-col"><a href="{{ url_for('edit', uuid=task.uuid) }}" class="btn btn-edit" title="Edit">✎</a></td>
         </tr>
         {% endfor %}
       </tbody>
