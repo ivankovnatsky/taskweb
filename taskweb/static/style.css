@@ -306,9 +306,18 @@ tr.active-row .id { color: var(--tw-act) }
 .filters {
   width: 100%;
   max-width: 860px;
+  margin-bottom: 16px;
+}
+.filters-row {
   display: flex;
   gap: 8px;
-  margin-bottom: 16px;
+  overflow: hidden;
+  max-height: 26px;
+  flex-wrap: wrap;
+  position: relative;
+}
+.filters-row.expanded {
+  max-height: none;
   flex-wrap: wrap;
   font-family: 'SF Mono', monospace;
   font-size: 10.5px;
@@ -331,6 +340,11 @@ tr.active-row .id { color: var(--tw-act) }
 .filter-chip.active {
   border-color: var(--tw-proj);
   color: var(--tw-proj);
+}
+.filter-more {
+  background: var(--chrome);
+  cursor: pointer;
+  font-weight: bold;
 }
 
 /* Flash messages */
