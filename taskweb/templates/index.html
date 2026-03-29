@@ -4,9 +4,6 @@
 <!-- Add Task -->
 <div class="add-form">
   <div class="window form-window">
-    <div class="titlebar">
-      <div class="address-bar"><span class="lock">🔒</span> localhost:5000/add</div>
-    </div>
     <div class="content">
       <form method="POST" action="{{ url_for('add') }}">
         <div class="form-grid">
@@ -64,9 +61,6 @@
 
 <!-- Task List -->
 <div class="window">
-  <div class="titlebar">
-    <div class="address-bar"><span class="lock">🔒</span> localhost:5000{% if current_project %}?project={{ current_project }}{% elif current_tag %}?tag={{ current_tag }}{% endif %}</div>
-  </div>
   <div class="content">
     {% if tasks %}
     <table class="tw">
