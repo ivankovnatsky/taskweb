@@ -26,15 +26,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
 
-      - name: Install task (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo snap install task --classic
-
-      - name: Install task (macOS)
-        if: runner.os == 'macOS'
-        run: brew install taskwarrior
-
       - name: Install package
         run: pip install ".[dev]"
 
