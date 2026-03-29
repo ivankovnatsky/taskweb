@@ -8,11 +8,6 @@
 </head>
 <body>
 
-<header>
-  <h1>TaskWeb</h1>
-  <div class="badge">taskwarrior</div>
-</header>
-
 <nav>
   <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Pending</a>
   <a href="{{ url_for('completed') }}" class="{% if request.endpoint == 'completed' %}active{% endif %}">Completed</a>

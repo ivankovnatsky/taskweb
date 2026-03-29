@@ -38,38 +38,6 @@ body {
   transition: background .2s, color .2s;
 }
 
-/* Header */
-header {
-  width: 100%;
-  max-width: 860px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 28px;
-}
-
-h1 {
-  font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--dim);
-}
-
-.badge {
-  font-family: 'SF Mono', monospace;
-  font-size: 10px;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--tw-proj);
-  border: 1px solid var(--tw-proj);
-  padding: 2px 7px;
-  border-radius: 3px;
-  opacity: .7;
-}
-
-
 /* Navigation */
 nav {
   width: 100%;
