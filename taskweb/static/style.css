@@ -408,7 +408,46 @@ tr.active-row .id { color: var(--tw-act) }
 .detail-actions {
   display: flex;
   gap: 8px;
+  align-items: center;
   margin-top: 16px;
+}
+.detail-actions a.btn-submit {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Edit form */
+.edit-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 16px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.edit-row {
+  display: contents;
+}
+.edit-row input,
+.edit-row select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'SF Mono', monospace;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+.edit-row input:focus,
+.edit-row select:focus {
+  outline: none;
+  border-color: var(--tw-proj);
+}
+.edit-annotations {
+  padding: 0;
+}
+.edit-meta span:last-child {
+  font-size: 11px;
 }
 
 /* Footer */

@@ -10,11 +10,11 @@ from taskweb.tasks import (
     complete_task,
     delete_task,
     derive_from_tasks,
+    edit_task,
     get_completed_tasks,
     get_deleted_tasks,
     get_pending_tasks,
     get_task_by_uuid,
-    start_task,
 )
 
 
@@ -31,7 +31,7 @@ def create_app() -> Flask:
         """Convert a Unix epoch string to 'YYYY-MM-DD HH:MM' in UTC."""
         try:
             dt = datetime.fromtimestamp(int(ts), tz=timezone.utc)
-            return dt.strftime("%Y-%m-%d %H:%M")
+            return dt.strftime("%Y-%m-%d %H:%M:%S")
         except (ValueError, TypeError, OSError):
             return ts
 
@@ -129,6 +129,44 @@ def create_app() -> Flask:
             flash("Failed to add task.", "error")
         return redirect(url_for("index"))
 
+    @app.route("/task/<uuid>/edit", methods=["GET", "POST"])
+    def edit(uuid):
+        task = get_task_by_uuid(uuid)
+        if not task:
+            flash("Task not found.", "error")
+            return redirect(url_for("index"))
+
+        if request.method == "GET":
+            return render_template("task_edit.html", task=task)
+
+        description = request.form.get("description", "").strip()
+        if not description:
+            flash("Description is required.", "error")
+            return redirect(url_for("edit", uuid=uuid))
+
+        project = request.form.get("project", "").strip()
+        tags_str = request.form.get("tags", "").strip()
+        tags = [t.strip() for t in tags_str.split(",") if t.strip()] if tags_str else []
+        priority = request.form.get("priority", "").strip()
+        due = request.form.get("due", "").strip()
+        recur = request.form.get("recur", "").strip()
+        annotation = request.form.get("annotation", "").strip()
+
+        if edit_task(
+            uuid,
+            description=description,
+            project=project,
+            tags=tags,
+            priority=priority,
+            due=due,
+            recur=recur,
+            annotation=annotation,
+        ):
+            flash("Task updated.", "success")
+        else:
+            flash("Failed to update task.", "error")
+        return redirect(url_for("task_detail", uuid=uuid))
+
     @app.route("/task/<uuid>/done", methods=["POST"])
     def done(uuid):
         if complete_task(uuid):
@@ -143,14 +181,6 @@ def create_app() -> Flask:
             flash("Task deleted.", "success")
         else:
             flash("Failed to delete task.", "error")
-        return redirect(request.referrer or url_for("index"))
-
-    @app.route("/task/<uuid>/start", methods=["POST"])
-    def start(uuid):
-        if start_task(uuid):
-            flash("Task started.", "success")
-        else:
-            flash("Failed to start task.", "error")
         return redirect(request.referrer or url_for("index"))
 
     @app.errorhandler(500)
