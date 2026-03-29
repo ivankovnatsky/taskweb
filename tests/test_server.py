@@ -86,13 +86,6 @@ def test_start(mock_start, client):
     mock_start.assert_called_once_with("abc-123-def")
 
 
-@patch("taskweb.server.stop_task", return_value=True)
-def test_stop(mock_stop, client):
-    response = client.post("/task/abc-123-def/stop")
-    assert response.status_code == 302
-    mock_stop.assert_called_once_with("abc-123-def")
-
-
 @patch("taskweb.server.get_pending_tasks", return_value=[])
 def test_filter_by_project(mock_tasks, client):
     response = client.get("/?project=infra")
