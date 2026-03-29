@@ -66,8 +66,8 @@
     <table class="tw">
       <thead>
         <tr>
-          <th></th>
           <th>ID</th>
+          <th></th>
           <th>Age</th>
           <th>Project</th>
           <th>Tags</th>
@@ -80,12 +80,12 @@
       <tbody>
         {% for task in tasks %}
         <tr class="{% if task.is_active %}active-row{% endif %}">
+          <td class="{% if task.is_recurring %}recur{% else %}id{% endif %}">{{ task.id }}</td>
           <td class="action-col">
             <form method="POST" action="{{ url_for('done', uuid=task.uuid) }}">
               <button type="submit" class="btn btn-done" title="Complete">✓</button>
             </form>
           </td>
-          <td class="{% if task.is_recurring %}recur{% else %}id{% endif %}">{{ task.id }}</td>
           <td class="age">{{ task.age }}</td>
           <td class="proj">{{ task.project }}</td>
           <td class="{% if 'next' in task.tags %}tag-next{% else %}tag{% endif %}">
