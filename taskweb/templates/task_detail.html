@@ -67,9 +67,11 @@
       <div class="detail-actions">
         <a href="{{ url_for('edit', uuid=task.uuid) }}" class="btn-submit">Edit</a>
         <form method="POST" action="{{ url_for('done', uuid=task.uuid) }}">
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
           <button type="submit" class="btn-submit">Complete</button>
         </form>
         <form method="POST" action="{{ url_for('delete', uuid=task.uuid) }}">
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
           <button type="submit" class="btn btn-delete" title="Delete">Delete</button>
         </form>
       </div>

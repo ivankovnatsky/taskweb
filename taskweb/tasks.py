@@ -320,6 +320,9 @@ def _update_task(uuid: str, updates: dict) -> bool:
         c.execute("UPDATE tasks SET data = ? WHERE uuid = ?", (json.dumps(data), uuid))
         conn.commit()
         return True
+    except Exception:
+        logger.exception("Failed to update task %s", uuid)
+        return False
     finally:
         conn.close()
 
@@ -357,13 +360,14 @@ def add_task(
                 data["due"] = due
 
         c = conn.cursor()
-        c.execute("INSERT INTO tasks (uuid, data) VALUES (?, ?)", (task_uuid, json.dumps(data)))
 
-        # Record operations for sync
+        # Record operations for sync (before data writes)
         _record_undo_point(c)
         _record_create(c, task_uuid)
         for key, value in data.items():
             _record_update(c, task_uuid, key, None, value)
+
+        c.execute("INSERT INTO tasks (uuid, data) VALUES (?, ?)", (task_uuid, json.dumps(data)))
 
         # Add to working set
         c.execute("SELECT COALESCE(MAX(id), 0) + 1 FROM working_set")
