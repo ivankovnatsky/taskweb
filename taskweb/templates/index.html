@@ -97,15 +97,9 @@
               <form method="POST" action="{{ url_for('done', uuid=task.uuid) }}">
                 <button type="submit" class="btn btn-done" title="Complete">✓</button>
               </form>
-              {% if task.is_active %}
-              <form method="POST" action="{{ url_for('stop', uuid=task.uuid) }}">
-                <button type="submit" class="btn btn-start" title="Stop">◼</button>
-              </form>
-              {% else %}
               <form method="POST" action="{{ url_for('start', uuid=task.uuid) }}">
                 <button type="submit" class="btn btn-start" title="Start">▶</button>
               </form>
-              {% endif %}
               <form method="POST" action="{{ url_for('delete', uuid=task.uuid) }}">
                 <button type="submit" class="btn btn-delete" title="Delete">✕</button>
               </form>
@@ -116,8 +110,19 @@
       </tbody>
     </table>
     <div class="tw-footer">
-      {{ tasks|length }} of {{ counts.pending }} tasks · urgency sorted
+      {{ counts.pending }} tasks · urgency sorted
       {% if counts.overdue %} · <span class="due">overdue: {{ counts.overdue }}</span>{% endif %}
+      {% if total_pages > 1 %}
+      <div class="pagination">
+        {% if page > 1 %}
+        <a href="{{ url_for('index', project=current_project, tag=current_tag, page=page-1) }}">&larr; Prev</a>
+        {% endif %}
+        <span>{{ page }} / {{ total_pages }}</span>
+        {% if page < total_pages %}
+        <a href="{{ url_for('index', project=current_project, tag=current_tag, page=page+1) }}">Next &rarr;</a>
+        {% endif %}
+      </div>
+      {% endif %}
     </div>
     {% else %}
     <div class="empty">No pending tasks. Add one above.</div>

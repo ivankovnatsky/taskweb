@@ -68,15 +68,9 @@
         <form method="POST" action="{{ url_for('done', uuid=task.uuid) }}">
           <button type="submit" class="btn-submit">Complete</button>
         </form>
-        {% if task.is_active %}
-        <form method="POST" action="{{ url_for('stop', uuid=task.uuid) }}">
-          <button type="submit" class="btn-submit" style="border-color:var(--tw-urg);color:var(--tw-urg)">Stop</button>
-        </form>
-        {% else %}
         <form method="POST" action="{{ url_for('start', uuid=task.uuid) }}">
           <button type="submit" class="btn-submit" style="border-color:var(--tw-act);color:var(--tw-act)">Start</button>
         </form>
-        {% endif %}
         <form method="POST" action="{{ url_for('delete', uuid=task.uuid) }}">
           <button type="submit" class="btn btn-delete" title="Delete">Delete</button>
         </form>

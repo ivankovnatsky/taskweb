@@ -222,10 +222,16 @@ def get_pending_tasks(filter_str: str = "") -> list[Task]:
     return filtered
 
 
-def get_completed_tasks(limit: int = 20) -> list[Task]:
+def get_completed_tasks() -> list[Task]:
     tasks = get_tasks("completed")
     tasks.sort(key=lambda t: t.end, reverse=True)
-    return tasks[:limit]
+    return tasks
+
+
+def get_deleted_tasks() -> list[Task]:
+    tasks = get_tasks("deleted")
+    tasks.sort(key=lambda t: t.end, reverse=True)
+    return tasks
 
 
 def get_task_by_uuid(uuid: str) -> Task | None:
@@ -345,7 +351,7 @@ def add_task(
             data["priority"] = priority
         if due:
             try:
-                due_dt = datetime.strptime(due, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                due_dt = datetime.strptime(due, "%Y-%m-%d").astimezone(timezone.utc)
                 data["due"] = str(int(due_dt.timestamp()))
             except ValueError:
                 data["due"] = due
@@ -434,29 +440,3 @@ def delete_task(uuid: str) -> bool:
 
 def start_task(uuid: str) -> bool:
     return _update_task(uuid, {"start": str(int(time.time()))})
-
-
-def stop_task(uuid: str) -> bool:
-    conn = _connect()
-    try:
-        c = conn.cursor()
-        c.execute("SELECT data FROM tasks WHERE uuid = ?", (uuid,))
-        row = c.fetchone()
-        if not row:
-            return False
-        data = json.loads(row[0])
-        now = str(int(time.time()))
-        _record_undo_point(c)
-        if "start" in data:
-            _record_update(c, uuid, "start", data["start"], None)
-        _record_update(c, uuid, "modified", data.get("modified"), now)
-        data.pop("start", None)
-        data["modified"] = now
-        c.execute("UPDATE tasks SET data = ? WHERE uuid = ?", (json.dumps(data), uuid))
-        conn.commit()
-        return True
-    except Exception:
-        logger.exception("Failed to stop task %s", uuid)
-        return False
-    finally:
-        conn.close()
