@@ -3,6 +3,7 @@
 {% block title_suffix %} — {{ task.description }}{% endblock %}
 
 {% block content %}
+<a href="{{ url_for('index') }}" class="back-link">&larr; Back</a>
 <div class="window">
   <div class="content">
     <div class="task-detail">
