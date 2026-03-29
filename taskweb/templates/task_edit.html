@@ -13,6 +13,7 @@
       </div>
 
       <form method="POST" action="{{ url_for('edit', uuid=task.uuid) }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
         <div class="edit-grid">
           <div class="edit-row">
             <label class="detail-label" for="description">Description</label>

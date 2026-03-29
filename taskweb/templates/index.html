@@ -6,6 +6,7 @@
   <div class="window form-window">
     <div class="content">
       <form method="POST" action="{{ url_for('add') }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
         <div class="form-grid">
           <div class="full">
             <label for="description">Description</label>
@@ -85,6 +86,7 @@
         <tr class="{% if task.is_active %}active-row{% endif %}">
           <td class="action-col">
             <form method="POST" action="{{ url_for('done', uuid=task.uuid) }}">
+              <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
               <button type="submit" class="btn btn-done" title="Complete">✓</button>
             </form>
           </td>
