@@ -110,36 +110,6 @@ nav a.active {
   transition: border-color .2s;
 }
 
-.titlebar {
-  background: var(--chrome);
-  border-bottom: 1px solid var(--border);
-  padding: 10px 14px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  transition: background .2s, border-color .2s;
-}
-
-.address-bar {
-  flex: 1;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 4px 12px;
-  font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
-  font-size: 11px;
-  color: var(--dim);
-  letter-spacing: .02em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.lock {
-  font-size: 10px;
-  margin-right: 4px;
-}
-
 /* Content area */
 .content {
   background: var(--bg);
