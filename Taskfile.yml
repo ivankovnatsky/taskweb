@@ -6,8 +6,10 @@ tasks:
     cmd: nix develop
 
   serve:
-    desc: Start the web server
+    desc: Start the web server with demo database
     cmd: python -m taskweb serve
+    env:
+      TASKDATA: ./data/task
 
   test:
     desc: Run tests
