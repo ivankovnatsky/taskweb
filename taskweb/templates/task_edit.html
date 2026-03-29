@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title_suffix %} — Edit: {{ task.description }}{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="back-link">&larr; Back to task</a>
+<div class="window form-window">
+  <div class="content">
+    <div class="task-detail">
+      <div class="detail-header">
+        <span class="id">{{ task.id }}</span>
+        <span class="desc">Edit task</span>
+      </div>
+
+      <form method="POST" action="{{ url_for('edit', uuid=task.uuid) }}">
+        <div class="edit-grid">
+          <div class="edit-row">
+            <label class="detail-label" for="description">Description</label>
+            <input type="text" id="description" name="description" value="{{ task.description }}" required>
+          </div>
+
+          <div class="edit-row">
+            <label class="detail-label" for="project">Project</label>
+            <input type="text" id="project" name="project" value="{{ task.project }}">
+          </div>
+
+          <div class="edit-row">
+            <label class="detail-label" for="tags">Tags</label>
+            <input type="text" id="tags" name="tags" value="{{ task.tags | join(', ') }}" placeholder="comma separated">
+          </div>
+
+          <div class="edit-row">
+            <label class="detail-label" for="priority">Priority</label>
+            <select id="priority" name="priority">
+              <option value="">None</option>
+              <option value="H" {% if task.priority == 'H' %}selected{% endif %}>High</option>
+              <option value="M" {% if task.priority == 'M' %}selected{% endif %}>Medium</option>
+              <option value="L" {% if task.priority == 'L' %}selected{% endif %}>Low</option>
+            </select>
+          </div>
+
+          <div class="edit-row">
+            <label class="detail-label" for="due">Due</label>
+            <input type="date" id="due" name="due" value="{{ task.due_formatted }}">
+          </div>
+
+          <div class="edit-row">
+            <label class="detail-label" for="recur">Recur</label>
+            <input type="text" id="recur" name="recur" value="{{ task.recur }}" placeholder="e.g. weekly, monthly">
+          </div>
+
+          {% if task.annotations %}
+          <div class="edit-row">
+            <span class="detail-label">Annotations</span>
+            <div class="edit-annotations">
+              {% for ann in task.annotations %}
+              <div class="annotation">
+                <span class="annotation-date">{{ ann.entry | format_timestamp }}</span>
+                {{ ann.description }}
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="edit-row">
+            <label class="detail-label" for="annotation">Add annotation</label>
+            <input type="text" id="annotation" name="annotation" placeholder="New annotation text">
+          </div>
+
+          <div class="edit-row edit-meta">
+            <span class="detail-label">UUID</span>
+            <span class="age">{{ task.uuid }}</span>
+          </div>
+
+          <div class="edit-row edit-meta">
+            <span class="detail-label">Status</span>
+            <span>{{ task.status }}</span>
+          </div>
+
+          <div class="edit-row edit-meta">
+            <span class="detail-label">Created</span>
+            <span class="age">{{ task.entry | format_timestamp }}</span>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">Save</button>
+          <a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="btn btn-delete">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
