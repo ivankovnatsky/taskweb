@@ -11,10 +11,10 @@ from taskweb.tasks import (
     delete_task,
     derive_from_tasks,
     get_completed_tasks,
+    get_deleted_tasks,
     get_pending_tasks,
     get_task_by_uuid,
     start_task,
-    stop_task,
 )
 
 
@@ -35,10 +35,13 @@ def create_app() -> Flask:
         except (ValueError, TypeError, OSError):
             return ts
 
+    PER_PAGE = 40
+
     @app.route("/")
     def index():
         project_filter = request.args.get("project", "")
         tag_filter = request.args.get("tag", "")
+        page = max(1, request.args.get("page", 1, type=int))
 
         filter_str = ""
         if project_filter:
@@ -46,8 +49,12 @@ def create_app() -> Flask:
         if tag_filter:
             filter_str += f"+{tag_filter} "
 
-        tasks = get_pending_tasks(filter_str.strip())
-        derived = derive_from_tasks(tasks)
+        all_tasks = get_pending_tasks(filter_str.strip())
+        derived = derive_from_tasks(all_tasks)
+        total = len(all_tasks)
+        total_pages = max(1, (total + PER_PAGE - 1) // PER_PAGE)
+        page = min(page, total_pages)
+        tasks = all_tasks[(page - 1) * PER_PAGE : page * PER_PAGE]
 
         return render_template(
             "index.html",
@@ -57,17 +64,42 @@ def create_app() -> Flask:
             counts=derived["counts"],
             current_project=project_filter,
             current_tag=tag_filter,
+            page=page,
+            total_pages=total_pages,
         )
 
     @app.route("/completed")
     def completed():
-        tasks = get_completed_tasks()
+        page = max(1, request.args.get("page", 1, type=int))
+        all_tasks = get_completed_tasks()
         pending = get_pending_tasks()
         derived = derive_from_tasks(pending)
+        total = len(all_tasks)
+        total_pages = max(1, (total + PER_PAGE - 1) // PER_PAGE)
+        page = min(page, total_pages)
+        tasks = all_tasks[(page - 1) * PER_PAGE : page * PER_PAGE]
         return render_template(
             "completed.html",
             tasks=tasks,
-            counts={**derived["counts"], "completed": len(tasks)},
+            counts={**derived["counts"], "completed": total},
+            page=page,
+            total_pages=total_pages,
+        )
+
+    @app.route("/deleted")
+    def deleted():
+        page = max(1, request.args.get("page", 1, type=int))
+        all_tasks = get_deleted_tasks()
+        total = len(all_tasks)
+        total_pages = max(1, (total + PER_PAGE - 1) // PER_PAGE)
+        page = min(page, total_pages)
+        tasks = all_tasks[(page - 1) * PER_PAGE : page * PER_PAGE]
+        return render_template(
+            "deleted.html",
+            tasks=tasks,
+            total=total,
+            page=page,
+            total_pages=total_pages,
         )
 
     @app.route("/task/<uuid>")
@@ -119,14 +151,6 @@ def create_app() -> Flask:
             flash("Task started.", "success")
         else:
             flash("Failed to start task.", "error")
-        return redirect(request.referrer or url_for("index"))
-
-    @app.route("/task/<uuid>/stop", methods=["POST"])
-    def stop(uuid):
-        if stop_task(uuid):
-            flash("Task stopped.", "success")
-        else:
-            flash("Failed to stop task.", "error")
         return redirect(request.referrer or url_for("index"))
 
     @app.errorhandler(500)

@@ -149,6 +149,15 @@ tr.active-row .id { color: var(--tw-act) }
 .done { color: var(--tw-done); text-decoration: line-through }
 .block { color: var(--tw-block) }
 .tw-footer { margin-top: 6px; color: var(--tw-cnt); font-size: 11px }
+.pagination { margin-top: 8px; display: flex; align-items: center; gap: 12px; }
+.pagination a {
+  font-family: 'SF Mono', monospace;
+  font-size: 11px;
+  color: var(--dim);
+  text-decoration: none;
+}
+.pagination a:hover { color: var(--text); }
+.pagination span { font-size: 11px; color: var(--dim); }
 
 /* Annotations */
 .annotation-count {

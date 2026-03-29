@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title_suffix %} — Completed{% endblock %}
+{% block title_suffix %} — Deleted{% endblock %}
 
 {% block content %}
 <div class="window">
@@ -27,21 +27,21 @@
       </tbody>
     </table>
     <div class="tw-footer">
-      {{ counts.completed }} completed tasks
+      {{ total }} deleted tasks
       {% if total_pages > 1 %}
       <div class="pagination">
         {% if page > 1 %}
-        <a href="{{ url_for('completed', page=page-1) }}">&larr; Prev</a>
+        <a href="{{ url_for('deleted', page=page-1) }}">&larr; Prev</a>
         {% endif %}
         <span>{{ page }} / {{ total_pages }}</span>
         {% if page < total_pages %}
-        <a href="{{ url_for('completed', page=page+1) }}">Next &rarr;</a>
+        <a href="{{ url_for('deleted', page=page+1) }}">Next &rarr;</a>
         {% endif %}
       </div>
       {% endif %}
     </div>
     {% else %}
-    <div class="empty">No completed tasks yet.</div>
+    <div class="empty">No deleted tasks.</div>
     {% endif %}
   </div>
 </div>
