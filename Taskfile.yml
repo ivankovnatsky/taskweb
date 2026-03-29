@@ -3,7 +3,7 @@ version: "3"
 tasks:
   dev:
     desc: Enter nix development shell
-    cmd: nix develop
+    cmd: nix develop --command $SHELL
 
   serve:
     desc: Start the web server with demo database
