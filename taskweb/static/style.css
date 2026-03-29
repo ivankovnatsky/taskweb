@@ -213,9 +213,18 @@ tr.active-row .id { color: var(--tw-act) }
   color: var(--tw-due);
 }
 
-.btn-start:hover {
-  border-color: var(--tw-act);
-  color: var(--tw-act);
+.btn-edit {
+  text-decoration: none;
+}
+.btn-edit:hover {
+  border-color: var(--tw-tag);
+  color: var(--tw-tag);
+}
+
+.action-col {
+  width: 1px;
+  white-space: nowrap;
+  padding-right: 2px !important;
 }
 
 /* Add task form */
