@@ -1,10 +1,11 @@
 """Flask web application for TaskWeb."""
 
-import hashlib
 import hmac
+import logging
 import os
 import re
 from datetime import datetime, timezone
+from urllib.parse import urlparse
 
 from flask import Flask, abort, flash, redirect, render_template, request, session, url_for
 
@@ -21,6 +22,8 @@ from taskweb.tasks import (
     get_task_by_uuid,
 )
 
+logger = logging.getLogger(__name__)
+
 
 def create_app() -> Flask:
     app = Flask(
@@ -28,10 +31,11 @@ def create_app() -> Flask:
         template_folder=os.path.join(os.path.dirname(__file__), "templates"),
         static_folder=os.path.join(os.path.dirname(__file__), "static"),
     )
-    app.secret_key = (
-        os.environ.get("TASKWEB_SECRET_KEY")
-        or hashlib.sha256(f"taskweb-{os.path.expanduser('~')}".encode()).digest()
-    )
+    env_key = os.environ.get("TASKWEB_SECRET_KEY")
+    if env_key:
+        app.secret_key = env_key.encode()
+    else:
+        app.secret_key = os.urandom(32)
 
     @app.template_filter("format_timestamp")
     def format_timestamp(ts: str) -> str:
@@ -59,8 +63,19 @@ def create_app() -> Flask:
     def _check_csrf():
         if request.method == "POST" and not app.config.get("TESTING"):
             token = request.form.get("_csrf_token", "")
-            if not hmac.compare_digest(token, session.get("_csrf_token", "")):
+            expected = session.get("_csrf_token", "")
+            if not token or not expected or not hmac.compare_digest(token, expected):
                 abort(403)
+
+    def _safe_redirect_back():
+        """Redirect to referrer only if it's same-origin."""
+        ref = request.referrer
+        if ref:
+            parsed = urlparse(ref)
+            host = urlparse(request.host_url)
+            if parsed.scheme == host.scheme and parsed.netloc == host.netloc:
+                return redirect(ref)
+        return redirect(url_for("index"))
 
     PER_PAGE = 40
 
@@ -150,6 +165,8 @@ def create_app() -> Flask:
         tags_str = request.form.get("tags", "").strip()
         tags = [t.strip() for t in tags_str.split(",") if t.strip()] if tags_str else []
         priority = request.form.get("priority", "").strip()
+        if priority and priority not in ("H", "M", "L"):
+            priority = ""
         due = request.form.get("due", "").strip()
 
         if add_task(description, project=project, tags=tags, priority=priority, due=due):
@@ -179,6 +196,8 @@ def create_app() -> Flask:
         tags_str = request.form.get("tags", "").strip()
         tags = [t.strip() for t in tags_str.split(",") if t.strip()] if tags_str else []
         priority = request.form.get("priority", "").strip()
+        if priority and priority not in ("H", "M", "L"):
+            priority = ""
         due = request.form.get("due", "").strip()
         recur = request.form.get("recur", "").strip()
         annotation = request.form.get("annotation", "").strip()
@@ -206,7 +225,7 @@ def create_app() -> Flask:
             flash("Task completed.", "success")
         else:
             flash("Failed to complete task.", "error")
-        return redirect(request.referrer or url_for("index"))
+        return _safe_redirect_back()
 
     @app.route("/task/<uuid>/delete", methods=["POST"])
     def delete(uuid):
@@ -216,10 +235,11 @@ def create_app() -> Flask:
             flash("Task deleted.", "success")
         else:
             flash("Failed to delete task.", "error")
-        return redirect(request.referrer or url_for("index"))
+        return _safe_redirect_back()
 
     @app.errorhandler(500)
     def internal_error(e):
-        return render_template("error.html", error=str(e)), 500
+        logger.exception("Internal server error: %s", e)
+        return render_template("error.html"), 500
 
     return app
