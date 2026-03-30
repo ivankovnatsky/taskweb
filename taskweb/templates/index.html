@@ -12,7 +12,7 @@
     {% for t in tags %}
     <a href="{{ url_for('index', tag=t) }}" class="filter-chip {% if current_tag == t %}active{% endif %}">+{{ t }}</a>
     {% endfor %}
-    <button class="filter-chip filter-more" id="filter-toggle" type="button" style="display:none">&hellip;</button>
+    <button class="filter-chip filter-more" id="filter-toggle" type="button" style="display:none">[&hellip;]</button>
   </div>
 </div>
 {% endif %}
