@@ -41,6 +41,24 @@ document.querySelectorAll('.flash').forEach(el => {
   window.addEventListener('resize', checkOverflow);
 })();
 
+// New task toggle
+(function () {
+  const btn = document.getElementById('new-task-toggle');
+  const form = document.getElementById('add-form');
+  if (!btn || !form) return;
+
+  btn.addEventListener('click', function (e) {
+    e.preventDefault();
+    const open = form.style.display !== 'none';
+    form.style.display = open ? 'none' : '';
+    btn.classList.toggle('open', !open);
+    if (!open) {
+      const input = form.querySelector('#description');
+      if (input) input.focus();
+    }
+  });
+})();
+
 // Confirm delete
 document.querySelectorAll('.btn-delete').forEach(btn => {
   btn.closest('form').addEventListener('submit', e => {
