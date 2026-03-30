@@ -16,6 +16,10 @@ A web interface for [Taskwarrior 3](https://taskwarrior.org/).
 
 ![Task Detail](screenshots/task-detail.png)
 
+### Task Edit
+
+![Task Edit](screenshots/task-edit.png)
+
 ### Completed Tasks
 
 ![Completed Tasks](screenshots/completed.png)
@@ -24,10 +28,12 @@ A web interface for [Taskwarrior 3](https://taskwarrior.org/).
 
 - View pending tasks sorted by urgency
 - Add new tasks with project, tags, priority, and due date
-- Complete, start/stop, and delete tasks
+- Complete and delete tasks
+- Full task editing (description, project, tags, priority, due, recur, annotations)
 - Task detail view with annotations
 - Filter by project or tag
-- View completed tasks
+- View completed and deleted tasks
+- Pagination (40 tasks per page)
 - Light/dark mode with system preference detection
 - Responsive design
 
@@ -58,16 +64,16 @@ A demo database with sample tasks is included in `data/` for development.
 
 ```console
 # Enter nix dev shell
-task dev
+just dev
 
 # Run tests
-task test
+just test
 
 # Format code
-task format
+just format
 
 # Start dev server
-task serve
+just serve
 ```
 
 ## Stack
