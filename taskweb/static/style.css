@@ -318,15 +318,14 @@ tr.active-row .id { color: var(--tw-act) }
   display: flex;
   gap: 8px;
   overflow: hidden;
-  max-height: 26px;
+  max-height: 30px;
   flex-wrap: wrap;
   position: relative;
+  font-family: 'SF Mono', monospace;
+  font-size: 10.5px;
 }
 .filters-row.expanded {
   max-height: none;
-  flex-wrap: wrap;
-  font-family: 'SF Mono', monospace;
-  font-size: 10.5px;
 }
 
 .filter-chip {
