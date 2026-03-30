@@ -24,7 +24,7 @@ document.querySelectorAll('.flash').forEach(el => {
 
   toggle.addEventListener('click', function () {
     row.classList.toggle('expanded');
-    toggle.textContent = row.classList.contains('expanded') ? '\u2715' : '\u2026';
+    toggle.textContent = row.classList.contains('expanded') ? '[\u2715]' : '[\u2026]';
   });
 
   checkOverflow();
