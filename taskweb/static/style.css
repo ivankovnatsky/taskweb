@@ -144,8 +144,8 @@ tr.active-row .id { color: var(--tw-act) }
 .urg-hi { color: var(--tw-urghi); font-weight: 700 }
 .urg { color: var(--tw-urg) }
 .urg-lo { color: var(--tw-age) }
-.desc {
-  color: var(--tw-desc);
+.desc { color: var(--tw-desc) }
+table.tw .desc {
   max-width: 260px;
   overflow: hidden;
   text-overflow: ellipsis;
