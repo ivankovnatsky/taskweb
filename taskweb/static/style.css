@@ -52,11 +52,10 @@ body {
 .back-link:hover { color: var(--text); }
 .back-link kbd {
   font-family: 'SF Mono', monospace;
-  font-size: 9px;
+  font-size: inherit;
   border: 1px solid var(--border);
   border-radius: 2px;
-  padding: 0 3px;
-  margin-right: 2px;
+  padding: 0 2px;
   opacity: 0.6;
 }
 
@@ -102,11 +101,10 @@ nav a.active {
 
 nav kbd {
   font-family: 'SF Mono', monospace;
-  font-size: 9px;
+  font-size: inherit;
   border: 1px solid var(--border);
   border-radius: 2px;
-  padding: 0 3px;
-  margin-right: 2px;
+  padding: 0 2px;
   opacity: 0.6;
 }
 
@@ -498,11 +496,10 @@ table.tw .desc {
 }
 .detail-actions kbd {
   font-family: 'SF Mono', monospace;
-  font-size: 9px;
+  font-size: inherit;
   border: 1px solid currentColor;
   border-radius: 2px;
-  padding: 0 3px;
-  margin-right: 2px;
+  padding: 0 2px;
   opacity: 0.6;
 }
 
