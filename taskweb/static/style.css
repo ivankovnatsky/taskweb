@@ -50,6 +50,15 @@ body {
   text-decoration: none;
 }
 .back-link:hover { color: var(--text); }
+.back-link kbd {
+  font-family: 'SF Mono', monospace;
+  font-size: 9px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 0 3px;
+  margin-right: 2px;
+  opacity: 0.6;
+}
 
 /* Navigation */
 nav {
@@ -89,6 +98,32 @@ nav a.active {
 .nav-sep {
   border-left: 1px solid var(--border);
   margin: 0 4px;
+}
+
+nav kbd {
+  font-family: 'SF Mono', monospace;
+  font-size: 9px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 0 3px;
+  margin-right: 2px;
+  opacity: 0.6;
+}
+
+/* Keyboard ID input indicator */
+.kbd-input {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  font-family: 'SF Mono', monospace;
+  font-size: 14px;
+  background: var(--chrome);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 10px;
+  color: var(--tw-id);
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  z-index: 100;
 }
 
 /* Window chrome */
@@ -460,6 +495,15 @@ table.tw .desc {
   text-decoration: none;
   display: inline-flex;
   align-items: center;
+}
+.detail-actions kbd {
+  font-family: 'SF Mono', monospace;
+  font-size: 9px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  padding: 0 3px;
+  margin-right: 2px;
+  opacity: 0.6;
 }
 
 /* Edit form */
