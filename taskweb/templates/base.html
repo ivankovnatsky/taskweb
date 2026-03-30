@@ -9,11 +9,11 @@
 <body>
 
 <nav>
-  <a href="#" id="new-task-toggle" class="nav-new-task">New Task</a>
+  <a href="#" id="new-task-toggle" class="nav-new-task"><kbd>N</kbd> New Task</a>
   <span class="nav-sep"></span>
-  <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Pending</a>
-  <a href="{{ url_for('completed') }}" class="{% if request.endpoint == 'completed' %}active{% endif %}">Completed</a>
-  <a href="{{ url_for('deleted') }}" class="{% if request.endpoint == 'deleted' %}active{% endif %}">Deleted</a>
+  <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}" data-key="p"><kbd>P</kbd> Pending</a>
+  <a href="{{ url_for('completed') }}" class="{% if request.endpoint == 'completed' %}active{% endif %}" data-key="c"><kbd>C</kbd> Completed</a>
+  <a href="{{ url_for('deleted') }}" class="{% if request.endpoint == 'deleted' %}active{% endif %}" data-key="d"><kbd>D</kbd> Deleted</a>
 </nav>
 
 <div class="add-form" id="add-form" style="display:none">
