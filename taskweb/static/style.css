@@ -106,6 +106,7 @@ nav a.active {
 table.tw {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 table.tw th {
@@ -117,7 +118,9 @@ table.tw th {
   white-space: nowrap;
   font-size: 11.5px;
   letter-spacing: .02em;
+  width: 1px;
 }
+table.tw th.desc-col { width: auto }
 
 table.tw td {
   padding: 3px 14px 3px 0;
@@ -144,7 +147,14 @@ tr.active-row .id { color: var(--tw-act) }
 .urg-hi { color: var(--tw-urghi); font-weight: 700 }
 .urg { color: var(--tw-urg) }
 .urg-lo { color: var(--tw-age) }
-.desc { color: var(--tw-desc) }
+.desc {
+  color: var(--tw-desc);
+  max-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+td.desc { width: 100% }
 .recur { color: var(--tw-recur) }
 .done { color: var(--tw-done); text-decoration: line-through }
 .block { color: var(--tw-block) }
@@ -383,6 +393,9 @@ tr.active-row .id { color: var(--tw-act) }
   color: var(--tw-desc);
   text-decoration: none;
   transition: color .15s;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .task-link:hover {
   color: var(--tw-id);
