@@ -1,7 +1,3 @@
-# Enter nix development shell (preserves user's native shell)
-dev:
-    nix develop --command "$SHELL"
-
 # Start the web server with demo database
 serve:
     TASKDATA=./data/task python -m taskweb serve --debug
