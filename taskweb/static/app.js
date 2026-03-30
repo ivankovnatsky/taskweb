@@ -14,8 +14,13 @@ document.querySelectorAll('.flash').forEach(el => {
   if (!row || !toggle) return;
 
   function checkOverflow() {
-    // If content overflows single row, show the toggle button
-    if (row.scrollHeight > row.clientHeight + 4) {
+    // Temporarily expand to measure true height
+    row.style.maxHeight = 'none';
+    const fullHeight = row.scrollHeight;
+    row.style.maxHeight = '';
+    const clippedHeight = row.clientHeight;
+
+    if (fullHeight > clippedHeight + 2) {
       toggle.style.display = '';
     } else {
       toggle.style.display = 'none';
@@ -27,7 +32,12 @@ document.querySelectorAll('.flash').forEach(el => {
     toggle.textContent = row.classList.contains('expanded') ? '[\u2715]' : '[\u2026]';
   });
 
-  checkOverflow();
+  // Check after fonts loaded
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(checkOverflow);
+  } else {
+    checkOverflow();
+  }
   window.addEventListener('resize', checkOverflow);
 })();
 
