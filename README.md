@@ -63,7 +63,7 @@ A demo database with sample tasks is included in `data/` for development.
 ## Development
 
 ```console
-# Enter nix dev shell
+# Enter nix dev shell (preserves your native shell)
 just dev
 
 # Run tests

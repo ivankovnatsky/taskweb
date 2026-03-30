@@ -1,6 +1,6 @@
-# Enter nix development shell
+# Enter nix development shell (preserves user's native shell)
 dev:
-    nix develop --command $SHELL
+    nix develop --command "$SHELL"
 
 # Start the web server with demo database
 serve:
