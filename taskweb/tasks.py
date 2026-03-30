@@ -93,7 +93,7 @@ def _db_path() -> Path:
 
 
 def _connect() -> sqlite3.Connection:
-    conn = sqlite3.connect(str(_db_path()), timeout=10)
+    conn = sqlite3.connect(str(_db_path()), timeout=10, isolation_level=None)
     conn.execute("PRAGMA journal_mode=WAL")
     return conn
 
@@ -303,10 +303,12 @@ def _update_task(uuid: str, updates: dict) -> bool:
     """Update task properties in the database."""
     conn = _connect()
     try:
+        conn.execute("BEGIN IMMEDIATE")
         c = conn.cursor()
         c.execute("SELECT data FROM tasks WHERE uuid = ?", (uuid,))
         row = c.fetchone()
         if not row:
+            conn.rollback()
             return False
         data = json.loads(row[0])
         _record_undo_point(c)
@@ -321,6 +323,7 @@ def _update_task(uuid: str, updates: dict) -> bool:
         conn.commit()
         return True
     except Exception:
+        conn.rollback()
         logger.exception("Failed to update task %s", uuid)
         return False
     finally:
@@ -336,6 +339,7 @@ def add_task(
 ) -> bool:
     conn = _connect()
     try:
+        conn.execute("BEGIN IMMEDIATE")
         task_uuid = str(uuid_mod.uuid4())
         now = str(int(time.time()))
         data: dict = {
@@ -369,7 +373,7 @@ def add_task(
 
         c.execute("INSERT INTO tasks (uuid, data) VALUES (?, ?)", (task_uuid, json.dumps(data)))
 
-        # Add to working set
+        # Add to working set (safe under BEGIN IMMEDIATE)
         c.execute("SELECT COALESCE(MAX(id), 0) + 1 FROM working_set")
         next_id = c.fetchone()[0]
         c.execute("INSERT INTO working_set (id, uuid) VALUES (?, ?)", (next_id, task_uuid))
@@ -377,6 +381,7 @@ def add_task(
         conn.commit()
         return True
     except Exception:
+        conn.rollback()
         logger.exception("Failed to add task")
         return False
     finally:
@@ -386,10 +391,12 @@ def add_task(
 def complete_task(uuid: str) -> bool:
     conn = _connect()
     try:
+        conn.execute("BEGIN IMMEDIATE")
         c = conn.cursor()
         c.execute("SELECT data FROM tasks WHERE uuid = ?", (uuid,))
         row = c.fetchone()
         if not row:
+            conn.rollback()
             return False
         data = json.loads(row[0])
         now = str(int(time.time()))
@@ -408,6 +415,7 @@ def complete_task(uuid: str) -> bool:
         conn.commit()
         return True
     except Exception:
+        conn.rollback()
         logger.exception("Failed to complete task %s", uuid)
         return False
     finally:
@@ -417,10 +425,12 @@ def complete_task(uuid: str) -> bool:
 def delete_task(uuid: str) -> bool:
     conn = _connect()
     try:
+        conn.execute("BEGIN IMMEDIATE")
         c = conn.cursor()
         c.execute("SELECT data FROM tasks WHERE uuid = ?", (uuid,))
         row = c.fetchone()
         if not row:
+            conn.rollback()
             return False
         data = json.loads(row[0])
         now = str(int(time.time()))
@@ -436,6 +446,7 @@ def delete_task(uuid: str) -> bool:
         conn.commit()
         return True
     except Exception:
+        conn.rollback()
         logger.exception("Failed to delete task %s", uuid)
         return False
     finally:
@@ -455,10 +466,12 @@ def edit_task(
     """Edit a task's fields. Empty strings clear the field."""
     conn = _connect()
     try:
+        conn.execute("BEGIN IMMEDIATE")
         c = conn.cursor()
         c.execute("SELECT data FROM tasks WHERE uuid = ?", (uuid,))
         row = c.fetchone()
         if not row:
+            conn.rollback()
             return False
         data = json.loads(row[0])
         _record_undo_point(c)
@@ -550,6 +563,7 @@ def edit_task(
         conn.commit()
         return True
     except Exception:
+        conn.rollback()
         logger.exception("Failed to edit task %s", uuid)
         return False
     finally:

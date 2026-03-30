@@ -202,9 +202,11 @@ function toggleNewTask() {
   });
 })();
 
-// Confirm delete
+// Confirm delete (only for .btn-delete inside a form)
 document.querySelectorAll('.btn-delete').forEach(btn => {
-  btn.closest('form').addEventListener('submit', e => {
+  const form = btn.closest('form');
+  if (!form) return;
+  form.addEventListener('submit', e => {
     if (!confirm('Delete this task?')) {
       e.preventDefault();
     }
