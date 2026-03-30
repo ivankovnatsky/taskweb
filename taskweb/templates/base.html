@@ -9,10 +9,52 @@
 <body>
 
 <nav>
+  <a href="#" id="new-task-toggle" class="nav-new-task">New Task</a>
+  <span class="nav-sep"></span>
   <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Pending</a>
   <a href="{{ url_for('completed') }}" class="{% if request.endpoint == 'completed' %}active{% endif %}">Completed</a>
   <a href="{{ url_for('deleted') }}" class="{% if request.endpoint == 'deleted' %}active{% endif %}">Deleted</a>
 </nav>
+
+<div class="add-form" id="add-form" style="display:none">
+  <div class="window form-window">
+    <div class="content">
+      <form method="POST" action="{{ url_for('add') }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <div class="form-grid">
+          <div class="full">
+            <label for="description">Description</label>
+            <input type="text" id="description" name="description" placeholder="What needs to be done?" required>
+          </div>
+          <div>
+            <label for="project">Project</label>
+            <input type="text" id="project" name="project" placeholder="e.g. infra.kafka">
+          </div>
+          <div>
+            <label for="tags">Tags</label>
+            <input type="text" id="tags" name="tags" placeholder="comma,separated">
+          </div>
+          <div>
+            <label for="priority">Priority</label>
+            <select id="priority" name="priority">
+              <option value="">None</option>
+              <option value="H">High</option>
+              <option value="M">Medium</option>
+              <option value="L">Low</option>
+            </select>
+          </div>
+          <div>
+            <label for="due">Due</label>
+            <input type="date" id="due" name="due">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">Add Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% for category, message in messages %}
