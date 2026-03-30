@@ -1,52 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- Add Task -->
-<div class="add-form">
-  <div class="window form-window">
-    <div class="content">
-      <form method="POST" action="{{ url_for('add') }}">
-        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-        <div class="form-grid">
-          <div class="full">
-            <label for="description">Description</label>
-            <input type="text" id="description" name="description" placeholder="What needs to be done?" required>
-          </div>
-          <div>
-            <label for="project">Project</label>
-            <input type="text" id="project" name="project" placeholder="e.g. infra.kafka" list="project-list">
-            <datalist id="project-list">
-              {% for p in projects %}
-              <option value="{{ p }}">
-              {% endfor %}
-            </datalist>
-          </div>
-          <div>
-            <label for="tags">Tags</label>
-            <input type="text" id="tags" name="tags" placeholder="comma,separated">
-          </div>
-          <div>
-            <label for="priority">Priority</label>
-            <select id="priority" name="priority">
-              <option value="">None</option>
-              <option value="H">High</option>
-              <option value="M">Medium</option>
-              <option value="L">Low</option>
-            </select>
-          </div>
-          <div>
-            <label for="due">Due</label>
-            <input type="date" id="due" name="due">
-          </div>
-        </div>
-        <div class="form-actions">
-          <button type="submit" class="btn-submit">Add Task</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
 <!-- Filters -->
 {% if projects or tags %}
 <div class="filters" id="filters">
@@ -124,8 +78,54 @@
       {% endif %}
     </div>
     {% else %}
-    <div class="empty">No pending tasks. Add one above.</div>
+    <div class="empty">No pending tasks.</div>
     {% endif %}
+  </div>
+</div>
+
+<!-- Add Task -->
+<div class="add-form">
+  <div class="window form-window">
+    <div class="content">
+      <form method="POST" action="{{ url_for('add') }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <div class="form-grid">
+          <div class="full">
+            <label for="description">Description</label>
+            <input type="text" id="description" name="description" placeholder="What needs to be done?" required>
+          </div>
+          <div>
+            <label for="project">Project</label>
+            <input type="text" id="project" name="project" placeholder="e.g. infra.kafka" list="project-list">
+            <datalist id="project-list">
+              {% for p in projects %}
+              <option value="{{ p }}">
+              {% endfor %}
+            </datalist>
+          </div>
+          <div>
+            <label for="tags">Tags</label>
+            <input type="text" id="tags" name="tags" placeholder="comma,separated">
+          </div>
+          <div>
+            <label for="priority">Priority</label>
+            <select id="priority" name="priority">
+              <option value="">None</option>
+              <option value="H">High</option>
+              <option value="M">Medium</option>
+              <option value="L">Low</option>
+            </select>
+          </div>
+          <div>
+            <label for="due">Due</label>
+            <input type="date" id="due" name="due">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">Add Task</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 {% endblock %}
