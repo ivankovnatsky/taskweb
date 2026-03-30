@@ -119,3 +119,27 @@ def test_task_detail_invalid_uuid(client):
 def test_task_detail_not_found(mock_get, client):
     response = client.get("/task/abc12345-1234-5678-9abc-000000000000")
     assert response.status_code == 302
+
+
+def test_csrf_rejects_missing_token():
+    """POST without CSRF token is rejected when TESTING is off."""
+    from taskweb.server import create_app
+
+    app = create_app()
+    # Don't set TESTING = True
+    with app.test_client() as c:
+        response = c.post("/add", data={"description": "test"})
+        assert response.status_code == 403
+
+
+def test_csrf_rejects_wrong_token():
+    """POST with wrong CSRF token is rejected."""
+    from taskweb.server import create_app
+
+    app = create_app()
+    with app.test_client() as c:
+        # Set a session token, then submit a wrong one
+        with c.session_transaction() as sess:
+            sess["_csrf_token"] = "correct-token"
+        response = c.post("/add", data={"description": "test", "_csrf_token": "wrong"})
+        assert response.status_code == 403
