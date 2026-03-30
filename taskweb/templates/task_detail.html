@@ -65,14 +65,14 @@
       {% endif %}
 
       <div class="detail-actions">
-        <a href="{{ url_for('edit', uuid=task.uuid) }}" class="btn-submit" id="action-edit"><kbd>E</kbd> Edit</a>
+        <a href="{{ url_for('edit', uuid=task.uuid) }}" class="btn-submit" id="action-edit"><kbd>E</kbd>dit</a>
         <form method="POST" action="{{ url_for('done', uuid=task.uuid) }}" id="action-complete">
           <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-          <button type="submit" class="btn-submit"><kbd>C</kbd> Complete</button>
+          <button type="submit" class="btn-submit"><kbd>C</kbd>omplete</button>
         </form>
         <form method="POST" action="{{ url_for('delete', uuid=task.uuid) }}" id="action-delete">
           <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-          <button type="submit" class="btn btn-delete" title="Delete"><kbd>D</kbd> Delete</button>
+          <button type="submit" class="btn btn-delete" title="Delete"><kbd>D</kbd>elete</button>
         </form>
       </div>
     </div>
