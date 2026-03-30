@@ -14,9 +14,14 @@ document.querySelectorAll('.flash').forEach(el => {
   if (!row || !toggle) return;
 
   function checkOverflow() {
+    // Measure full (unwrapped) height
     row.style.maxHeight = 'none';
+    row.offsetHeight; // force reflow
     const fullHeight = row.scrollHeight;
+
+    // Restore clamp and measure again
     row.style.maxHeight = '';
+    row.offsetHeight; // force reflow
     const clippedHeight = row.clientHeight;
 
     if (fullHeight > clippedHeight + 2) {
