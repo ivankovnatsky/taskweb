@@ -79,6 +79,18 @@ nav a.active {
   border-bottom: 1px solid var(--tw-id);
 }
 
+.nav-new-task { color: var(--tw-proj) !important; }
+.nav-new-task:hover { color: var(--tw-act) !important; }
+.nav-new-task.open {
+  border-bottom: 1px solid var(--tw-proj);
+  color: var(--tw-proj) !important;
+}
+
+.nav-sep {
+  border-left: 1px solid var(--border);
+  margin: 0 4px;
+}
+
 /* Window chrome */
 .window {
   width: 100%;
