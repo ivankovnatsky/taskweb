@@ -113,9 +113,10 @@
     return dirty;
   }
 
-  window.addEventListener('beforeunload', function (e) {
+  function onBeforeUnload(e) {
     if (isDirty()) e.preventDefault();
-  });
+  }
+  window.addEventListener('beforeunload', onBeforeUnload);
 
   document.getElementById('edit-cancel').addEventListener('click', function (e) {
     if (isDirty() && !confirm('You have unsaved changes. Discard them?')) {
@@ -124,8 +125,7 @@
   });
 
   form.addEventListener('submit', function () {
-    window.removeEventListener('beforeunload', arguments.callee);
-    saved = null;
+    window.removeEventListener('beforeunload', onBeforeUnload);
   });
 
   document.addEventListener('keydown', function (e) {
