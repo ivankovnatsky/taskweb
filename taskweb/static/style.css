@@ -208,6 +208,7 @@ table.tw .desc {
 }
 .pagination a:hover { color: var(--text); }
 .pagination span { font-size: 11px; color: var(--dim); }
+.pagination .page-current { color: var(--tw-id); font-weight: 700; }
 
 /* Annotations */
 .annotation-count {
