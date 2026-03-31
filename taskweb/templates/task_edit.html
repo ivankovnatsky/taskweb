@@ -16,12 +16,12 @@
         <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
         <div class="edit-grid">
           <div class="edit-row">
-            <label class="detail-label" for="description"><kbd>DD</kbd> Description</label>
+            <label class="detail-label" for="description"><kbd>DD</kbd>escription</label>
             <input type="text" id="description" name="description" value="{{ task.description }}" required>
           </div>
 
           <div class="edit-row">
-            <label class="detail-label" for="project"><kbd>PP</kbd> Project</label>
+            <label class="detail-label" for="project"><kbd>PP</kbd>roject</label>
             <input type="text" id="project" name="project" value="{{ task.project }}">
           </div>
 
@@ -31,7 +31,7 @@
           </div>
 
           <div class="edit-row">
-            <label class="detail-label" for="priority"><kbd>PR</kbd> Priority</label>
+            <label class="detail-label" for="priority"><kbd>PR</kbd>iority</label>
             <select id="priority" name="priority">
               <option value="">None</option>
               <option value="H" {% if task.priority == 'H' %}selected{% endif %}>High</option>
@@ -41,7 +41,7 @@
           </div>
 
           <div class="edit-row">
-            <label class="detail-label" for="due"><kbd>DU</kbd> Due</label>
+            <label class="detail-label" for="due"><kbd>DU</kbd>e</label>
             <input type="date" id="due" name="due" value="{{ task.due_formatted }}">
           </div>
 
@@ -65,7 +65,7 @@
           {% endif %}
 
           <div class="edit-row">
-            <label class="detail-label" for="annotation"><kbd>AN</kbd> Annotation</label>
+            <label class="detail-label" for="annotation"><kbd>AN</kbd>notation</label>
             <input type="text" id="annotation" name="annotation" placeholder="New annotation text">
           </div>
 
@@ -87,7 +87,7 @@
 
         <div class="form-actions">
           <button type="submit" class="btn-submit" id="edit-save"><kbd>S</kbd>ave</button>
-          <a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="btn btn-delete" id="edit-cancel"><kbd>CA</kbd> Cancel</a>
+          <a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="btn btn-delete" id="edit-cancel"><kbd>CA</kbd>NCEL</a>
         </div>
       </form>
     </div>
