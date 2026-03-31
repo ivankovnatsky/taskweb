@@ -52,15 +52,18 @@ taskweb serve --host 127.0.0.1 --port 8080
 
 ## Configuration
 
-TaskWeb reads from your Taskwarrior 3 configuration by default. You can override
-the data location with environment variables:
+TaskWeb resolves the database path in this order:
+
+1. `TASKDATA` environment variable
+2. `data.location` from your taskrc (`TASKRC` or `~/.taskrc`)
+3. `~/.task` (default)
 
 ```console
 export TASKDATA=~/.local/share/task
 export TASKRC=~/.config/task/taskrc
 ```
 
-Copy `.env.example` to `.env` to customize settings.
+See `config/local.env` and `config/user.env` for examples.
 
 ## Development
 
