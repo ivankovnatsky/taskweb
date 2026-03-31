@@ -157,7 +157,7 @@ table.tw th {
   color: var(--tw-header);
   font-weight: 700;
   text-align: left;
-  padding: 1px 14px 3px 0;
+  padding: 1px 8px 3px 0;
   border-bottom: 1px solid var(--tw-sep);
   white-space: nowrap;
   font-size: 11.5px;
@@ -165,7 +165,7 @@ table.tw th {
 }
 
 table.tw td {
-  padding: 3px 14px 3px 0;
+  padding: 3px 8px 3px 0;
   vertical-align: top;
   white-space: nowrap;
 }
