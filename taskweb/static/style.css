@@ -329,7 +329,7 @@ table.tw td.desc {
 .annotation-date {
   font-style: normal;
   opacity: 0.7;
-  margin-right: 6px;
+  display: block;
 }
 
 /* Actions */
