@@ -402,7 +402,13 @@ table.tw td.desc {
 .action-col {
   width: 1px;
   white-space: nowrap;
-  padding-right: 8px !important;
+}
+.action-col:first-child {
+  padding-right: 8px;
+}
+.action-col:last-child {
+  padding-right: 0;
+  padding-left: 8px;
 }
 
 /* Add task form */
