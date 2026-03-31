@@ -14,19 +14,9 @@ document.querySelectorAll('.flash').forEach(el => {
   if (!row || !toggle) return;
 
   function checkOverflow() {
-    // Measure full (unwrapped) height
-    row.style.maxHeight = 'none';
-    row.offsetHeight; // force reflow
-    const fullHeight = row.scrollHeight;
-
-    // Restore clamp and measure again
-    row.style.maxHeight = '';
-    row.offsetHeight; // force reflow
-    const clippedHeight = row.clientHeight;
-
-    if (fullHeight > clippedHeight + 2) {
+    if (row.scrollWidth > row.clientWidth) {
       toggle.style.display = '';
-    } else {
+    } else if (!row.classList.contains('expanded')) {
       toggle.style.display = 'none';
     }
   }
@@ -34,13 +24,10 @@ document.querySelectorAll('.flash').forEach(el => {
   toggle.addEventListener('click', function () {
     row.classList.toggle('expanded');
     toggle.textContent = row.classList.contains('expanded') ? '[\u2715]' : '[\u2026]';
+    checkOverflow();
   });
 
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(checkOverflow);
-  } else {
-    checkOverflow();
-  }
+  checkOverflow();
   window.addEventListener('resize', checkOverflow);
 })();
 
