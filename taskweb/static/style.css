@@ -151,7 +151,6 @@ nav kbd {
 table.tw {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
 }
 
 table.tw th {
@@ -163,11 +162,6 @@ table.tw th {
   white-space: nowrap;
   font-size: 11.5px;
   letter-spacing: .02em;
-  width: 1px;
-}
-
-table.tw th.col-desc {
-  width: auto;
 }
 
 table.tw td {
