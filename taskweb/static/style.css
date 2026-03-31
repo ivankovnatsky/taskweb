@@ -151,6 +151,7 @@ nav kbd {
 table.tw {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 table.tw th {
@@ -162,6 +163,11 @@ table.tw th {
   white-space: nowrap;
   font-size: 11.5px;
   letter-spacing: .02em;
+  width: 1px;
+}
+
+table.tw th.col-desc {
+  width: auto;
 }
 
 table.tw td {
@@ -191,7 +197,6 @@ tr.active-row .id { color: var(--tw-act) }
 .urg-lo { color: var(--tw-age) }
 .desc { color: var(--tw-desc) }
 table.tw .desc {
-  max-width: 260px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
