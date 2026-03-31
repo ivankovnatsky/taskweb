@@ -9,14 +9,18 @@ document.querySelectorAll('.flash').forEach(el => {
 
 // Filter overflow toggle
 (function () {
-  const row = document.querySelector('.filters-row');
+  const row = document.getElementById('filters-row');
   const toggle = document.getElementById('filter-toggle');
   if (!row || !toggle) return;
 
   function checkOverflow() {
+    if (row.classList.contains('expanded')) {
+      toggle.style.display = '';
+      return;
+    }
     if (row.scrollWidth > row.clientWidth) {
       toggle.style.display = '';
-    } else if (!row.classList.contains('expanded')) {
+    } else {
       toggle.style.display = 'none';
     }
   }
