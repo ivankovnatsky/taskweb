@@ -7,7 +7,7 @@ import re
 from datetime import datetime, timezone
 from flask import Flask, abort, flash, redirect, render_template, request, session, url_for
 
-from taskweb import __version__
+from taskweb import __commit__, __version__
 from taskweb.tasks import (
     DatabaseUnavailableError,
     add_task,
@@ -57,6 +57,7 @@ def create_app() -> Flask:
 
     app.jinja_env.globals["csrf_token"] = _generate_csrf_token
     app.jinja_env.globals["version"] = __version__
+    app.jinja_env.globals["commit"] = __commit__
 
     @app.before_request
     def _check_csrf():
