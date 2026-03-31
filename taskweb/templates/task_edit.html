@@ -21,7 +21,7 @@
           </div>
 
           <div class="edit-row">
-            <label class="detail-label" for="project">P<kbd>r</kbd>oject</label>
+            <label class="detail-label" for="project">Pr<kbd>o</kbd>ject</label>
             <input type="text" id="project" name="project" value="{{ task.project }}">
           </div>
 
@@ -46,7 +46,7 @@
           </div>
 
           <div class="edit-row">
-            <label class="detail-label" for="recur">Recur <kbd>w</kbd></label>
+            <label class="detail-label" for="recur"><kbd>R</kbd>ecur</label>
             <input type="text" id="recur" name="recur" value="{{ task.recur }}" placeholder="e.g. weekly, monthly">
           </div>
 
@@ -141,7 +141,7 @@
     if (key === 's') { e.preventDefault(); form.requestSubmit(); return; }
     if (key === 'a') { e.preventDefault(); document.getElementById('edit-cancel').click(); return; }
     // Field focus shortcuts
-    var fields = {e:'description', r:'project', g:'tags', i:'priority', u:'due', w:'recur', n:'annotation'};
+    var fields = {e:'description', o:'project', g:'tags', i:'priority', u:'due', r:'recur', n:'annotation'};
     if (fields[key]) {
       e.preventDefault();
       var el = document.getElementById(fields[key]);
