@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 from taskweb.tasks import (
     Task,
+    _calculate_urgency,
     add_task,
     complete_task,
     delete_task,
@@ -432,3 +433,151 @@ def test_edit_task_not_found(tmp_path):
     with patch("taskweb.tasks._db_path", return_value=db_path):
         result = edit_task("nonexistent", description="X")
     assert result is False
+
+
+# --- _calculate_urgency tests ---
+
+_URG_DEFAULTS = {
+    "due": "",
+    "priority": "",
+    "start": "",
+    "tags": [],
+    "project": "",
+    "annotations": [],
+    "entry": "",
+    "wait": "",
+    "scheduled": "",
+}
+
+
+def _urg(**overrides):
+    return _calculate_urgency(**{**_URG_DEFAULTS, **overrides})
+
+
+def test_urgency_baseline_no_fields():
+    assert _urg() == 0.0
+
+
+def test_urgency_project():
+    assert _urg(project="work") > 0.0
+    assert round(_urg(project="work"), 2) == 1.0
+
+
+def test_urgency_active():
+    now = str(int(time.time()))
+    assert round(_urg(start=now), 2) == 4.0
+
+
+def test_urgency_priority_h():
+    assert round(_urg(priority="H"), 2) == 6.0
+
+
+def test_urgency_priority_m():
+    assert round(_urg(priority="M"), 2) == 3.9
+
+
+def test_urgency_priority_l():
+    assert round(_urg(priority="L"), 2) == 1.8
+
+
+def test_urgency_next_tag():
+    u = _urg(tags=["next"])
+    # next tag (15.0) + 1 tag (0.8)
+    assert round(u, 2) == 15.8
+
+
+def test_urgency_tags_count():
+    assert round(_urg(tags=["a"]), 2) == 0.8
+    assert round(_urg(tags=["a", "b"]), 2) == 0.9
+    assert round(_urg(tags=["a", "b", "c"]), 2) == 1.0
+
+
+def test_urgency_annotations_count():
+    ann1 = [{"entry": "1", "description": "x"}]
+    ann2 = ann1 + [{"entry": "2", "description": "y"}]
+    ann3 = ann2 + [{"entry": "3", "description": "z"}]
+    assert round(_urg(annotations=ann1), 2) == 0.8
+    assert round(_urg(annotations=ann2), 2) == 0.9
+    assert round(_urg(annotations=ann3), 2) == 1.0
+
+
+def test_urgency_due_overdue():
+    # 10 days overdue -> capped at 1.0, * 12.0 = 12.0
+    overdue = str(int(time.time()) - 86400 * 10)
+    assert round(_urg(due=overdue), 2) == 12.0
+
+
+def test_urgency_due_today():
+    # Due right now: days_overdue ~ 0, value = (14/21 * 0.8) + 0.2 ≈ 0.733
+    today = str(int(time.time()))
+    u = _urg(due=today)
+    assert 8.0 < u < 10.0  # 0.733 * 12 ≈ 8.8
+
+
+def test_urgency_due_far_future():
+    # Due in 30 days -> capped at 0.2, * 12.0 = 2.4
+    future = str(int(time.time()) + 86400 * 30)
+    assert round(_urg(due=future), 2) == 2.4
+
+
+def test_urgency_due_boundary_14_days():
+    # Due in exactly 14 days -> boundary: value = 0.2, * 12.0 = 2.4
+    due_14d = str(int(time.time()) + 86400 * 14)
+    u = _urg(due=due_14d)
+    assert round(u, 1) == 2.4
+
+
+def test_urgency_age_new_task():
+    now = str(int(time.time()))
+    u = _urg(entry=now)
+    assert u < 0.1  # near zero age
+
+
+def test_urgency_age_half_year():
+    half_year_ago = str(int(time.time()) - 86400 * 182)
+    u = _urg(entry=half_year_ago)
+    assert 0.9 < u < 1.1  # ~182/365 * 2.0 ≈ 1.0
+
+
+def test_urgency_age_capped():
+    # Over 365 days -> capped at 2.0
+    old = str(int(time.time()) - 86400 * 500)
+    assert round(_urg(entry=old), 2) == 2.0
+
+
+def test_urgency_no_entry():
+    # Missing entry -> no age contribution (0.0)
+    assert _urg(entry="") == 0.0
+
+
+def test_urgency_waiting():
+    # Waiting in the future -> -3.0
+    future_wait = str(int(time.time()) + 86400 * 7)
+    assert round(_urg(wait=future_wait), 2) == -3.0
+
+
+def test_urgency_scheduled_past():
+    # 10 days past scheduled -> capped at 1.0, * 5.0 = 5.0
+    past = str(int(time.time()) - 86400 * 10)
+    assert round(_urg(scheduled=past), 2) == 5.0
+
+
+def test_urgency_scheduled_far_future():
+    # 30 days out -> 0.2 * 5.0 = 1.0
+    future = str(int(time.time()) + 86400 * 30)
+    assert round(_urg(scheduled=future), 2) == 1.0
+
+
+def test_urgency_combined():
+    now = str(int(time.time()))
+    overdue = str(int(time.time()) - 86400 * 10)
+    u = _urg(
+        due=overdue,
+        priority="H",
+        start=now,
+        tags=["urgent"],
+        project="work",
+        entry=now,
+    )
+    # due 12.0 + priority 6.0 + active 4.0 + tag 0.8 + project 1.0 + age ~0
+    assert u > 23.0
