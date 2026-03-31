@@ -731,11 +731,17 @@ footer a:hover {
     gap: 10px;
     flex-wrap: wrap;
     justify-content: center;
+    font-size: 14px;
+  }
+  nav a {
+    padding: 8px 0;
   }
   .nav-search {
     margin-left: 0;
     width: 100%;
     text-align: center;
+    font-size: 14px;
+    padding: 10px 12px;
   }
   nav kbd {
     border: none;
@@ -753,12 +759,15 @@ footer a:hover {
   .filters-row {
     flex-wrap: nowrap;
     overflow: hidden;
+    font-size: 13px;
+  }
+  .filter-chip {
+    padding: 4px 10px;
   }
   /* Mobile: card-like two-row layout per task */
   table.tw,
   table.tw thead,
   table.tw tbody,
-  table.tw tr,
   table.tw th,
   table.tw td {
     display: block;
@@ -769,7 +778,7 @@ footer a:hover {
   table.tw tr {
     display: flex;
     flex-wrap: wrap;
-    padding: 8px 0;
+    padding: 10px 0;
     border-bottom: 1px solid var(--border);
   }
   /* Hide: done, id, age, tags, edit */
@@ -782,9 +791,10 @@ footer a:hover {
   }
   /* Row 1: description (full width, first) */
   table.tw td.desc {
+    display: block;
     order: -1;
     width: 100%;
-    font-size: 13px;
+    font-size: 15px;
     padding: 0 0 4px;
   }
   /* Row 2: project, due, urgency inline */
@@ -792,12 +802,15 @@ footer a:hover {
   table.tw td.due,
   table.tw td.due-ok,
   table.tw td[class^="urg"] {
-    font-size: 11px;
+    font-size: 13px;
     padding: 0;
-    margin-right: 10px;
+    margin-right: 12px;
   }
   table.tw td {
     border: none;
+  }
+  .tw-footer {
+    font-size: 12px;
   }
   /* Edit form stacks vertically */
   .edit-grid {
@@ -813,6 +826,8 @@ footer a:hover {
   .edit-row input,
   .edit-row select {
     width: 100%;
+    font-size: 14px;
+    padding: 8px;
   }
   .edit-row kbd {
     display: none;
@@ -842,6 +857,6 @@ footer a:hover {
     padding: 10px 12px;
   }
   footer {
-    font-size: 9px;
+    font-size: 11px;
   }
 }
