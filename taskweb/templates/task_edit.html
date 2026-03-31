@@ -127,6 +127,13 @@
   });
 
   document.addEventListener('keydown', function (e) {
+    // Escape works from anywhere (including inputs)
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      document.getElementById('edit-cancel').click();
+      return;
+    }
+    // S and A only when not in an input
     var tag = e.target.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
