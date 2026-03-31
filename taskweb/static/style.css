@@ -1,41 +1,79 @@
 :root {
-  --bg:      #f5f4f0; --chrome: #eae8e2; --border: #ccc9c0;
-  --text:    #1c1c1e; --dim:    #6e6e73;
-  --tw-header:#555;
-  --tw-id:   #5f87af; --tw-age:  #808080; --tw-proj: #5f8700;
-  --tw-tag:  #875faf; --tw-due:  #d70000; --tw-due-ok:#5f87af;
-  --tw-urg:  #d75f00; --tw-urghi:#cc7700; --tw-done: #6c6c6c;
-  --tw-desc: #1c1c1e; --tw-act:  #5f8700; --tw-block:#af8700;
-  --tw-recur:#008787; --tw-sep:  #ccc9c0; --tw-cnt:  #6e6e73;
+  --bg: #f5f4f0;
+  --chrome: #eae8e2;
+  --border: #ccc9c0;
+  --text: #1c1c1e;
+  --dim: #6e6e73;
+  --tw-header: #555;
+  --tw-id: #5f87af;
+  --tw-age: #808080;
+  --tw-proj: #5f8700;
+  --tw-tag: #875faf;
+  --tw-due: #d70000;
+  --tw-due-ok: #5f87af;
+  --tw-urg: #d75f00;
+  --tw-urghi: #cc7700;
+  --tw-done: #6c6c6c;
+  --tw-desc: #1c1c1e;
+  --tw-act: #5f8700;
+  --tw-block: #af8700;
+  --tw-recur: #008787;
+  --tw-sep: #ccc9c0;
+  --tw-cnt: #6e6e73;
   --tw-next: #5f5faf;
-  --flash-success: #5f8700; --flash-error: #d70000;
+  --flash-success: #5f8700;
+  --flash-error: #d70000;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg:#1c1c1e;--chrome:#272729;--border:#3a3a3c;
-    --text:#e0e0e0;--dim:#888;--tw-header:#aaa;
-    --tw-id:#5f87af;--tw-age:#606060;--tw-proj:#5faf5f;
-    --tw-tag:#875faf;--tw-due:#d70000;--tw-due-ok:#5f87af;
-    --tw-urg:#d75f00;--tw-urghi:#ff8700;--tw-done:#3a3a3c;
-    --tw-desc:#e0e0e0;--tw-act:#5faf5f;--tw-block:#af8700;
-    --tw-recur:#008787;--tw-sep:#3a3a3c;--tw-cnt:#888;--tw-next:#5f5faf;
-    --flash-success:#5faf5f;--flash-error:#ff5f57;
+    --bg: #1c1c1e;
+    --chrome: #272729;
+    --border: #3a3a3c;
+    --text: #e0e0e0;
+    --dim: #888;
+    --tw-header: #aaa;
+    --tw-id: #5f87af;
+    --tw-age: #606060;
+    --tw-proj: #5faf5f;
+    --tw-tag: #875faf;
+    --tw-due: #d70000;
+    --tw-due-ok: #5f87af;
+    --tw-urg: #d75f00;
+    --tw-urghi: #ff8700;
+    --tw-done: #3a3a3c;
+    --tw-desc: #e0e0e0;
+    --tw-act: #5faf5f;
+    --tw-block: #af8700;
+    --tw-recur: #008787;
+    --tw-sep: #3a3a3c;
+    --tw-cnt: #888;
+    --tw-next: #5f5faf;
+    --flash-success: #5faf5f;
+    --flash-error: #ff5f57;
   }
 }
 
-*{box-sizing:border-box;margin:0;padding:0}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
+    sans-serif;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 36px 20px 56px;
-  transition: background .2s, color .2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 
 /* Back link */
@@ -44,14 +82,16 @@ body {
   width: 100%;
   max-width: 1200px;
   margin-bottom: 12px;
-  font-family: 'SF Mono', monospace;
+  font-family: "SF Mono", monospace;
   font-size: 11px;
   color: var(--dim);
   text-decoration: none;
 }
-.back-link:hover { color: var(--text); }
+.back-link:hover {
+  color: var(--text);
+}
 .back-link kbd {
-  font-family: 'SF Mono', monospace;
+  font-family: "SF Mono", monospace;
   font-size: inherit;
   border: 1px solid var(--border);
   border-radius: 2px;
@@ -66,7 +106,7 @@ nav {
   display: flex;
   gap: 16px;
   margin-bottom: 20px;
-  font-family: 'SF Mono', monospace;
+  font-family: "SF Mono", monospace;
   font-size: 11px;
 }
 
@@ -74,12 +114,13 @@ nav a {
   color: var(--dim);
   text-decoration: none;
   padding: 4px 0;
-  letter-spacing: .05em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  transition: color .15s;
+  transition: color 0.15s;
 }
 
-nav a:hover, nav a.active {
+nav a:hover,
+nav a.active {
   color: var(--tw-id);
 }
 
@@ -87,8 +128,12 @@ nav a.active {
   border-bottom: 1px solid var(--tw-id);
 }
 
-.nav-new-task { color: var(--tw-proj) !important; }
-.nav-new-task:hover { color: var(--tw-act) !important; }
+.nav-new-task {
+  color: var(--tw-proj) !important;
+}
+.nav-new-task:hover {
+  color: var(--tw-act) !important;
+}
 .nav-new-task.open {
   border-bottom: 1px solid var(--tw-proj);
   color: var(--tw-proj) !important;
@@ -100,7 +145,7 @@ nav a.active {
 }
 
 nav kbd {
-  font-family: 'SF Mono', monospace;
+  font-family: "SF Mono", monospace;
   font-size: inherit;
   border: 1px solid var(--border);
   border-radius: 2px;
@@ -113,14 +158,14 @@ nav kbd {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  font-family: 'SF Mono', monospace;
+  font-family: "SF Mono", monospace;
   font-size: 14px;
   background: var(--chrome);
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 4px 10px;
   color: var(--tw-id);
-  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   z-index: 100;
 }
 
@@ -131,20 +176,20 @@ nav kbd {
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid var(--border);
-  box-shadow: 0 6px 32px rgba(0,0,0,.12);
+  box-shadow: 0 6px 32px rgba(0, 0, 0, 0.12);
   margin-bottom: 24px;
-  transition: border-color .2s;
+  transition: border-color 0.2s;
 }
 
 /* Content area */
 .content {
   background: var(--bg);
   padding: 14px 16px;
-  font-family: 'SF Mono', monospace;
+  font-family: "SF Mono", monospace;
   font-size: 12px;
   line-height: 1.75;
   overflow-x: auto;
-  transition: background .2s;
+  transition: background 0.2s;
 }
 
 /* Task table */
@@ -161,7 +206,7 @@ table.tw th {
   border-bottom: 1px solid var(--tw-sep);
   white-space: nowrap;
   font-size: 11.5px;
-  letter-spacing: .02em;
+  letter-spacing: 0.02em;
 }
 
 table.tw td {
@@ -175,21 +220,53 @@ table.tw td:last-child {
   padding-right: 0;
 }
 
-tr.active-row td { font-weight: 700 }
-tr.active-row .desc { color: var(--tw-act) }
-tr.active-row .id { color: var(--tw-act) }
+tr.active-row td {
+  font-weight: 700;
+}
+tr.active-row .desc {
+  color: var(--tw-act);
+}
+tr.active-row .id {
+  color: var(--tw-act);
+}
 
-.id { color: var(--tw-id) }
-.age { color: var(--tw-age); font-size: 11px }
-.proj { color: var(--tw-proj) }
-.tag { color: var(--tw-tag) }
-.tag-next { color: var(--tw-next); font-weight: 700 }
-.due { color: var(--tw-due); font-weight: 700 }
-.due-ok { color: var(--tw-due-ok) }
-.urg-hi { color: var(--tw-urghi); font-weight: 700 }
-.urg { color: var(--tw-urg) }
-.urg-lo { color: var(--tw-age) }
-.desc { color: var(--tw-desc) }
+.id {
+  color: var(--tw-id);
+}
+.age {
+  color: var(--tw-age);
+  font-size: 11px;
+}
+.proj {
+  color: var(--tw-proj);
+}
+.tag {
+  color: var(--tw-tag);
+}
+.tag-next {
+  color: var(--tw-next);
+  font-weight: 700;
+}
+.due {
+  color: var(--tw-due);
+  font-weight: 700;
+}
+.due-ok {
+  color: var(--tw-due-ok);
+}
+.urg-hi {
+  color: var(--tw-urghi);
+  font-weight: 700;
+}
+.urg {
+  color: var(--tw-urg);
+}
+.urg-lo {
+  color: var(--tw-age);
+}
+.desc {
+  color: var(--tw-desc);
+}
 table.tw td.desc {
   max-width: 0;
   width: 100%;
@@ -197,20 +274,44 @@ table.tw td.desc {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.recur { color: var(--tw-recur) }
-.done { color: var(--tw-done); text-decoration: line-through }
-.block { color: var(--tw-block) }
-.tw-footer { margin-top: 6px; color: var(--tw-cnt); font-size: 11px }
-.pagination { margin-top: 8px; display: flex; align-items: center; gap: 12px; }
+.recur {
+  color: var(--tw-recur);
+}
+.done {
+  color: var(--tw-done);
+  text-decoration: line-through;
+}
+.block {
+  color: var(--tw-block);
+}
+.tw-footer {
+  margin-top: 6px;
+  color: var(--tw-cnt);
+  font-size: 11px;
+}
+.pagination {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 .pagination a {
-  font-family: 'SF Mono', monospace;
+  font-family: "SF Mono", monospace;
   font-size: 11px;
   color: var(--dim);
   text-decoration: none;
 }
-.pagination a:hover { color: var(--text); }
-.pagination span { font-size: 11px; color: var(--dim); }
-.pagination .page-current { color: var(--tw-id); font-weight: 700; }
+.pagination a:hover {
+  color: var(--text);
+}
+.pagination span {
+  font-size: 11px;
+  color: var(--dim);
+}
+.pagination .page-current {
+  color: var(--tw-id);
+  font-weight: 700;
+}
 
 /* Annotations */
 .annotation-count {
@@ -238,9 +339,9 @@ table.tw td.desc {
 }
 
 .btn {
-  font-family: 'SF Mono', monospace;
+  font-family: "SF Mono", monospace;
   font-size: 10px;
-  letter-spacing: .03em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   border: 1px solid var(--border);
   background: var(--chrome);
@@ -248,7 +349,7 @@ table.tw td.desc {
   padding: 2px 6px;
   border-radius: 3px;
   cursor: pointer;
-  transition: all .15s;
+  transition: all 0.15s;
 }
 
 .btn:hover {
@@ -261,11 +362,13 @@ table.tw td.desc {
   color: var(--tw-proj);
 }
 
-.btn-submit.btn-delete {
+.btn-submit.btn-delete,
+.btn-cancel {
   border-color: var(--border);
   color: var(--dim);
 }
-.btn-delete:hover {
+.btn-delete:hover,
+.btn-cancel:hover {
   border-color: var(--tw-due);
   background: transparent;
   color: var(--tw-due);
@@ -308,10 +411,10 @@ table.tw td.desc {
 
 .form-grid label {
   display: block;
-  font-family: 'SF Mono', monospace;
+  font-family: "SF Mono", monospace;
   font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   color: var(--dim);
   margin-bottom: 4px;
 }
@@ -319,14 +422,14 @@ table.tw td.desc {
 .form-grid input,
 .form-grid select {
   width: 100%;
-  font-family: 'SF Mono', monospace;
+  font-family: "SF Mono", monospace;
   font-size: 12px;
   padding: 6px 8px;
   border: 1px solid var(--border);
   border-radius: 4px;
   background: var(--bg);
   color: var(--text);
-  transition: border-color .15s;
+  transition: border-color 0.15s;
 }
 
 .form-grid input:focus,
@@ -342,7 +445,7 @@ table.tw td.desc {
 }
 .form-actions kbd,
 .detail-actions kbd {
-  font-family: 'SF Mono', monospace;
+  font-family: "SF Mono", monospace;
   font-size: inherit;
   border: 1px solid currentColor;
   border-radius: 2px;
@@ -350,10 +453,11 @@ table.tw td.desc {
   opacity: 0.6;
 }
 
-.btn-submit {
-  font-family: 'SF Mono', monospace;
+.btn-submit,
+.btn-cancel {
+  font-family: "SF Mono", monospace;
   font-size: 11px;
-  letter-spacing: .05em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   border: 1px solid var(--tw-proj);
   background: transparent;
@@ -361,10 +465,16 @@ table.tw td.desc {
   padding: 5px 14px;
   border-radius: 4px;
   cursor: pointer;
-  transition: all .15s;
+  transition: all 0.15s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  line-height: 1;
 }
 
-.btn-submit:hover {
+.btn-submit:hover,
+.btn-cancel:hover {
   background: var(--tw-proj);
   color: white;
 }
@@ -387,7 +497,7 @@ table.tw td.desc {
   flex-wrap: nowrap;
   flex: 1;
   min-width: 0;
-  font-family: 'SF Mono', monospace;
+  font-family: "SF Mono", monospace;
   font-size: 10.5px;
   line-height: 1.4;
 }
@@ -403,7 +513,7 @@ table.tw td.desc {
   border: 1px solid var(--border);
   border-radius: 3px;
   white-space: nowrap;
-  transition: all .15s;
+  transition: all 0.15s;
 }
 
 .filter-chip:hover {
@@ -426,7 +536,7 @@ table.tw td.desc {
 .flash {
   width: 100%;
   max-width: 1200px;
-  font-family: 'SF Mono', monospace;
+  font-family: "SF Mono", monospace;
   font-size: 11px;
   padding: 8px 12px;
   border-radius: 4px;
@@ -449,7 +559,7 @@ table.tw td.desc {
   text-align: center;
   padding: 32px;
   color: var(--dim);
-  font-family: 'SF Mono', monospace;
+  font-family: "SF Mono", monospace;
   font-size: 12px;
 }
 
@@ -457,7 +567,7 @@ table.tw td.desc {
 .task-link {
   color: var(--tw-desc);
   text-decoration: none;
-  transition: color .15s;
+  transition: color 0.15s;
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -468,7 +578,7 @@ table.tw td.desc {
 
 /* Task detail */
 .task-detail {
-  font-family: 'SF Mono', monospace;
+  font-family: "SF Mono", monospace;
   font-size: 12px;
 }
 .detail-header {
@@ -481,7 +591,7 @@ table.tw td.desc {
 .badge-active {
   font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: .06em;
+  letter-spacing: 0.06em;
   color: var(--tw-act);
   border: 1px solid var(--tw-act);
   padding: 1px 6px;
@@ -497,7 +607,7 @@ table.tw td.desc {
   color: var(--dim);
   font-size: 10.5px;
   text-transform: uppercase;
-  letter-spacing: .06em;
+  letter-spacing: 0.06em;
 }
 .detail-annotations {
   margin-bottom: 16px;
@@ -533,7 +643,7 @@ table.tw td.desc {
   display: contents;
 }
 .edit-row kbd {
-  font-family: 'SF Mono', monospace;
+  font-family: "SF Mono", monospace;
   font-size: inherit;
   border: 1px solid currentColor;
   border-radius: 2px;
@@ -545,7 +655,7 @@ table.tw td.desc {
   background: var(--bg);
   border: 1px solid var(--border);
   color: var(--text);
-  font-family: 'SF Mono', monospace;
+  font-family: "SF Mono", monospace;
   font-size: 11px;
   padding: 4px 8px;
   border-radius: 4px;
@@ -565,12 +675,12 @@ table.tw td.desc {
 /* Footer */
 footer {
   margin-top: 28px;
-  font-family: 'SF Mono', monospace;
+  font-family: "SF Mono", monospace;
   font-size: 10px;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--dim);
-  opacity: .5;
+  opacity: 0.5;
   text-align: center;
   line-height: 1.8;
 }
@@ -584,9 +694,22 @@ footer a:hover {
 
 /* Responsive */
 @media (max-width: 600px) {
-  body { padding: 16px 10px 36px }
-  header { flex-wrap: wrap; gap: 8px }
-  .form-grid { grid-template-columns: 1fr }
-  .filters { gap: 4px }
-  table.tw td, table.tw th { padding-right: 8px; font-size: 11px }
+  body {
+    padding: 16px 10px 36px;
+  }
+  header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .filters {
+    gap: 4px;
+  }
+  table.tw td,
+  table.tw th {
+    padding-right: 8px;
+    font-size: 11px;
+  }
 }
