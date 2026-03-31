@@ -83,14 +83,16 @@ def test_delete(mock_delete, client):
 def test_filter_by_project(mock_tasks, client):
     response = client.get("/?project=infra")
     assert response.status_code == 200
-    mock_tasks.assert_called_once_with("project:infra")
+    mock_tasks.assert_any_call("project:infra")
+    mock_tasks.assert_any_call()
 
 
 @patch("taskweb.server.get_pending_tasks", return_value=[])
 def test_filter_by_tag(mock_tasks, client):
     response = client.get("/?tag=next")
     assert response.status_code == 200
-    mock_tasks.assert_called_once_with("+next")
+    mock_tasks.assert_any_call("+next")
+    mock_tasks.assert_any_call()
 
 
 @patch("taskweb.server.get_task_by_uuid")

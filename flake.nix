@@ -62,7 +62,7 @@
             pkgs.python312Packages.pytest
             pkgs.ruff
             pkgs.treefmt
-            pkgs.nixfmt-rfc-style
+            pkgs.nixfmt
             pkgs.nodePackages.prettier
             pkgs.just
             pkgs.taskwarrior3

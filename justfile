@@ -1,6 +1,10 @@
-# Start the web server (reads from ~/.local/share/task by default)
+# Start the web server with local test data
 serve:
     python -m taskweb serve --debug
+
+# Start the web server with user's real Taskwarrior data
+serve-user:
+    TASKDATA=~/.local/share/task python -m taskweb serve --debug
 
 # Run tests
 test:
