@@ -13,6 +13,10 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
+class DatabaseUnavailableError(Exception):
+    """Raised when the Taskwarrior database cannot be found or opened."""
+
+
 @dataclass
 class Task:
     uuid: str
@@ -93,7 +97,13 @@ def _db_path() -> Path:
 
 
 def _connect() -> sqlite3.Connection:
-    conn = sqlite3.connect(str(_db_path()), timeout=10, isolation_level=None)
+    db = _db_path()
+    if not db.exists():
+        raise DatabaseUnavailableError(
+            f"Database not found: {db}\n"
+            "Set TASKDATA to your Taskwarrior 3 data directory."
+        )
+    conn = sqlite3.connect(str(db), timeout=10, isolation_level=None)
     conn.execute("PRAGMA journal_mode=WAL")
     return conn
 
