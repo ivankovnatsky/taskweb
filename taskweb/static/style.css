@@ -325,11 +325,13 @@ table.tw td.desc {
   padding-left: 8px;
   border-left: 2px solid var(--border);
   margin-top: 2px;
+  display: flex;
 }
 .annotation-date {
   font-style: normal;
   opacity: 0.7;
-  display: block;
+  flex-shrink: 0;
+  margin-right: 8px;
 }
 
 /* Actions */
