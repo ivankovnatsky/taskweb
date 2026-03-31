@@ -92,7 +92,7 @@ class Task:
 
 
 def _db_path() -> Path:
-    data_dir = os.environ.get("TASKDATA", os.path.expanduser("~/.local/share/task"))
+    data_dir = os.environ.get("TASKDATA", os.path.expanduser("~/.task"))
     return Path(data_dir) / "taskchampion.sqlite3"
 
 
