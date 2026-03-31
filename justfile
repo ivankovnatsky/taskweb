@@ -1,6 +1,6 @@
-# Start the web server with demo database
+# Start the web server (reads from ~/.local/share/task by default)
 serve:
-    TASKDATA=./data/task python -m taskweb serve --debug
+    python -m taskweb serve --debug
 
 # Run tests
 test:
@@ -10,6 +10,10 @@ test:
 format:
     ruff format .
     ruff check --fix .
+
+# Update screenshots using Playwright
+screenshots:
+    python scripts/screenshots.py
 
 # Remove build artifacts
 clean:

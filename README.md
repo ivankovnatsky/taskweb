@@ -58,7 +58,7 @@ export TASKDATA=~/.local/share/task
 export TASKRC=~/.config/task/taskrc
 ```
 
-A demo database with sample tasks is included in `data/` for development.
+Copy `.env.example` to `.env` to customize settings.
 
 ## Development
 
