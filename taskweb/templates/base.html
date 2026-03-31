@@ -69,7 +69,7 @@
 {% block content %}{% endblock %}
 
 <footer>
-  TaskWeb v{{ version }}{% if commit %} ({{ commit }}){% endif %} &middot; Taskwarrior web interface
+  TaskWeb v{{ version }}{% if commit %} (<a href="https://github.com/ivankovnatsky/taskweb/commit/{{ commit_full }}">{{ commit }}</a>){% endif %} &middot; Taskwarrior web interface
 </footer>
 
 <script src="{{ url_for('static', filename='app.js') }}"></script>
