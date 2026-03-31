@@ -500,13 +500,16 @@ table.tw td.desc {
 .detail-actions {
   display: flex;
   gap: 8px;
-  align-items: center;
+  align-items: stretch;
   margin-top: 16px;
 }
-.detail-actions a.btn-submit {
-  text-decoration: none;
+.detail-actions .btn-submit {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-sizing: border-box;
+  line-height: 1;
 }
 .detail-actions kbd {
   font-family: 'SF Mono', monospace;
