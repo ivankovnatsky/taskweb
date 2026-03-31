@@ -190,7 +190,9 @@ tr.active-row .id { color: var(--tw-act) }
 .urg { color: var(--tw-urg) }
 .urg-lo { color: var(--tw-age) }
 .desc { color: var(--tw-desc) }
-table.tw .desc {
+table.tw td.desc {
+  max-width: 0;
+  width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
