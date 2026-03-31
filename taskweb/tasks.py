@@ -33,6 +33,7 @@ class Task:
     start: str = ""
     end: str = ""
     recur: str = ""
+    wait: str = ""
     annotations: list[dict] = field(default_factory=list)
 
     @property
@@ -81,6 +82,16 @@ class Task:
     @property
     def is_active(self) -> bool:
         return bool(self.start)
+
+    @property
+    def wait_formatted(self) -> str:
+        if not self.wait:
+            return ""
+        try:
+            wait_ts = int(self.wait)
+            return datetime.fromtimestamp(wait_ts, tz=timezone.utc).strftime("%Y-%m-%d")
+        except (ValueError, TypeError):
+            return self.wait
 
     @property
     def is_recurring(self) -> bool:
@@ -148,6 +159,7 @@ def _parse_task_data(uuid: str, data: dict, working_set: dict[str, int]) -> Task
         start=start,
         end=data.get("end", ""),
         recur=data.get("recur", ""),
+        wait=data.get("wait", ""),
         annotations=annotations,
     )
 
@@ -229,6 +241,12 @@ def get_pending_tasks(filter_str: str = "") -> list[Task]:
         if match:
             filtered.append(t)
     return filtered
+
+
+def get_waiting_tasks() -> list[Task]:
+    tasks = get_tasks("waiting")
+    tasks.sort(key=lambda t: t.urgency, reverse=True)
+    return tasks
 
 
 def get_completed_tasks() -> list[Task]:

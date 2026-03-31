@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title_suffix %} — Waiting{% endblock %}
+
+{% block content %}
+<div class="window">
+  <div class="content">
+    {% if tasks %}
+    <table class="tw">
+      <thead>
+        <tr>
+          <th>Age</th>
+          <th>Project</th>
+          <th>Tags</th>
+          <th>Wait</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in tasks %}
+        <tr>
+          <td class="age">{{ task.age }}</td>
+          <td class="proj">{{ task.project }}</td>
+          <td class="tag">{% for t in task.tags %}+{{ t }}{% if not loop.last %} {% endif %}{% endfor %}</td>
+          <td class="due-ok">{{ task.wait_formatted }}</td>
+          <td class="desc">
+            <a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="task-link">
+              {{ task.description }}{% if task.annotations %} <span class="annotation-count">[{{ task.annotations|length }}]</span>{% endif %}
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="tw-footer">
+      {{ total }} waiting tasks
+      {% if total_pages > 1 %}
+      <div class="pagination">
+        {% if page > 1 %}
+        <a href="{{ url_for('waiting', page=page-1) }}">&larr;</a>
+        {% endif %}
+        {% for p in range(1, total_pages + 1) %}
+        {% if p == page %}
+        <span class="page-current">{{ p }}</span>
+        {% else %}
+        <a href="{{ url_for('waiting', page=p) }}">{{ p }}</a>
+        {% endif %}
+        {% endfor %}
+        {% if page < total_pages %}
+        <a href="{{ url_for('waiting', page=page+1) }}">&rarr;</a>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+    {% else %}
+    <div class="empty">No waiting tasks.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

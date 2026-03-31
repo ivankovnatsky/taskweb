@@ -14,6 +14,7 @@
   <span class="nav-sep"></span>
   {% endif %}
   <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}" data-key="p"><kbd>P</kbd>ending</a>
+  <a href="{{ url_for('waiting') }}" class="{% if request.endpoint == 'waiting' %}active{% endif %}" data-key="w"><kbd>W</kbd>aiting</a>
   <a href="{{ url_for('completed') }}" class="{% if request.endpoint == 'completed' %}active{% endif %}" data-key="c"><kbd>C</kbd>ompleted</a>
   <a href="{{ url_for('deleted') }}" class="{% if request.endpoint == 'deleted' %}active{% endif %}" data-key="d"><kbd>D</kbd>eleted</a>
 </nav>

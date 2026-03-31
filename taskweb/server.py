@@ -20,6 +20,7 @@ from taskweb.tasks import (
     get_deleted_tasks,
     get_pending_tasks,
     get_task_by_uuid,
+    get_waiting_tasks,
 )
 
 logger = logging.getLogger(__name__)
@@ -99,6 +100,22 @@ def create_app() -> Flask:
             counts=derived["counts"],
             current_project=project_filter,
             current_tag=tag_filter,
+            page=page,
+            total_pages=total_pages,
+        )
+
+    @app.route("/waiting")
+    def waiting():
+        page = max(1, request.args.get("page", 1, type=int))
+        all_tasks = get_waiting_tasks()
+        total = len(all_tasks)
+        total_pages = max(1, (total + PER_PAGE - 1) // PER_PAGE)
+        page = min(page, total_pages)
+        tasks = all_tasks[(page - 1) * PER_PAGE : page * PER_PAGE]
+        return render_template(
+            "waiting.html",
+            tasks=tasks,
+            total=total,
             page=page,
             total_pages=total_pages,
         )
