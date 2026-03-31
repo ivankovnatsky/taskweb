@@ -9,13 +9,16 @@
 <body>
 
 <nav>
+  {% if request.endpoint == 'index' %}
   <a href="#" id="new-task-toggle" class="nav-new-task"><kbd>N</kbd>ew Task</a>
   <span class="nav-sep"></span>
+  {% endif %}
   <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}" data-key="p"><kbd>P</kbd>ending</a>
   <a href="{{ url_for('completed') }}" class="{% if request.endpoint == 'completed' %}active{% endif %}" data-key="c"><kbd>C</kbd>ompleted</a>
   <a href="{{ url_for('deleted') }}" class="{% if request.endpoint == 'deleted' %}active{% endif %}" data-key="d"><kbd>D</kbd>eleted</a>
 </nav>
 
+{% if request.endpoint == 'index' %}
 <div class="add-form" id="add-form" style="display:none">
   <div class="window form-window">
     <div class="content">
@@ -55,6 +58,7 @@
     </div>
   </div>
 </div>
+{% endif %}
 
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% for category, message in messages %}

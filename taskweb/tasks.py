@@ -100,8 +100,7 @@ def _connect() -> sqlite3.Connection:
     db = _db_path()
     if not db.exists():
         raise DatabaseUnavailableError(
-            f"Database not found: {db}\n"
-            "Set TASKDATA to your Taskwarrior 3 data directory."
+            f"Database not found: {db}\nSet TASKDATA to your Taskwarrior 3 data directory."
         )
     conn = sqlite3.connect(str(db), timeout=10, isolation_level=None)
     conn.execute("PRAGMA journal_mode=WAL")
@@ -531,9 +530,21 @@ def edit_task(
             else:
                 data.pop("priority", None)
 
-        # Due
+        # Due — preserve existing timestamp if only the date portion matches
         old_due = data.get("due", "")
-        if due:
+        if due and old_due:
+            try:
+                old_date = datetime.fromtimestamp(int(old_due), tz=timezone.utc).strftime(
+                    "%Y-%m-%d"
+                )
+                if due == old_date:
+                    new_due = old_due  # preserve original timestamp with time component
+                else:
+                    due_dt = datetime.strptime(due, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                    new_due = str(int(due_dt.timestamp()))
+            except (ValueError, TypeError):
+                new_due = due
+        elif due:
             try:
                 due_dt = datetime.strptime(due, "%Y-%m-%d").replace(tzinfo=timezone.utc)
                 new_due = str(int(due_dt.timestamp()))

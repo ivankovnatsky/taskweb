@@ -12,6 +12,7 @@ from taskweb.tasks import (
     complete_task,
     delete_task,
     derive_from_tasks,
+    edit_task,
     get_completed_tasks,
     get_pending_tasks,
     get_task_by_uuid,
@@ -353,3 +354,81 @@ def test_filter_by_tag(tmp_path):
         tasks = get_pending_tasks("+next")
     assert len(tasks) == 1
     assert tasks[0].description == "Tagged"
+
+
+def test_edit_task_description(tmp_path):
+    db_path = _create_test_db(tmp_path)
+    now = str(int(time.time()))
+    _insert_task(
+        db_path,
+        "uuid-edit",
+        {"description": "Original", "status": "pending", "entry": now},
+        ws_id=1,
+    )
+
+    with patch("taskweb.tasks._db_path", return_value=db_path):
+        result = edit_task("uuid-edit", description="Updated")
+    assert result is True
+
+    conn = sqlite3.connect(str(db_path))
+    data = json.loads(
+        conn.execute("SELECT data FROM tasks WHERE uuid = ?", ("uuid-edit",)).fetchone()[0]
+    )
+    conn.close()
+    assert data["description"] == "Updated"
+
+
+def test_edit_task_tags(tmp_path):
+    db_path = _create_test_db(tmp_path)
+    now = str(int(time.time()))
+    _insert_task(
+        db_path,
+        "uuid-edit2",
+        {"description": "Task", "status": "pending", "entry": now, "tags": "old"},
+        ws_id=1,
+    )
+
+    with patch("taskweb.tasks._db_path", return_value=db_path):
+        result = edit_task("uuid-edit2", description="Task", tags=["new", "next"])
+    assert result is True
+
+    conn = sqlite3.connect(str(db_path))
+    data = json.loads(
+        conn.execute("SELECT data FROM tasks WHERE uuid = ?", ("uuid-edit2",)).fetchone()[0]
+    )
+    conn.close()
+    assert data["tags"] == "new,next"
+    assert "tag_old" not in data
+    assert data["tag_new"] == "x"
+
+
+def test_edit_task_preserves_due_time(tmp_path):
+    """Editing without changing due date should preserve the original timestamp."""
+    db_path = _create_test_db(tmp_path)
+    now = str(int(time.time()))
+    # Due at 2026-04-01 15:30:00 UTC (not midnight)
+    due_ts = str(int(time.mktime(time.strptime("2026-04-01 15:30:00", "%Y-%m-%d %H:%M:%S"))))
+    _insert_task(
+        db_path,
+        "uuid-due",
+        {"description": "Timed", "status": "pending", "entry": now, "due": due_ts},
+        ws_id=1,
+    )
+
+    with patch("taskweb.tasks._db_path", return_value=db_path):
+        result = edit_task("uuid-due", description="Timed", due="2026-04-01")
+    assert result is True
+
+    conn = sqlite3.connect(str(db_path))
+    data = json.loads(
+        conn.execute("SELECT data FROM tasks WHERE uuid = ?", ("uuid-due",)).fetchone()[0]
+    )
+    conn.close()
+    assert data["due"] == due_ts  # preserved, not rewritten to midnight
+
+
+def test_edit_task_not_found(tmp_path):
+    db_path = _create_test_db(tmp_path)
+    with patch("taskweb.tasks._db_path", return_value=db_path):
+        result = edit_task("nonexistent", description="X")
+    assert result is False

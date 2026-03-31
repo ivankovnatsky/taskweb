@@ -1,5 +1,6 @@
 """Take screenshots of TaskWeb for README using Playwright."""
 
+import os
 import subprocess
 import sys
 import time
@@ -12,10 +13,12 @@ def main():
     base = f"http://127.0.0.1:{port}"
     width, height = 1280, 900
 
+    env = {**os.environ, "TASKDATA": "./data/task"}
     server = subprocess.Popen(
         [sys.executable, "-m", "taskweb", "serve", "--port", str(port)],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        env=env,
     )
     time.sleep(2)
 
