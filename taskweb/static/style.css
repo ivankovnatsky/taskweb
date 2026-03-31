@@ -363,11 +363,18 @@ table.tw .desc {
   max-width: 1200px;
   margin-bottom: 16px;
 }
+.filters-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
 .filters-row {
   display: flex;
   gap: 8px;
   overflow: hidden;
   flex-wrap: nowrap;
+  flex: 1;
+  min-width: 0;
   font-family: 'SF Mono', monospace;
   font-size: 10.5px;
   line-height: 1.4;
@@ -401,7 +408,6 @@ table.tw .desc {
   cursor: pointer;
   font-weight: bold;
   flex-shrink: 0;
-  margin-left: auto;
 }
 
 /* Flash messages */
