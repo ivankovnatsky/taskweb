@@ -4,7 +4,7 @@ serve:
 
 # Start the web server with user's real Taskwarrior data
 serve-user:
-    TASKDATA=~/.local/share/task python -m taskweb serve --debug
+    TASKDATA=~/.task python -m taskweb serve --debug
 
 # Run tests
 test:
