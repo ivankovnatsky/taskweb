@@ -143,6 +143,21 @@ nav a.active {
   border-left: 1px solid var(--border);
   margin: 0 4px;
 }
+.nav-search {
+  margin-left: auto;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 4px 10px;
+  font-family: "SF Mono", monospace;
+  font-size: 11px;
+  width: 240px;
+}
+.nav-search:focus {
+  outline: none;
+  border-color: var(--tw-id);
+}
 
 nav kbd {
   font-family: "SF Mono", monospace;

@@ -217,3 +217,42 @@ document.querySelectorAll(".btn-delete").forEach((btn) => {
     }
   });
 });
+
+// Search field — client-side table filtering
+(function () {
+  const field = document.getElementById("search-field");
+  if (!field) return;
+  const table = document.querySelector("table.tw");
+  if (!table) return;
+  const rows = table.querySelectorAll("tbody tr");
+
+  field.addEventListener("input", function () {
+    const q = field.value.toLowerCase();
+    rows.forEach(function (row) {
+      row.style.display = row.textContent.toLowerCase().includes(q)
+        ? ""
+        : "none";
+    });
+  });
+
+  // "/" focuses search, Escape blurs it
+  document.addEventListener("keydown", function (e) {
+    if (
+      e.target.tagName === "INPUT" ||
+      e.target.tagName === "TEXTAREA" ||
+      e.target.tagName === "SELECT"
+    ) {
+      if (e.key === "Escape" && e.target === field) {
+        field.value = "";
+        field.dispatchEvent(new Event("input"));
+        field.blur();
+        e.preventDefault();
+      }
+      return;
+    }
+    if (e.key === "/" && !e.ctrlKey && !e.metaKey) {
+      e.preventDefault();
+      field.focus();
+    }
+  });
+})();
