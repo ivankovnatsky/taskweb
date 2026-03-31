@@ -5,8 +5,6 @@ import logging
 import os
 import re
 from datetime import datetime, timezone
-from urllib.parse import urlparse
-
 from flask import Flask, abort, flash, redirect, render_template, request, session, url_for
 
 from taskweb import __version__
@@ -68,16 +66,6 @@ def create_app() -> Flask:
             if not token or not expected or not hmac.compare_digest(token, expected):
                 abort(403)
 
-    def _safe_redirect_back():
-        """Redirect to referrer only if it's same-origin."""
-        ref = request.referrer
-        if ref:
-            parsed = urlparse(ref)
-            host = urlparse(request.host_url)
-            if parsed.scheme == host.scheme and parsed.netloc == host.netloc:
-                return redirect(ref)
-        return redirect(url_for("index"))
-
     PER_PAGE = 40
 
     @app.route("/")
@@ -93,7 +81,8 @@ def create_app() -> Flask:
             filter_str += f"+{tag_filter} "
 
         all_tasks = get_pending_tasks(filter_str.strip())
-        derived = derive_from_tasks(all_tasks)
+        all_pending = all_tasks if not filter_str.strip() else get_pending_tasks()
+        derived = derive_from_tasks(all_pending)
         total = len(all_tasks)
         total_pages = max(1, (total + PER_PAGE - 1) // PER_PAGE)
         page = min(page, total_pages)
@@ -115,8 +104,6 @@ def create_app() -> Flask:
     def completed():
         page = max(1, request.args.get("page", 1, type=int))
         all_tasks = get_completed_tasks()
-        pending = get_pending_tasks()
-        derived = derive_from_tasks(pending)
         total = len(all_tasks)
         total_pages = max(1, (total + PER_PAGE - 1) // PER_PAGE)
         page = min(page, total_pages)
@@ -124,7 +111,7 @@ def create_app() -> Flask:
         return render_template(
             "completed.html",
             tasks=tasks,
-            counts={**derived["counts"], "completed": total},
+            counts={"completed": total},
             page=page,
             total_pages=total_pages,
         )
@@ -226,7 +213,7 @@ def create_app() -> Flask:
             flash("Task completed.", "success")
         else:
             flash("Failed to complete task.", "error")
-        return _safe_redirect_back()
+        return redirect(url_for("index"))
 
     @app.route("/task/<uuid>/delete", methods=["POST"])
     def delete(uuid):
@@ -236,7 +223,7 @@ def create_app() -> Flask:
             flash("Task deleted.", "success")
         else:
             flash("Failed to delete task.", "error")
-        return _safe_redirect_back()
+        return redirect(url_for("index"))
 
     @app.errorhandler(DatabaseUnavailableError)
     def db_unavailable(e):
