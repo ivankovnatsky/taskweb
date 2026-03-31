@@ -5,6 +5,7 @@ import logging
 import os
 import re
 from datetime import datetime, timezone
+
 from flask import Flask, abort, flash, redirect, render_template, request, session, url_for
 
 from taskweb import __commit__, __version__

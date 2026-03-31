@@ -282,7 +282,7 @@ table.tw td.desc {
 .action-col {
   width: 1px;
   white-space: nowrap;
-  padding-right: 0.75rem !important;
+  padding-right: 8px !important;
 }
 
 /* Add task form */
