@@ -16,22 +16,22 @@
         <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
         <div class="edit-grid">
           <div class="edit-row">
-            <label class="detail-label" for="description">Description</label>
+            <label class="detail-label" for="description">D<kbd>e</kbd>scription</label>
             <input type="text" id="description" name="description" value="{{ task.description }}" required>
           </div>
 
           <div class="edit-row">
-            <label class="detail-label" for="project">Project</label>
+            <label class="detail-label" for="project">P<kbd>r</kbd>oject</label>
             <input type="text" id="project" name="project" value="{{ task.project }}">
           </div>
 
           <div class="edit-row">
-            <label class="detail-label" for="tags">Tags</label>
+            <label class="detail-label" for="tags">Ta<kbd>g</kbd>s</label>
             <input type="text" id="tags" name="tags" value="{{ task.tags | join(', ') }}" placeholder="comma,separated">
           </div>
 
           <div class="edit-row">
-            <label class="detail-label" for="priority">Priority</label>
+            <label class="detail-label" for="priority">Pr<kbd>i</kbd>ority</label>
             <select id="priority" name="priority">
               <option value="">None</option>
               <option value="H" {% if task.priority == 'H' %}selected{% endif %}>High</option>
@@ -41,12 +41,12 @@
           </div>
 
           <div class="edit-row">
-            <label class="detail-label" for="due">Due</label>
+            <label class="detail-label" for="due">D<kbd>u</kbd>e</label>
             <input type="date" id="due" name="due" value="{{ task.due_formatted }}">
           </div>
 
           <div class="edit-row">
-            <label class="detail-label" for="recur">Recur</label>
+            <label class="detail-label" for="recur">Recur <kbd>w</kbd></label>
             <input type="text" id="recur" name="recur" value="{{ task.recur }}" placeholder="e.g. weekly, monthly">
           </div>
 
@@ -65,7 +65,7 @@
           {% endif %}
 
           <div class="edit-row">
-            <label class="detail-label" for="annotation">Add annotation</label>
+            <label class="detail-label" for="annotation">A<kbd>n</kbd>notation</label>
             <input type="text" id="annotation" name="annotation" placeholder="New annotation text">
           </div>
 
@@ -133,17 +133,19 @@
       document.getElementById('edit-cancel').click();
       return;
     }
-    // S and A only when not in an input
+    // Other shortcuts only when not in an input
     var tag = e.target.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
-    if (e.key === 's' || e.key === 'S') {
+    var key = e.key.toLowerCase();
+    if (key === 's') { e.preventDefault(); form.requestSubmit(); return; }
+    if (key === 'a') { e.preventDefault(); document.getElementById('edit-cancel').click(); return; }
+    // Field focus shortcuts
+    var fields = {e:'description', r:'project', g:'tags', i:'priority', u:'due', w:'recur', n:'annotation'};
+    if (fields[key]) {
       e.preventDefault();
-      form.requestSubmit();
-    }
-    if (e.key === 'a' || e.key === 'A') {
-      e.preventDefault();
-      document.getElementById('edit-cancel').click();
+      var el = document.getElementById(fields[key]);
+      if (el) el.focus();
     }
   });
 })();

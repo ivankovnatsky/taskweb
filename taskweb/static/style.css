@@ -532,6 +532,14 @@ table.tw td.desc {
 .edit-row {
   display: contents;
 }
+.edit-row kbd {
+  font-family: 'SF Mono', monospace;
+  font-size: inherit;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  padding: 0 2px;
+  opacity: 0.6;
+}
 .edit-row input,
 .edit-row select {
   background: var(--bg);
