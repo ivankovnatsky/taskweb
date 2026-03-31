@@ -4,7 +4,6 @@ import json
 import logging
 import os
 import sqlite3
-import subprocess
 import time
 import uuid as uuid_mod
 from dataclasses import dataclass, field
@@ -138,9 +137,7 @@ def _connect() -> sqlite3.Connection:
     return conn
 
 
-def _parse_task_data(
-    uuid: str, data: dict, working_set: dict[str, int], urgency_map: dict[str, float]
-) -> Task:
+def _parse_task_data(uuid: str, data: dict, working_set: dict[str, int]) -> Task:
     """Parse a task's JSON data dict into a Task object."""
     tags_str = data.get("tags", "")
     tags = [t.strip() for t in tags_str.split(",") if t.strip()] if tags_str else []
@@ -158,7 +155,17 @@ def _parse_task_data(
     priority = data.get("priority", "")
     status = data.get("status", "pending")
 
-    urgency = urgency_map.get(uuid, 0.0)
+    urgency = _calculate_urgency(
+        due=due,
+        priority=priority,
+        start=start,
+        tags=tags,
+        project=data.get("project", ""),
+        annotations=annotations,
+        entry=entry,
+        wait=data.get("wait", ""),
+        scheduled=data.get("scheduled", ""),
+    )
 
     return Task(
         uuid=uuid,
@@ -180,28 +187,103 @@ def _parse_task_data(
     )
 
 
-def _get_urgency_map(task_uuid: str | None = None) -> dict[str, float]:
-    """Get urgency values from Taskwarrior CLI via 'task export'.
+def _calculate_urgency(
+    due: str,
+    priority: str,
+    start: str,
+    tags: list[str],
+    project: str,
+    annotations: list[dict],
+    entry: str,
+    wait: str,
+    scheduled: str,
+) -> float:
+    """Calculate urgency matching Taskwarrior's algorithm and default coefficients."""
+    value = 0.0
+    now = time.time()
 
-    If task_uuid is provided, only export that single task.
-    """
-    try:
-        cmd = ["task"]
-        if task_uuid:
-            cmd.append(task_uuid)
-        cmd.append("export")
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
-        if result.returncode == 0:
-            tasks = json.loads(result.stdout)
-            return {t["uuid"]: t.get("urgency", 0.0) for t in tasks}
-    except (subprocess.TimeoutExpired, json.JSONDecodeError, FileNotFoundError):
-        logger.warning("Failed to get urgency from task CLI, falling back to 0.0")
-    return {}
+    # Project: coefficient 1.0
+    if project:
+        value += 1.0
+
+    # Active (started): coefficient 4.0
+    if start:
+        value += 4.0
+
+    # Scheduled (past scheduled date): coefficient 5.0
+    if scheduled:
+        try:
+            if int(scheduled) < now:
+                value += 5.0
+        except (ValueError, TypeError):
+            pass
+
+    # Waiting: coefficient -3.0
+    if wait:
+        try:
+            if int(wait) > now:
+                value -= 3.0
+        except (ValueError, TypeError):
+            pass
+
+    # Annotations: coefficient 1.0, value 0.8/0.9/1.0
+    ann_count = len(annotations)
+    if ann_count >= 3:
+        value += 1.0
+    elif ann_count == 2:
+        value += 0.9
+    elif ann_count == 1:
+        value += 0.8
+
+    # Tags: coefficient 1.0, value 0.8/0.9/1.0
+    tag_count = len(tags)
+    if tag_count >= 3:
+        value += 1.0
+    elif tag_count == 2:
+        value += 0.9
+    elif tag_count == 1:
+        value += 0.8
+
+    # Due: coefficient 12.0, linear 0.2-1.0 over 21 days
+    if due:
+        try:
+            days_overdue = (now - int(due)) / 86400.0
+            if days_overdue >= 7.0:
+                due_value = 1.0
+            elif days_overdue >= -14.0:
+                due_value = ((days_overdue + 14.0) * 0.8 / 21.0) + 0.2
+            else:
+                due_value = 0.2
+            value += due_value * 12.0
+        except (ValueError, TypeError):
+            pass
+
+    # Age: coefficient 2.0, linear up to 365 days
+    if entry:
+        try:
+            age_days = (now - int(entry)) / 86400.0
+            if age_days > 365:
+                value += 2.0
+            else:
+                value += (age_days / 365.0) * 2.0
+        except (ValueError, TypeError):
+            pass
+    else:
+        value += 2.0  # TW default when no entry
+
+    # Priority (UDA coefficients): H=6.0, M=3.9, L=1.8
+    if priority == "H":
+        value += 6.0
+    elif priority == "M":
+        value += 3.9
+    elif priority == "L":
+        value += 1.8
+
+    # Special tag 'next': coefficient 15.0
+    if "next" in tags:
+        value += 15.0
+
+    return round(value, 2)
 
 
 def _get_working_set(conn: sqlite3.Connection) -> dict[str, int]:
@@ -216,7 +298,6 @@ def get_tasks(status_filter: str = "") -> list[Task]:
     try:
         conn.execute("BEGIN DEFERRED")
         working_set = _get_working_set(conn)
-        urgency_map = _get_urgency_map()
         c = conn.cursor()
         c.execute("SELECT uuid, data FROM tasks")
         tasks = []
@@ -224,7 +305,7 @@ def get_tasks(status_filter: str = "") -> list[Task]:
             data = json.loads(data_str)
             if status_filter and data.get("status", "pending") != status_filter:
                 continue
-            tasks.append(_parse_task_data(uuid, data, working_set, urgency_map))
+            tasks.append(_parse_task_data(uuid, data, working_set))
         tasks.sort(key=lambda t: t.urgency, reverse=True)
         return tasks
     finally:
@@ -280,8 +361,7 @@ def get_task_by_uuid(uuid: str) -> Task | None:
         row = c.fetchone()
         if not row:
             return None
-        urgency_map = _get_urgency_map(uuid)
-        return _parse_task_data(row[0], json.loads(row[1]), working_set, urgency_map)
+        return _parse_task_data(row[0], json.loads(row[1]), working_set)
     finally:
         conn.rollback()
         conn.close()

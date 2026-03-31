@@ -158,11 +158,7 @@ def test_get_pending_tasks(tmp_path):
         ws_id=2,
     )
 
-    urgency_map = {"uuid-1": 6.0, "uuid-2": 1.0}
-    with (
-        patch("taskweb.tasks._db_path", return_value=db_path),
-        patch("taskweb.tasks._get_urgency_map", return_value=urgency_map),
-    ):
+    with patch("taskweb.tasks._db_path", return_value=db_path):
         tasks = get_pending_tasks()
     assert len(tasks) == 2
     assert tasks[0].urgency > tasks[1].urgency
@@ -170,8 +166,7 @@ def test_get_pending_tasks(tmp_path):
 
 def test_get_pending_tasks_empty(tmp_path):
     db_path = _create_test_db(tmp_path)
-    with patch("taskweb.tasks._db_path", return_value=db_path), \
-         patch("taskweb.tasks._get_urgency_map", return_value={}):
+    with patch("taskweb.tasks._db_path", return_value=db_path):
         tasks = get_pending_tasks()
     assert tasks == []
 
@@ -190,8 +185,7 @@ def test_get_completed_tasks(tmp_path):
         },
     )
 
-    with patch("taskweb.tasks._db_path", return_value=db_path), \
-         patch("taskweb.tasks._get_urgency_map", return_value={}):
+    with patch("taskweb.tasks._db_path", return_value=db_path):
         tasks = get_completed_tasks()
     assert len(tasks) == 1
     assert tasks[0].description == "Done task"
@@ -211,8 +205,7 @@ def test_get_task_by_uuid(tmp_path):
         ws_id=1,
     )
 
-    with patch("taskweb.tasks._db_path", return_value=db_path), \
-         patch("taskweb.tasks._get_urgency_map", return_value={"uuid-abc": 2.5}):
+    with patch("taskweb.tasks._db_path", return_value=db_path):
         task = get_task_by_uuid("uuid-abc")
     assert task is not None
     assert task.description == "Specific task"
@@ -221,8 +214,7 @@ def test_get_task_by_uuid(tmp_path):
 
 def test_get_task_by_uuid_not_found(tmp_path):
     db_path = _create_test_db(tmp_path)
-    with patch("taskweb.tasks._db_path", return_value=db_path), \
-         patch("taskweb.tasks._get_urgency_map", return_value={}):
+    with patch("taskweb.tasks._db_path", return_value=db_path):
         task = get_task_by_uuid("nonexistent")
     assert task is None
 
@@ -327,8 +319,7 @@ def test_filter_by_project(tmp_path):
         ws_id=2,
     )
 
-    with patch("taskweb.tasks._db_path", return_value=db_path), \
-         patch("taskweb.tasks._get_urgency_map", return_value={}):
+    with patch("taskweb.tasks._db_path", return_value=db_path):
         tasks = get_pending_tasks("project:infra")
     assert len(tasks) == 1
     assert tasks[0].project == "infra"
@@ -359,8 +350,7 @@ def test_filter_by_tag(tmp_path):
         ws_id=2,
     )
 
-    with patch("taskweb.tasks._db_path", return_value=db_path), \
-         patch("taskweb.tasks._get_urgency_map", return_value={}):
+    with patch("taskweb.tasks._db_path", return_value=db_path):
         tasks = get_pending_tasks("+next")
     assert len(tasks) == 1
     assert tasks[0].description == "Tagged"
