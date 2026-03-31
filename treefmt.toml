@@ -14,5 +14,5 @@ includes = ["*.nix"]
 
 [formatter.prettier]
 command = "prettier"
-options = ["--write"]
+options = ["--write", "--prose-wrap", "always"]
 includes = ["*.md", "*.json", "*.yml", "*.yaml", "*.js", "*.css", "*.html"]
