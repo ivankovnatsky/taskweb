@@ -30,8 +30,8 @@
           <th>Project</th>
           <th>Tags</th>
           <th>Due</th>
-          <th>Urg</th>
           <th>Description</th>
+          <th>Urg</th>
           <th></th>
         </tr>
       </thead>
@@ -51,12 +51,12 @@
             {% for t in task.tags %}+{{ t }}{% if not loop.last %} {% endif %}{% endfor %}
           </td>
           <td class="{% if task.is_overdue %}due{% elif task.due %}due-ok{% endif %}">{{ task.due_formatted }}</td>
-          <td class="{% if task.urgency >= 10 %}urg-hi{% elif task.urgency >= 4 %}urg{% else %}urg-lo{% endif %}">{{ "%.1f"|format(task.urgency) }}</td>
           <td class="desc">
             <a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="task-link">
               {{ task.description }}{% if task.is_recurring %} ↻{% endif %}{% if task.annotations %} <span class="annotation-count">[{{ task.annotations|length }}]</span>{% endif %}
             </a>
           </td>
+          <td class="{% if task.urgency >= 10 %}urg-hi{% elif task.urgency >= 4 %}urg{% else %}urg-lo{% endif %}">{{ "%.1f"|format(task.urgency) }}</td>
           <td class="action-col"><a href="{{ url_for('edit', uuid=task.uuid) }}" class="btn btn-edit" title="Edit">✎</a></td>
         </tr>
         {% endfor %}
