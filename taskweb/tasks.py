@@ -358,7 +358,7 @@ def add_task(
             data["priority"] = priority
         if due:
             try:
-                due_dt = datetime.strptime(due, "%Y-%m-%d").astimezone(timezone.utc)
+                due_dt = datetime.strptime(due, "%Y-%m-%d").replace(tzinfo=timezone.utc)
                 data["due"] = str(int(due_dt.timestamp()))
             except ValueError:
                 data["due"] = due
@@ -525,7 +525,7 @@ def edit_task(
         old_due = data.get("due", "")
         if due:
             try:
-                due_dt = datetime.strptime(due, "%Y-%m-%d").astimezone(timezone.utc)
+                due_dt = datetime.strptime(due, "%Y-%m-%d").replace(tzinfo=timezone.utc)
                 new_due = str(int(due_dt.timestamp()))
             except ValueError:
                 new_due = due
