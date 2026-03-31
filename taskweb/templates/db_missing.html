@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title_suffix %} — Database Not Found{% endblock %}
+
+{% block content %}
+<div class="window">
+  <div class="content">
+    <div class="empty">
+      <h2>No Taskwarrior database found</h2>
+      <p>{{ message }}</p>
+      <p>Example: <code>TASKDATA=~/.local/share/task python -m taskweb serve</code></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

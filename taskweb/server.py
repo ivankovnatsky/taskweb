@@ -11,6 +11,7 @@ from flask import Flask, abort, flash, redirect, render_template, request, sessi
 
 from taskweb import __version__
 from taskweb.tasks import (
+    DatabaseUnavailableError,
     add_task,
     complete_task,
     delete_task,
@@ -236,6 +237,10 @@ def create_app() -> Flask:
         else:
             flash("Failed to delete task.", "error")
         return _safe_redirect_back()
+
+    @app.errorhandler(DatabaseUnavailableError)
+    def db_unavailable(e):
+        return render_template("db_missing.html", message=str(e)), 503
 
     @app.errorhandler(500)
     def internal_error(e):
