@@ -259,6 +259,10 @@ table.tw .desc {
   color: var(--tw-proj);
 }
 
+.btn-submit.btn-delete {
+  border-color: var(--border);
+  color: var(--dim);
+}
 .btn-delete:hover {
   border-color: var(--tw-due);
   color: var(--tw-due);
