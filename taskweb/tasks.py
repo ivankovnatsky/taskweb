@@ -210,11 +210,17 @@ def _calculate_urgency(
     if start:
         value += 4.0
 
-    # Scheduled (past scheduled date): coefficient 5.0
+    # Scheduled: coefficient 5.0, ramps like due over 21 days
     if scheduled:
         try:
-            if int(scheduled) < now:
-                value += 5.0
+            days_overdue = (now - int(scheduled)) / 86400.0
+            if days_overdue >= 7.0:
+                sched_value = 1.0
+            elif days_overdue >= -14.0:
+                sched_value = ((days_overdue + 14.0) * 0.8 / 21.0) + 0.2
+            else:
+                sched_value = 0.2
+            value += sched_value * 5.0
         except (ValueError, TypeError):
             pass
 
@@ -269,7 +275,7 @@ def _calculate_urgency(
         except (ValueError, TypeError):
             pass
     else:
-        value += 2.0  # TW default when no entry
+        pass  # no entry = no age contribution
 
     # Priority (UDA coefficients): H=6.0, M=3.9, L=1.8
     if priority == "H":
