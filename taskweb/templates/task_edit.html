@@ -86,8 +86,8 @@
         </div>
 
         <div class="form-actions">
-          <button type="submit" class="btn-submit">Save</button>
-          <a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="btn btn-delete" id="edit-cancel">Cancel</a>
+          <button type="submit" class="btn-submit" id="edit-save"><kbd>S</kbd>ave</button>
+          <a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="btn btn-delete" id="edit-cancel">C<kbd>a</kbd>ncel</a>
         </div>
       </form>
     </div>
@@ -124,6 +124,20 @@
   form.addEventListener('submit', function () {
     window.removeEventListener('beforeunload', arguments.callee);
     saved = null;
+  });
+
+  document.addEventListener('keydown', function (e) {
+    var tag = e.target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.key === 's' || e.key === 'S') {
+      e.preventDefault();
+      form.requestSubmit();
+    }
+    if (e.key === 'a' || e.key === 'A') {
+      e.preventDefault();
+      document.getElementById('edit-cancel').click();
+    }
   });
 })();
 </script>
