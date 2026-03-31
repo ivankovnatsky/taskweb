@@ -565,6 +565,13 @@ footer {
   text-align: center;
   line-height: 1.8;
 }
+footer a {
+  color: inherit;
+  text-decoration: none;
+}
+footer a:hover {
+  text-decoration: underline;
+}
 
 /* Responsive */
 @media (max-width: 600px) {

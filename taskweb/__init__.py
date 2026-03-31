@@ -13,5 +13,14 @@ try:
         .decode()
         .strip()
     )
+    __commit_full__ = (
+        subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            stderr=subprocess.DEVNULL,
+        )
+        .decode()
+        .strip()
+    )
 except Exception:
     __commit__ = ""
+    __commit_full__ = ""
