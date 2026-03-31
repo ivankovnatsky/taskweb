@@ -340,6 +340,15 @@ table.tw td.desc {
   display: flex;
   gap: 8px;
 }
+.form-actions kbd,
+.detail-actions kbd {
+  font-family: 'SF Mono', monospace;
+  font-size: inherit;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  padding: 0 2px;
+  opacity: 0.6;
+}
 
 .btn-submit {
   font-family: 'SF Mono', monospace;
@@ -510,14 +519,6 @@ table.tw td.desc {
   text-decoration: none;
   box-sizing: border-box;
   line-height: 1;
-}
-.detail-actions kbd {
-  font-family: 'SF Mono', monospace;
-  font-size: inherit;
-  border: 1px solid currentColor;
-  border-radius: 2px;
-  padding: 0 2px;
-  opacity: 0.6;
 }
 
 /* Edit form */
