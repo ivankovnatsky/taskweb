@@ -117,8 +117,10 @@ function toggleNewTask() {
       if (key === 'e') { e.preventDefault(); window.location.href = editLink.href; return; }
       if (key === 'c') {
         e.preventDefault();
-        const form = document.getElementById('action-complete');
-        if (form) form.submit();
+        if (confirm('Complete this task?')) {
+          const form = document.getElementById('action-complete');
+          if (form) form.submit();
+        }
         return;
       }
       if (key === 'd') {
