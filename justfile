@@ -1,6 +1,6 @@
 # Start the web server with local test data
 serve:
-    python -m taskweb serve --debug
+    set -a && source config/local.env && set +a && python -m taskweb serve --debug
 
 # Start the web server with user's real Taskwarrior data
 serve-user:
