@@ -57,7 +57,7 @@
               {% for ann in task.annotations %}
               <div class="annotation">
                 <span class="annotation-date">{{ ann.entry | format_timestamp }}</span>
-                {{ ann.description }}
+                <span class="annotation-text">{{ ann.description }}</span>
               </div>
               {% endfor %}
             </div>
