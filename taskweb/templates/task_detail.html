@@ -66,7 +66,7 @@
 
       <div class="detail-actions">
         <a href="{{ url_for('edit', uuid=task.uuid) }}" class="btn-submit" id="action-edit"><kbd>E</kbd>dit</a>
-        <form method="POST" action="{{ url_for('done', uuid=task.uuid) }}" id="action-complete">
+        <form method="POST" action="{{ url_for('done', uuid=task.uuid) }}" id="action-complete" onsubmit="return confirm('Complete this task?')">
           <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
           <button type="submit" class="btn-submit"><kbd>C</kbd>omplete</button>
         </form>
