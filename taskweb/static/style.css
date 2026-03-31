@@ -265,6 +265,7 @@ table.tw .desc {
 }
 .btn-delete:hover {
   border-color: var(--tw-due);
+  background: transparent;
   color: var(--tw-due);
 }
 
