@@ -16,17 +16,17 @@
         <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
         <div class="edit-grid">
           <div class="edit-row">
-            <label class="detail-label" for="description">D<kbd>e</kbd>scription</label>
+            <label class="detail-label" for="description"><kbd>DD</kbd> Description</label>
             <input type="text" id="description" name="description" value="{{ task.description }}" required>
           </div>
 
           <div class="edit-row">
-            <label class="detail-label" for="project">Pr<kbd>o</kbd>ject</label>
+            <label class="detail-label" for="project"><kbd>PP</kbd> Project</label>
             <input type="text" id="project" name="project" value="{{ task.project }}">
           </div>
 
           <div class="edit-row">
-            <label class="detail-label" for="tags">Ta<kbd>g</kbd>s</label>
+            <label class="detail-label" for="tags"><kbd>T</kbd>ags</label>
             <input type="text" id="tags" name="tags" value="{{ task.tags | join(', ') }}" placeholder="comma,separated">
           </div>
 
@@ -65,7 +65,7 @@
           {% endif %}
 
           <div class="edit-row">
-            <label class="detail-label" for="annotation">A<kbd>n</kbd>notation</label>
+            <label class="detail-label" for="annotation"><kbd>NN</kbd> Annotation</label>
             <input type="text" id="annotation" name="annotation" placeholder="New annotation text">
           </div>
 
@@ -99,6 +99,8 @@
   var form = document.querySelector('form');
   var initial = new FormData(form);
   var saved = {};
+  var lastKey = '';
+  var lastKeyTime = 0;
   initial.forEach(function (v, k) { saved[k] = v; });
 
   function isDirty() {
@@ -140,12 +142,25 @@
     var key = e.key.toLowerCase();
     if (key === 's') { e.preventDefault(); form.requestSubmit(); return; }
     if (key === 'a') { e.preventDefault(); document.getElementById('edit-cancel').click(); return; }
-    // Field focus shortcuts
-    var fields = {e:'description', o:'project', g:'tags', i:'priority', u:'due', r:'recur', n:'annotation'};
-    if (fields[key]) {
+    // Single-key field shortcuts (unique, no nav conflict)
+    var single = {t:'tags', i:'priority', u:'due', r:'recur'};
+    if (single[key]) {
       e.preventDefault();
-      var el = document.getElementById(fields[key]);
-      if (el) el.focus();
+      document.getElementById(single[key]).focus();
+      return;
+    }
+    // Double-tap field shortcuts (conflict with nav: D, P, N)
+    var double = {d:'description', p:'project', n:'annotation'};
+    if (double[key]) {
+      var now = Date.now();
+      if (lastKey === key && now - lastKeyTime < 400) {
+        e.preventDefault();
+        document.getElementById(double[key]).focus();
+        lastKey = '';
+        return;
+      }
+      lastKey = key;
+      lastKeyTime = now;
     }
   });
 })();
