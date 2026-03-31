@@ -87,10 +87,44 @@
 
         <div class="form-actions">
           <button type="submit" class="btn-submit">Save</button>
-          <a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="btn btn-delete">Cancel</a>
+          <a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="btn btn-delete" id="edit-cancel">Cancel</a>
         </div>
       </form>
     </div>
   </div>
 </div>
+
+<script>
+(function () {
+  var form = document.querySelector('form');
+  var initial = new FormData(form);
+  var saved = {};
+  initial.forEach(function (v, k) { saved[k] = v; });
+
+  function isDirty() {
+    var current = new FormData(form);
+    var dirty = false;
+    current.forEach(function (v, k) {
+      if (k === '_csrf_token') return;
+      if (saved[k] !== v) dirty = true;
+    });
+    return dirty;
+  }
+
+  window.addEventListener('beforeunload', function (e) {
+    if (isDirty()) e.preventDefault();
+  });
+
+  document.getElementById('edit-cancel').addEventListener('click', function (e) {
+    if (isDirty() && !confirm('You have unsaved changes. Discard them?')) {
+      e.preventDefault();
+    }
+  });
+
+  form.addEventListener('submit', function () {
+    window.removeEventListener('beforeunload', arguments.callee);
+    saved = null;
+  });
+})();
+</script>
 {% endblock %}
