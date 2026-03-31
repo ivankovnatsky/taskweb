@@ -31,7 +31,7 @@
           </div>
 
           <div class="edit-row">
-            <label class="detail-label" for="priority">Pr<kbd>i</kbd>ority</label>
+            <label class="detail-label" for="priority"><kbd>PR</kbd> Priority</label>
             <select id="priority" name="priority">
               <option value="">None</option>
               <option value="H" {% if task.priority == 'H' %}selected{% endif %}>High</option>
@@ -41,7 +41,7 @@
           </div>
 
           <div class="edit-row">
-            <label class="detail-label" for="due">D<kbd>u</kbd>e</label>
+            <label class="detail-label" for="due"><kbd>DU</kbd> Due</label>
             <input type="date" id="due" name="due" value="{{ task.due_formatted }}">
           </div>
 
@@ -65,7 +65,7 @@
           {% endif %}
 
           <div class="edit-row">
-            <label class="detail-label" for="annotation"><kbd>NN</kbd> Annotation</label>
+            <label class="detail-label" for="annotation"><kbd>AN</kbd> Annotation</label>
             <input type="text" id="annotation" name="annotation" placeholder="New annotation text">
           </div>
 
@@ -87,7 +87,7 @@
 
         <div class="form-actions">
           <button type="submit" class="btn-submit" id="edit-save"><kbd>S</kbd>ave</button>
-          <a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="btn btn-delete" id="edit-cancel">C<kbd>a</kbd>ncel</a>
+          <a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="btn btn-delete" id="edit-cancel"><kbd>CA</kbd> Cancel</a>
         </div>
       </form>
     </div>
@@ -140,28 +140,27 @@
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     var key = e.key.toLowerCase();
+    // Single-key shortcuts (unique, no conflict)
     if (key === 's') { e.preventDefault(); form.requestSubmit(); return; }
-    if (key === 'a') { e.preventDefault(); document.getElementById('edit-cancel').click(); return; }
-    // Single-key field shortcuts (unique, no nav conflict)
-    var single = {t:'tags', i:'priority', u:'due', r:'recur'};
-    if (single[key]) {
+    if (key === 't') { e.preventDefault(); document.getElementById('tags').focus(); return; }
+    if (key === 'r') { e.preventDefault(); document.getElementById('recur').focus(); return; }
+
+    // Two-key combo shortcuts
+    var combos = {
+      dd:'description', pp:'project', pr:'priority',
+      du:'due', an:'annotation', ca:'_cancel'
+    };
+    var now = Date.now();
+    var combo = lastKey + key;
+    if (lastKey && now - lastKeyTime < 400 && combos[combo]) {
       e.preventDefault();
-      document.getElementById(single[key]).focus();
+      lastKey = '';
+      if (combo === 'ca') { document.getElementById('edit-cancel').click(); return; }
+      document.getElementById(combos[combo]).focus();
       return;
     }
-    // Double-tap field shortcuts (conflict with nav: D, P, N)
-    var double = {d:'description', p:'project', n:'annotation'};
-    if (double[key]) {
-      var now = Date.now();
-      if (lastKey === key && now - lastKeyTime < 400) {
-        e.preventDefault();
-        document.getElementById(double[key]).focus();
-        lastKey = '';
-        return;
-      }
-      lastKey = key;
-      lastKeyTime = now;
-    }
+    lastKey = key;
+    lastKeyTime = now;
   });
 })();
 </script>
