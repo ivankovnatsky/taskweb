@@ -21,7 +21,11 @@
           <td class="age">{{ task.age }}</td>
           <td class="done">{{ task.project }}</td>
           <td class="done">{% for t in task.tags %}+{{ t }}{% if not loop.last %} {% endif %}{% endfor %}</td>
-          <td class="done">{{ task.description }}</td>
+          <td class="done desc">
+            <a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="task-link">
+              {{ task.description }}
+            </a>
+          </td>
         </tr>
         {% endfor %}
       </tbody>
