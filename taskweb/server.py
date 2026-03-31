@@ -1,5 +1,6 @@
 """Flask web application for TaskWeb."""
 
+import hashlib
 import hmac
 import logging
 import os
@@ -36,7 +37,11 @@ def create_app() -> Flask:
     if env_key:
         app.secret_key = env_key.encode()
     else:
-        app.secret_key = os.urandom(32)
+        # Deterministic default so sessions survive restarts/reloaders
+        from taskweb.tasks import _db_path
+
+        seed = f"taskweb:{_db_path()}"
+        app.secret_key = hashlib.sha256(seed.encode()).digest()
 
     @app.template_filter("format_timestamp")
     def format_timestamp(ts: str) -> str:
@@ -84,9 +89,12 @@ def create_app() -> Flask:
         if tag_filter:
             filter_str += f"+{tag_filter} "
 
-        all_tasks = get_pending_tasks(filter_str.strip())
-        all_pending = all_tasks if not filter_str.strip() else get_pending_tasks()
+        all_pending = get_pending_tasks()
         derived = derive_from_tasks(all_pending)
+        all_tasks = all_pending if not filter_str.strip() else get_pending_tasks(filter_str.strip())
+        if filter_str.strip():
+            filtered_derived = derive_from_tasks(all_tasks)
+            derived["counts"] = filtered_derived["counts"]
         total = len(all_tasks)
         total_pages = max(1, (total + PER_PAGE - 1) // PER_PAGE)
         page = min(page, total_pages)
