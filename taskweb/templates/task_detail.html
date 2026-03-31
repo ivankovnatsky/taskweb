@@ -70,7 +70,7 @@
           <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
           <button type="submit" class="btn-submit"><kbd>C</kbd>omplete</button>
         </form>
-        <form method="POST" action="{{ url_for('delete', uuid=task.uuid) }}" id="action-delete">
+        <form method="POST" action="{{ url_for('delete', uuid=task.uuid) }}" id="action-delete" onsubmit="return confirm('Delete this task?')">
           <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
           <button type="submit" class="btn-submit btn-delete" title="Delete"><kbd>D</kbd>elete</button>
         </form>
