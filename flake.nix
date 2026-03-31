@@ -26,9 +26,7 @@
             click
           ];
 
-        pythonEnv = pkgs.python312.withPackages (
-          ps: (pythonPackages ps) ++ [ ps.playwright ]
-        );
+        pythonEnv = pkgs.python312.withPackages (ps: (pythonPackages ps) ++ [ ps.playwright ]);
 
         taskwebPackage = pkgs.python312Packages.buildPythonApplication {
           pname = "taskweb";
@@ -64,6 +62,7 @@
             pkgs.treefmt
             pkgs.nixfmt
             pkgs.nodePackages.prettier
+            pkgs.python312Packages.pre-commit-hooks
             pkgs.just
             pkgs.taskwarrior3
             pkgs.playwright-driver.browsers
