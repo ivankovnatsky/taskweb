@@ -29,7 +29,8 @@ A web interface for [Taskwarrior 3](https://taskwarrior.org/).
 - View pending tasks sorted by urgency
 - Add new tasks with project, tags, priority, and due date
 - Complete and delete tasks
-- Full task editing (description, project, tags, priority, due, recur, annotations)
+- Full task editing (description, project, tags, priority, due, recur,
+  annotations)
 - Task detail view with annotations
 - Filter by project or tag
 - View completed and deleted tasks
@@ -51,7 +52,8 @@ taskweb serve --host 127.0.0.1 --port 8080
 
 ## Configuration
 
-TaskWeb reads from your Taskwarrior 3 configuration by default. You can override the data location with environment variables:
+TaskWeb reads from your Taskwarrior 3 configuration by default. You can override
+the data location with environment variables:
 
 ```console
 export TASKDATA=~/.local/share/task
@@ -86,4 +88,3 @@ just serve
 ## License
 
 MIT
-

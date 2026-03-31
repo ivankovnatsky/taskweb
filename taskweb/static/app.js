@@ -1,88 +1,93 @@
 // Auto-dismiss flash messages
-document.querySelectorAll('.flash').forEach(el => {
+document.querySelectorAll(".flash").forEach((el) => {
   setTimeout(() => {
-    el.style.opacity = '0';
-    el.style.transition = 'opacity 0.3s';
+    el.style.opacity = "0";
+    el.style.transition = "opacity 0.3s";
     setTimeout(() => el.remove(), 300);
   }, 3000);
 });
 
 // Filter overflow toggle
 (function () {
-  const row = document.getElementById('filters-row');
-  const toggle = document.getElementById('filter-toggle');
+  const row = document.getElementById("filters-row");
+  const toggle = document.getElementById("filter-toggle");
   if (!row || !toggle) return;
 
   function checkOverflow() {
-    if (row.classList.contains('expanded')) {
-      toggle.style.display = '';
+    if (row.classList.contains("expanded")) {
+      toggle.style.display = "";
       return;
     }
     if (row.scrollWidth > row.clientWidth) {
-      toggle.style.display = '';
+      toggle.style.display = "";
     } else {
-      toggle.style.display = 'none';
+      toggle.style.display = "none";
     }
   }
 
-  toggle.addEventListener('click', function () {
-    row.classList.toggle('expanded');
-    toggle.textContent = row.classList.contains('expanded') ? '[\u2715]' : '[\u2026]';
+  toggle.addEventListener("click", function () {
+    row.classList.toggle("expanded");
+    toggle.textContent = row.classList.contains("expanded")
+      ? "[\u2715]"
+      : "[\u2026]";
     checkOverflow();
   });
 
   checkOverflow();
-  window.addEventListener('resize', checkOverflow);
+  window.addEventListener("resize", checkOverflow);
 })();
 
 // New task toggle
 function toggleNewTask() {
-  const btn = document.getElementById('new-task-toggle');
-  const form = document.getElementById('add-form');
+  const btn = document.getElementById("new-task-toggle");
+  const form = document.getElementById("add-form");
   if (!btn || !form) return;
-  const open = form.style.display !== 'none';
-  form.style.display = open ? 'none' : '';
-  btn.classList.toggle('open', !open);
+  const open = form.style.display !== "none";
+  form.style.display = open ? "none" : "";
+  btn.classList.toggle("open", !open);
   if (!open) {
-    const input = form.querySelector('#description');
+    const input = form.querySelector("#description");
     if (input) input.focus();
   }
 }
 
 (function () {
-  const btn = document.getElementById('new-task-toggle');
-  if (btn) btn.addEventListener('click', function (e) {
-    e.preventDefault();
-    toggleNewTask();
-  });
+  const btn = document.getElementById("new-task-toggle");
+  if (btn)
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+      toggleNewTask();
+    });
 })();
 
 // Keyboard navigation
 (function () {
-  let idBuffer = '';
+  let idBuffer = "";
   let idTimer = null;
   let indicator = null;
 
   function showIndicator(text) {
     if (!indicator) {
-      indicator = document.createElement('div');
-      indicator.className = 'kbd-input';
+      indicator = document.createElement("div");
+      indicator.className = "kbd-input";
       document.body.appendChild(indicator);
     }
-    indicator.textContent = '#' + text;
-    indicator.style.display = '';
+    indicator.textContent = "#" + text;
+    indicator.style.display = "";
   }
 
   function hideIndicator() {
-    if (indicator) indicator.style.display = 'none';
+    if (indicator) indicator.style.display = "none";
   }
 
   function goToTask(id) {
     // Find task row with matching ID
-    const cells = document.querySelectorAll('table.tw td.id, table.tw td.recur');
+    const cells = document.querySelectorAll(
+      "table.tw td.id, table.tw td.recur",
+    );
     for (const cell of cells) {
       if (cell.textContent.trim() === id) {
-        const link = cell.closest('tr').querySelector('a.task-link');
+        const link = cell.closest("tr").querySelector("a.task-link");
         if (link) {
           window.location.href = link.href;
           return;
@@ -91,14 +96,14 @@ function toggleNewTask() {
     }
   }
 
-  document.addEventListener('keydown', function (e) {
+  document.addEventListener("keydown", function (e) {
     // Skip if user is typing in an input/select/textarea
     const tag = e.target.tagName;
-    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") {
       // Escape closes new task form
-      if (e.key === 'Escape') {
-        const form = document.getElementById('add-form');
-        if (form && form.style.display !== 'none') {
+      if (e.key === "Escape") {
+        const form = document.getElementById("add-form");
+        if (form && form.style.display !== "none") {
           toggleNewTask();
           e.target.blur();
         }
@@ -109,35 +114,39 @@ function toggleNewTask() {
     // Don't capture if modifier keys are held
     if (e.ctrlKey || e.metaKey || e.altKey) return;
 
+    // Skip all shortcuts on edit page (has its own keybinds in inline script)
+    if (document.getElementById("edit-save")) return;
+
     const key = e.key.toLowerCase();
 
     // Task detail shortcuts (override nav when on detail page)
-    const editLink = document.getElementById('action-edit');
+    const editLink = document.getElementById("action-edit");
     if (editLink) {
-      if (key === 'e') { e.preventDefault(); window.location.href = editLink.href; return; }
-      if (key === 'c') {
+      if (key === "e") {
         e.preventDefault();
-        if (confirm('Complete this task?')) {
-          const form = document.getElementById('action-complete');
+        window.location.href = editLink.href;
+        return;
+      }
+      if (key === "c") {
+        e.preventDefault();
+        if (confirm("Complete this task?")) {
+          const form = document.getElementById("action-complete");
           if (form) form.submit();
         }
         return;
       }
-      if (key === 'd') {
+      if (key === "d") {
         e.preventDefault();
-        if (confirm('Delete this task?')) {
-          const form = document.getElementById('action-delete');
+        if (confirm("Delete this task?")) {
+          const form = document.getElementById("action-delete");
           if (form) form.submit();
         }
         return;
       }
     }
 
-    // Skip nav shortcuts on edit page (has its own keybinds)
-    if (document.getElementById('edit-save')) return;
-
     // Letter shortcuts
-    if (key === 'n') {
+    if (key === "n") {
       e.preventDefault();
       toggleNewTask();
       return;
@@ -160,36 +169,36 @@ function toggleNewTask() {
       clearTimeout(idTimer);
       idTimer = setTimeout(function () {
         goToTask(idBuffer);
-        idBuffer = '';
+        idBuffer = "";
         hideIndicator();
       }, 800);
       return;
     }
 
     // Enter confirms buffered ID immediately
-    if (e.key === 'Enter' && idBuffer) {
+    if (e.key === "Enter" && idBuffer) {
       e.preventDefault();
       clearTimeout(idTimer);
       goToTask(idBuffer);
-      idBuffer = '';
+      idBuffer = "";
       hideIndicator();
       return;
     }
 
     // Escape clears buffer, closes form, or navigates back
-    if (e.key === 'Escape') {
+    if (e.key === "Escape") {
       if (idBuffer) {
         clearTimeout(idTimer);
-        idBuffer = '';
+        idBuffer = "";
         hideIndicator();
         return;
       }
-      const form = document.getElementById('add-form');
-      if (form && form.style.display !== 'none') {
+      const form = document.getElementById("add-form");
+      if (form && form.style.display !== "none") {
         toggleNewTask();
         return;
       }
-      const backLink = document.getElementById('back-link');
+      const backLink = document.getElementById("back-link");
       if (backLink) {
         window.location.href = backLink.href;
         return;
@@ -199,11 +208,11 @@ function toggleNewTask() {
 })();
 
 // Confirm delete (only for .btn-delete inside a form)
-document.querySelectorAll('.btn-delete').forEach(btn => {
-  const form = btn.closest('form');
+document.querySelectorAll(".btn-delete").forEach((btn) => {
+  const form = btn.closest("form");
   if (!form) return;
-  form.addEventListener('submit', e => {
-    if (!confirm('Delete this task?')) {
+  form.addEventListener("submit", (e) => {
+    if (!confirm("Delete this task?")) {
       e.preventDefault();
     }
   });

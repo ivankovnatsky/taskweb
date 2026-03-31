@@ -87,7 +87,7 @@
 
         <div class="form-actions">
           <button type="submit" class="btn-submit" id="edit-save"><kbd>S</kbd>ave</button>
-          <a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="btn btn-delete" id="edit-cancel"><kbd>CA</kbd>NCEL</a>
+          <a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="btn btn-cancel" id="edit-cancel"><kbd>CA</kbd>NCEL</a>
         </div>
       </form>
     </div>
@@ -132,6 +132,7 @@
     // Escape works from anywhere (including inputs)
     if (e.key === 'Escape') {
       e.preventDefault();
+      e.stopPropagation();
       document.getElementById('edit-cancel').click();
       return;
     }
