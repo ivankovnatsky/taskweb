@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import sqlite3
+import subprocess
 import time
 import uuid as uuid_mod
 from dataclasses import dataclass, field
@@ -137,7 +138,9 @@ def _connect() -> sqlite3.Connection:
     return conn
 
 
-def _parse_task_data(uuid: str, data: dict, working_set: dict[str, int]) -> Task:
+def _parse_task_data(
+    uuid: str, data: dict, working_set: dict[str, int], urgency_map: dict[str, float]
+) -> Task:
     """Parse a task's JSON data dict into a Task object."""
     tags_str = data.get("tags", "")
     tags = [t.strip() for t in tags_str.split(",") if t.strip()] if tags_str else []
@@ -155,13 +158,7 @@ def _parse_task_data(uuid: str, data: dict, working_set: dict[str, int]) -> Task
     priority = data.get("priority", "")
     status = data.get("status", "pending")
 
-    urgency = _calculate_urgency(
-        due=due,
-        priority=priority,
-        start=start,
-        tags=tags,
-        status=status,
-    )
+    urgency = urgency_map.get(uuid, 0.0)
 
     return Task(
         uuid=uuid,
@@ -183,38 +180,28 @@ def _parse_task_data(uuid: str, data: dict, working_set: dict[str, int]) -> Task
     )
 
 
-def _calculate_urgency(due: str, priority: str, start: str, tags: list[str], status: str) -> float:
-    """Calculate urgency score similar to Taskwarrior."""
-    urg = 0.0
+def _get_urgency_map(task_uuid: str | None = None) -> dict[str, float]:
+    """Get urgency values from Taskwarrior CLI via 'task export'.
 
-    if due:
-        try:
-            days_until = (int(due) - time.time()) / 86400
-            if days_until < 0:
-                urg += 12.0
-            elif days_until < 7:
-                urg += 8.0
-            elif days_until < 14:
-                urg += 4.0
-            else:
-                urg += 1.0
-        except (ValueError, TypeError):
-            pass
-
-    if priority == "H":
-        urg += 6.0
-    elif priority == "M":
-        urg += 3.9
-    elif priority == "L":
-        urg += 1.8
-
-    if start:
-        urg += 4.0
-
-    if tags:
-        urg += min(len(tags), 3) * 0.6
-
-    return round(urg, 1)
+    If task_uuid is provided, only export that single task.
+    """
+    try:
+        cmd = ["task"]
+        if task_uuid:
+            cmd.append(task_uuid)
+        cmd.append("export")
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        if result.returncode == 0:
+            tasks = json.loads(result.stdout)
+            return {t["uuid"]: t.get("urgency", 0.0) for t in tasks}
+    except (subprocess.TimeoutExpired, json.JSONDecodeError, FileNotFoundError):
+        logger.warning("Failed to get urgency from task CLI, falling back to 0.0")
+    return {}
 
 
 def _get_working_set(conn: sqlite3.Connection) -> dict[str, int]:
@@ -229,6 +216,7 @@ def get_tasks(status_filter: str = "") -> list[Task]:
     try:
         conn.execute("BEGIN DEFERRED")
         working_set = _get_working_set(conn)
+        urgency_map = _get_urgency_map()
         c = conn.cursor()
         c.execute("SELECT uuid, data FROM tasks")
         tasks = []
@@ -236,7 +224,7 @@ def get_tasks(status_filter: str = "") -> list[Task]:
             data = json.loads(data_str)
             if status_filter and data.get("status", "pending") != status_filter:
                 continue
-            tasks.append(_parse_task_data(uuid, data, working_set))
+            tasks.append(_parse_task_data(uuid, data, working_set, urgency_map))
         tasks.sort(key=lambda t: t.urgency, reverse=True)
         return tasks
     finally:
@@ -292,7 +280,8 @@ def get_task_by_uuid(uuid: str) -> Task | None:
         row = c.fetchone()
         if not row:
             return None
-        return _parse_task_data(row[0], json.loads(row[1]), working_set)
+        urgency_map = _get_urgency_map(uuid)
+        return _parse_task_data(row[0], json.loads(row[1]), working_set, urgency_map)
     finally:
         conn.rollback()
         conn.close()
