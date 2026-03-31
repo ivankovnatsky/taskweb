@@ -133,6 +133,9 @@ function toggleNewTask() {
       }
     }
 
+    // Skip nav shortcuts on edit page (has its own keybinds)
+    if (document.getElementById('edit-save')) return;
+
     // Letter shortcuts
     if (key === 'n') {
       e.preventDefault();
