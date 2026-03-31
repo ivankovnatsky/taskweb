@@ -598,6 +598,13 @@ table.tw td.desc {
 .task-link:hover {
   color: var(--tw-id);
 }
+.done .task-link {
+  color: var(--tw-done);
+  text-decoration: line-through;
+}
+.done .task-link:hover {
+  color: var(--tw-id);
+}
 
 /* Task detail */
 .task-detail {
