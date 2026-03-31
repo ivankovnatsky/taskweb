@@ -17,6 +17,9 @@
   <a href="{{ url_for('waiting') }}" class="{% if request.endpoint == 'waiting' %}active{% endif %}" data-key="w"><kbd>W</kbd>aiting</a>
   <a href="{{ url_for('completed') }}" class="{% if request.endpoint == 'completed' %}active{% endif %}" data-key="c"><kbd>C</kbd>ompleted</a>
   <a href="{{ url_for('deleted') }}" class="{% if request.endpoint == 'deleted' %}active{% endif %}" data-key="d"><kbd>D</kbd>eleted</a>
+  {% if request.endpoint in ('index', 'waiting', 'completed', 'deleted') %}
+  <input type="text" id="search-field" class="nav-search" placeholder="Search..Project,Description" autocomplete="off">
+  {% endif %}
 </nav>
 
 {% if request.endpoint == 'index' %}
