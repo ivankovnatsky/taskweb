@@ -693,23 +693,87 @@ footer a:hover {
 }
 
 /* Responsive */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   body {
     padding: 16px 10px 36px;
   }
-  header {
+  nav {
+    gap: 10px;
     flex-wrap: wrap;
-    gap: 8px;
+  }
+  nav kbd {
+    display: none;
+  }
+  .back-link kbd {
+    display: none;
   }
   .form-grid {
     grid-template-columns: 1fr;
   }
-  .filters {
-    gap: 4px;
+  .filters-row {
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .filter-more {
+    display: none;
+  }
+  /* Hide less important columns on mobile */
+  table.tw th:nth-child(3),
+  table.tw td:nth-child(3),
+  table.tw th:nth-child(5),
+  table.tw td:nth-child(5),
+  table.tw th:nth-child(8),
+  table.tw td:nth-child(8) {
+    display: none;
   }
   table.tw td,
   table.tw th {
-    padding-right: 8px;
+    padding-right: 6px;
     font-size: 11px;
+  }
+  /* Edit form stacks vertically */
+  .edit-grid {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .edit-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 8px;
+  }
+  .edit-row input,
+  .edit-row select {
+    width: 100%;
+  }
+  .edit-row kbd {
+    display: none;
+  }
+  .form-actions kbd,
+  .detail-actions kbd {
+    display: none;
+  }
+  /* Detail grid stacks */
+  .detail-grid {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .detail-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 8px;
+  }
+  .detail-actions {
+    flex-wrap: wrap;
+  }
+  .window {
+    border-radius: 6px;
+  }
+  .content {
+    padding: 10px 12px;
+  }
+  footer {
+    font-size: 9px;
   }
 }
