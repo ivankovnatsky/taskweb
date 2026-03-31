@@ -723,36 +723,74 @@ footer a:hover {
   nav {
     gap: 10px;
     flex-wrap: wrap;
+    justify-content: center;
+  }
+  .nav-search {
+    margin-left: 0;
+    width: 100%;
+    text-align: center;
   }
   nav kbd {
-    display: none;
+    border: none;
+    padding: 0;
+    opacity: 1;
   }
   .back-link kbd {
-    display: none;
+    border: none;
+    padding: 0;
+    opacity: 1;
   }
   .form-grid {
     grid-template-columns: 1fr;
   }
   .filters-row {
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+  /* Mobile: card-like two-row layout per task */
+  table.tw,
+  table.tw thead,
+  table.tw tbody,
+  table.tw tr,
+  table.tw th,
+  table.tw td {
+    display: block;
+  }
+  table.tw thead {
+    display: none;
+  }
+  table.tw tr {
+    display: flex;
     flex-wrap: wrap;
-    overflow: visible;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
   }
-  .filter-more {
-    display: none;
-  }
-  /* Hide less important columns on mobile */
-  table.tw th:nth-child(3),
+  /* Hide: done, id, age, tags, edit */
+  table.tw td:nth-child(1),
+  table.tw td:nth-child(2),
   table.tw td:nth-child(3),
-  table.tw th:nth-child(5),
   table.tw td:nth-child(5),
-  table.tw th:nth-child(8),
-  table.tw td:nth-child(8) {
+  table.tw td:nth-child(9) {
     display: none;
   }
-  table.tw td,
-  table.tw th {
-    padding-right: 6px;
+  /* Row 1: description (full width, first) */
+  table.tw td.desc {
+    order: -1;
+    width: 100%;
+    font-size: 13px;
+    padding: 0 0 4px;
+  }
+  /* Row 2: project, due, urgency inline */
+  table.tw td.proj,
+  table.tw td.due,
+  table.tw td.due-ok,
+  table.tw td[class^="urg"] {
     font-size: 11px;
+    padding: 0;
+    margin-right: 10px;
+  }
+  table.tw td {
+    border: none;
   }
   /* Edit form stacks vertically */
   .edit-grid {
