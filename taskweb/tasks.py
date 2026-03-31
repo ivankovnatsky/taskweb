@@ -103,8 +103,27 @@ class Task:
 
 
 def _db_path() -> Path:
-    data_dir = os.environ.get("TASKDATA", os.path.expanduser("~/.task"))
-    return Path(data_dir) / "taskchampion.sqlite3"
+    # 1. Explicit env var takes priority
+    data_dir = os.environ.get("TASKDATA")
+    if data_dir:
+        return Path(os.path.expanduser(data_dir)) / "taskchampion.sqlite3"
+
+    # 2. Read data.location from taskrc
+    taskrc = Path(os.path.expanduser(os.environ.get("TASKRC", "~/.taskrc")))
+    if taskrc.exists():
+        try:
+            for line in taskrc.read_text().splitlines():
+                line = line.strip()
+                if line.startswith("data.location"):
+                    _, _, value = line.partition("=")
+                    value = value.strip()
+                    if value:
+                        return Path(os.path.expanduser(value)) / "taskchampion.sqlite3"
+        except OSError:
+            pass
+
+    # 3. Default
+    return Path(os.path.expanduser("~/.task")) / "taskchampion.sqlite3"
 
 
 def _connect() -> sqlite3.Connection:
@@ -208,6 +227,7 @@ def _get_working_set(conn: sqlite3.Connection) -> dict[str, int]:
 def get_tasks(status_filter: str = "") -> list[Task]:
     conn = _connect()
     try:
+        conn.execute("BEGIN DEFERRED")
         working_set = _get_working_set(conn)
         c = conn.cursor()
         c.execute("SELECT uuid, data FROM tasks")
@@ -220,6 +240,7 @@ def get_tasks(status_filter: str = "") -> list[Task]:
         tasks.sort(key=lambda t: t.urgency, reverse=True)
         return tasks
     finally:
+        conn.rollback()
         conn.close()
 
 
@@ -264,6 +285,7 @@ def get_deleted_tasks() -> list[Task]:
 def get_task_by_uuid(uuid: str) -> Task | None:
     conn = _connect()
     try:
+        conn.execute("BEGIN DEFERRED")
         working_set = _get_working_set(conn)
         c = conn.cursor()
         c.execute("SELECT uuid, data FROM tasks WHERE uuid = ?", (uuid,))
@@ -272,6 +294,7 @@ def get_task_by_uuid(uuid: str) -> Task | None:
             return None
         return _parse_task_data(row[0], json.loads(row[1]), working_set)
     finally:
+        conn.rollback()
         conn.close()
 
 
