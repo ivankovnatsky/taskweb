@@ -31,6 +31,22 @@ clean:
 update:
     nix flake update
 
+# Update taskweb flake input in nix-config and push (main only)
+update-nix-config:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    branch=$(git rev-parse --abbrev-ref HEAD)
+    if [ "$branch" = "HEAD" ]; then
+      echo "Error: detached HEAD state, must be on main branch"
+      exit 1
+    elif [ "$branch" != "main" ]; then
+      echo "Error: must be on main branch (currently on $branch)"
+      exit 1
+    fi
+    git push
+    cd "$(ghq root)/github.com/ivankovnatsky/nix-config"
+    nix flake update taskweb --commit-lock-file
+
 # Increment patch version
 bump:
     #!/usr/bin/env bash
