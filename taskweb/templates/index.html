@@ -6,12 +6,12 @@
 <div class="filters" id="filters">
   <div class="filters-inner">
     <div class="filters-row" id="filters-row">
-      <a href="{{ url_for('index') }}" class="filter-chip {% if not current_project and not current_tag %}active{% endif %}">all</a>
+      <a href="{{ url_for('index', q=search_query or none) }}" class="filter-chip {% if not current_project and not current_tag %}active{% endif %}">all</a>
       {% for p in projects %}
-      <a href="{{ url_for('index', project=p) }}" class="filter-chip {% if current_project == p %}active{% endif %}">{{ p }}</a>
+      <a href="{{ url_for('index', project=p, q=search_query or none) }}" class="filter-chip {% if current_project == p %}active{% endif %}">{{ p }}</a>
       {% endfor %}
       {% for t in tags %}
-      <a href="{{ url_for('index', tag=t) }}" class="filter-chip {% if current_tag == t %}active{% endif %}">+{{ t }}</a>
+      <a href="{{ url_for('index', tag=t, q=search_query or none) }}" class="filter-chip {% if current_tag == t %}active{% endif %}">+{{ t }}</a>
       {% endfor %}
     </div>
     <button class="filter-chip filter-more" id="filter-toggle" type="button" style="display:none">[&hellip;]</button>
@@ -70,17 +70,17 @@
       {% if total_pages > 1 %}
       <div class="pagination">
         {% if page > 1 %}
-        <a href="{{ url_for('index', project=current_project, tag=current_tag, page=page-1) }}">&larr;</a>
+        <a href="{{ url_for('index', project=current_project, tag=current_tag, q=search_query or none, page=page-1) }}">&larr;</a>
         {% endif %}
         {% for p in range(1, total_pages + 1) %}
         {% if p == page %}
         <span class="page-current">{{ p }}</span>
         {% else %}
-        <a href="{{ url_for('index', project=current_project, tag=current_tag, page=p) }}">{{ p }}</a>
+        <a href="{{ url_for('index', project=current_project, tag=current_tag, q=search_query or none, page=p) }}">{{ p }}</a>
         {% endif %}
         {% endfor %}
         {% if page < total_pages %}
-        <a href="{{ url_for('index', project=current_project, tag=current_tag, page=page+1) }}">&rarr;</a>
+        <a href="{{ url_for('index', project=current_project, tag=current_tag, q=search_query or none, page=page+1) }}">&rarr;</a>
         {% endif %}
       </div>
       {% endif %}

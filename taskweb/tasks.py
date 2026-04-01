@@ -373,6 +373,43 @@ def get_task_by_uuid(uuid: str) -> Task | None:
         conn.close()
 
 
+def matches_query(query_lower: str, description: str, project: str, tags: list[str], task_id: int = 0) -> bool:
+    """Check if a task matches a search query against description, project, tags, or ID."""
+    if query_lower in description.lower():
+        return True
+    if query_lower in project.lower():
+        return True
+    if any(query_lower in tag.lower() for tag in tags):
+        return True
+    # For numeric queries, also match task ID
+    if task_id and query_lower.isdigit() and str(task_id) == query_lower:
+        return True
+    return False
+
+
+def search_statuses_with_matches(query: str) -> set[str]:
+    """Return set of status names that have tasks matching the query. Lightweight — no Task parsing."""
+    query_lower = query.lower()
+    conn = _connect()
+    try:
+        conn.execute("BEGIN DEFERRED")
+        working_set = _get_working_set(conn)
+        c = conn.cursor()
+        c.execute("SELECT uuid, data FROM tasks")
+        statuses: set[str] = set()
+        for uuid, data_str in c.fetchall():
+            data = json.loads(data_str)
+            tags_str = data.get("tags", "")
+            tags = [t.strip() for t in tags_str.split(",") if t.strip()] if tags_str else []
+            task_id = working_set.get(uuid, 0)
+            if matches_query(query_lower, data.get("description", ""), data.get("project", ""), tags, task_id):
+                statuses.add(data.get("status", "pending"))
+        return statuses
+    finally:
+        conn.rollback()
+        conn.close()
+
+
 def derive_from_tasks(tasks: list[Task]) -> dict:
     """Derive projects, tags, and counts from an already-fetched task list."""
     projects = sorted({t.project for t in tasks if t.project})
