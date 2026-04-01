@@ -7,36 +7,6 @@ document.querySelectorAll(".flash").forEach((el) => {
   }, 3000);
 });
 
-// Filter overflow toggle
-(function () {
-  const row = document.getElementById("filters-row");
-  const toggle = document.getElementById("filter-toggle");
-  if (!row || !toggle) return;
-
-  function checkOverflow() {
-    if (row.classList.contains("expanded")) {
-      toggle.style.display = "";
-      return;
-    }
-    if (row.scrollWidth > row.clientWidth) {
-      toggle.style.display = "";
-    } else {
-      toggle.style.display = "none";
-    }
-  }
-
-  toggle.addEventListener("click", function () {
-    row.classList.toggle("expanded");
-    toggle.textContent = row.classList.contains("expanded")
-      ? "[\u2715]"
-      : "[\u2026]";
-    checkOverflow();
-  });
-
-  checkOverflow();
-  window.addEventListener("resize", checkOverflow);
-})();
-
 // New task toggle
 function toggleNewTask() {
   const btn = document.getElementById("new-task-toggle");

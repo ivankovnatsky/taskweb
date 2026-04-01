@@ -8,11 +8,13 @@
 </head>
 <body>
 
-<nav>
-  {% if request.endpoint == 'index' %}
+{% if request.endpoint == 'index' %}
+<div class="nav-new-task-row">
   <a href="#" id="new-task-toggle" class="nav-new-task"><kbd>N</kbd>ew Task</a>
-  <span class="nav-sep"></span>
-  {% endif %}
+</div>
+{% endif %}
+
+<nav>
   {% set sq = search_query|default('', true) %}
   <a href="{{ url_for('index', q=sq or none) }}" class="{% if request.endpoint == 'index' %}active{% endif %}" data-key="p"><kbd>P</kbd>ending</a>
   <a href="{{ url_for('waiting', q=sq or none) }}" class="{% if request.endpoint == 'waiting' %}active{% endif %}" data-key="w"><kbd>W</kbd>aiting</a>
