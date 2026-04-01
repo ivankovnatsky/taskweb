@@ -152,6 +152,15 @@ function toggleNewTask() {
       return;
     }
 
+    if (key === "s") {
+      const searchField = document.getElementById("search-field");
+      if (searchField) {
+        e.preventDefault();
+        searchField.focus();
+        return;
+      }
+    }
+
     // Nav shortcuts
     const navLink = document.querySelector('nav a[data-key="' + key + '"]');
     if (navLink) {
