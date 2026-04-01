@@ -12,6 +12,7 @@ from flask import Flask, abort, flash, redirect, render_template, request, sessi
 from taskweb import __commit__, __commit_full__, __version__
 from taskweb.tasks import (
     DatabaseUnavailableError,
+    matches_query,
     add_task,
     complete_task,
     delete_task,
@@ -22,6 +23,7 @@ from taskweb.tasks import (
     get_pending_tasks,
     get_task_by_uuid,
     get_waiting_tasks,
+    search_statuses_with_matches,
 )
 
 logger = logging.getLogger(__name__)
@@ -77,10 +79,43 @@ def create_app() -> Flask:
 
     PER_PAGE = 40
 
+    # Map status names to route endpoints
+    STATUS_ROUTES = {
+        "pending": "index",
+        "waiting": "waiting",
+        "completed": "completed",
+        "deleted": "deleted",
+    }
+
+    def _filter_by_query(tasks: list, query: str) -> list:
+        """Filter tasks by search query matching description, project, tags, or ID."""
+        q = query.lower()
+        return [t for t in tasks if matches_query(q, t.description, t.project, t.tags, t.id)]
+
+    @app.route("/search")
+    def search():
+        """Cross-status search: find which status has results and redirect there."""
+        query = request.args.get("q", "").strip()
+        if not query:
+            return redirect(url_for("index"))
+        # Determine which status the user is currently on (passed by JS)
+        origin = request.args.get("status", "pending")
+        statuses = search_statuses_with_matches(query)
+        # Prefer the current status if it has results
+        if origin in statuses:
+            return redirect(url_for(STATUS_ROUTES.get(origin, "index"), q=query))
+        # Otherwise redirect to first status with results
+        for status in ["pending", "waiting", "completed", "deleted"]:
+            if status in statuses:
+                return redirect(url_for(STATUS_ROUTES[status], q=query))
+        # No results anywhere — stay on current status showing empty
+        return redirect(url_for(STATUS_ROUTES.get(origin, "index"), q=query))
+
     @app.route("/")
     def index():
         project_filter = request.args.get("project", "")
         tag_filter = request.args.get("tag", "")
+        query = request.args.get("q", "").strip()
         page = max(1, request.args.get("page", 1, type=int))
 
         filter_str = ""
@@ -95,6 +130,12 @@ def create_app() -> Flask:
         if filter_str.strip():
             filtered_derived = derive_from_tasks(all_tasks)
             derived["counts"] = filtered_derived["counts"]
+
+        if query:
+            all_tasks = _filter_by_query(all_tasks, query)
+            filtered_derived = derive_from_tasks(all_tasks)
+            derived["counts"] = filtered_derived["counts"]
+
         total = len(all_tasks)
         total_pages = max(1, (total + PER_PAGE - 1) // PER_PAGE)
         page = min(page, total_pages)
@@ -110,12 +151,16 @@ def create_app() -> Flask:
             current_tag=tag_filter,
             page=page,
             total_pages=total_pages,
+            search_query=query,
         )
 
     @app.route("/waiting")
     def waiting():
+        query = request.args.get("q", "").strip()
         page = max(1, request.args.get("page", 1, type=int))
         all_tasks = get_waiting_tasks()
+        if query:
+            all_tasks = _filter_by_query(all_tasks, query)
         total = len(all_tasks)
         total_pages = max(1, (total + PER_PAGE - 1) // PER_PAGE)
         page = min(page, total_pages)
@@ -126,12 +171,16 @@ def create_app() -> Flask:
             total=total,
             page=page,
             total_pages=total_pages,
+            search_query=query,
         )
 
     @app.route("/completed")
     def completed():
+        query = request.args.get("q", "").strip()
         page = max(1, request.args.get("page", 1, type=int))
         all_tasks = get_completed_tasks()
+        if query:
+            all_tasks = _filter_by_query(all_tasks, query)
         total = len(all_tasks)
         total_pages = max(1, (total + PER_PAGE - 1) // PER_PAGE)
         page = min(page, total_pages)
@@ -142,12 +191,16 @@ def create_app() -> Flask:
             counts={"completed": total},
             page=page,
             total_pages=total_pages,
+            search_query=query,
         )
 
     @app.route("/deleted")
     def deleted():
+        query = request.args.get("q", "").strip()
         page = max(1, request.args.get("page", 1, type=int))
         all_tasks = get_deleted_tasks()
+        if query:
+            all_tasks = _filter_by_query(all_tasks, query)
         total = len(all_tasks)
         total_pages = max(1, (total + PER_PAGE - 1) // PER_PAGE)
         page = min(page, total_pages)
@@ -158,6 +211,7 @@ def create_app() -> Flask:
             total=total,
             page=page,
             total_pages=total_pages,
+            search_query=query,
         )
 
     @app.route("/task/<uuid>")

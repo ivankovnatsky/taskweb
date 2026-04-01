@@ -227,22 +227,22 @@ document.querySelectorAll(".btn-delete").forEach((btn) => {
   });
 });
 
-// Search field — client-side table filtering
+// Search field — client-side filtering with server-side cross-status search on Enter
 (function () {
   const field = document.getElementById("search-field");
   if (!field) return;
   const table = document.querySelector("table.tw");
-  if (!table) return;
-  const rows = table.querySelectorAll("tbody tr");
+  const rows = table ? table.querySelectorAll("tbody tr") : [];
 
-  field.addEventListener("input", function () {
+  function clientFilter() {
+    if (!rows.length) return;
     const q = field.value.toLowerCase().trim();
     const isNumeric = /^\d+$/.test(q);
     rows.forEach(function (row) {
       let match;
-      if (isNumeric) {
-        // For numeric queries, only search ID, project, tags, and description
-        // to avoid false matches in urgency, age, and other numeric columns
+      if (!q) {
+        match = true;
+      } else if (isNumeric) {
         const cells = row.querySelectorAll(
           "td.id, td.recur, td.proj, td.tag, td.tag-next, td.desc",
         );
@@ -259,9 +259,37 @@ document.querySelectorAll(".btn-delete").forEach((btn) => {
       }
       row.style.display = match ? "" : "none";
     });
+  }
+
+  function serverSearch() {
+    const q = field.value.trim();
+    if (q) {
+      // Determine current status from the active nav link
+      const activeNav = document.querySelector("nav a.active[data-key]");
+      const keyMap = { p: "pending", w: "waiting", c: "completed", d: "deleted" };
+      const status = activeNav ? keyMap[activeNav.dataset.key] || "pending" : "pending";
+      window.location.href = "/search?q=" + encodeURIComponent(q) + "&status=" + status;
+    } else {
+      // Clear search: reload current page without q
+      const url = new URL(window.location.href);
+      url.searchParams.delete("q");
+      url.searchParams.delete("page");
+      window.location.href = url.toString();
+    }
+  }
+
+  // Instant client-side filtering while typing
+  field.addEventListener("input", clientFilter);
+
+  // Enter submits to server for cross-status search
+  field.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      serverSearch();
+    }
   });
 
-  // "/" focuses search, Escape blurs it
+  // "/" focuses search, Escape clears and blurs it
   document.addEventListener("keydown", function (e) {
     if (
       e.target.tagName === "INPUT" ||
@@ -269,9 +297,19 @@ document.querySelectorAll(".btn-delete").forEach((btn) => {
       e.target.tagName === "SELECT"
     ) {
       if (e.key === "Escape" && e.target === field) {
-        field.value = "";
-        field.dispatchEvent(new Event("input"));
-        field.blur();
+        if (field.value) {
+          field.value = "";
+          clientFilter();
+          // Clear server-side query too
+          const url = new URL(window.location.href);
+          if (url.searchParams.has("q")) {
+            url.searchParams.delete("q");
+            url.searchParams.delete("page");
+            window.location.href = url.toString();
+          }
+        } else {
+          field.blur();
+        }
         e.preventDefault();
       }
       return;
