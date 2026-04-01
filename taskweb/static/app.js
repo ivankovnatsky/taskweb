@@ -227,11 +227,28 @@ document.querySelectorAll(".btn-delete").forEach((btn) => {
   const rows = table.querySelectorAll("tbody tr");
 
   field.addEventListener("input", function () {
-    const q = field.value.toLowerCase();
+    const q = field.value.toLowerCase().trim();
+    const isNumeric = /^\d+$/.test(q);
     rows.forEach(function (row) {
-      row.style.display = row.textContent.toLowerCase().includes(q)
-        ? ""
-        : "none";
+      let match;
+      if (isNumeric) {
+        // For numeric queries, only search ID, project, tags, and description
+        // to avoid false matches in urgency, age, and other numeric columns
+        const cells = row.querySelectorAll(
+          "td.id, td.recur, td.proj, td.tag, td.tag-next, td.desc",
+        );
+        if (cells.length > 0) {
+          const text = Array.from(cells)
+            .map((c) => c.textContent.toLowerCase())
+            .join(" ");
+          match = text.includes(q);
+        } else {
+          match = row.textContent.toLowerCase().includes(q);
+        }
+      } else {
+        match = row.textContent.toLowerCase().includes(q);
+      }
+      row.style.display = match ? "" : "none";
     });
   });
 
