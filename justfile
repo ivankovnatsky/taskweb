@@ -1,13 +1,11 @@
-# Open the local URL in the default browser
-open-browser:
-    (command -v open >/dev/null && open http://127.0.0.1:5000 || xdg-open http://127.0.0.1:5000) &
-
 # Start the web server with local test data
-serve: open-browser
+serve:
+    (sleep 1 && (command -v open >/dev/null && open http://127.0.0.1:5000 || xdg-open http://127.0.0.1:5000)) &
     set -a && . config/local.env && set +a && python -m taskweb serve --debug
 
 # Start the web server with user's real Taskwarrior data
-serve-user: open-browser
+serve-user:
+    (sleep 1 && (command -v open >/dev/null && open http://127.0.0.1:5000 || xdg-open http://127.0.0.1:5000)) &
     set -a && . config/user.env && set +a && python -m taskweb serve --debug
 
 # Run tests
