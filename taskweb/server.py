@@ -64,10 +64,27 @@ def create_app() -> Flask:
             session["_csrf_token"] = os.urandom(16).hex()
         return session["_csrf_token"]
 
+    def _page_range(page: int, total: int, window: int = 2) -> list[int | None]:
+        """Return page numbers with ellipsis gaps for pagination.
+
+        Returns a list where None represents an ellipsis. Example with
+        page=5, total=20: [1, None, 3, 4, 5, 6, 7, None, 20]
+        """
+        if total <= 1:
+            return []
+        pages: list[int | None] = []
+        for p in range(1, total + 1):
+            if p == 1 or p == total or abs(p - page) <= window:
+                pages.append(p)
+            elif not pages or pages[-1] is not None:
+                pages.append(None)
+        return pages
+
     app.jinja_env.globals["csrf_token"] = _generate_csrf_token
     app.jinja_env.globals["version"] = __version__
     app.jinja_env.globals["commit"] = __commit__
     app.jinja_env.globals["commit_full"] = __commit_full__
+    app.jinja_env.globals["page_range"] = _page_range
 
     @app.before_request
     def _check_csrf():

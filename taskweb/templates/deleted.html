@@ -31,17 +31,25 @@
       {% if total_pages > 1 %}
       <div class="pagination">
         {% if page > 1 %}
-        <a href="{{ url_for('deleted', q=search_query or none, page=page-1) }}">&larr;</a>
-        {% endif %}
-        {% for p in range(1, total_pages + 1) %}
-        {% if p == page %}
-        <span class="page-current">{{ p }}</span>
+        <a href="{{ url_for('deleted', q=search_query or none, page=page-1) }}" class="page-arrow page-arrow-left">&larr;</a>
         {% else %}
-        <a href="{{ url_for('deleted', q=search_query or none, page=p) }}">{{ p }}</a>
+        <span class="page-arrow page-arrow-left"></span>
         {% endif %}
-        {% endfor %}
+        <div class="page-numbers">
+          {% for p in page_range(page, total_pages) %}
+          {% if p is none %}
+          <span class="page-ellipsis">&hellip;</span>
+          {% elif p == page %}
+          <span class="page-current">{{ p }}</span>
+          {% else %}
+          <a href="{{ url_for('deleted', q=search_query or none, page=p) }}" class="page-num">{{ p }}</a>
+          {% endif %}
+          {% endfor %}
+        </div>
         {% if page < total_pages %}
-        <a href="{{ url_for('deleted', q=search_query or none, page=page+1) }}">&rarr;</a>
+        <a href="{{ url_for('deleted', q=search_query or none, page=page+1) }}" class="page-arrow page-arrow-right">&rarr;</a>
+        {% else %}
+        <span class="page-arrow page-arrow-right"></span>
         {% endif %}
       </div>
       {% endif %}
