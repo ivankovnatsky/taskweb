@@ -896,7 +896,9 @@ footer a:hover {
   }
   .form-actions kbd,
   .detail-actions kbd {
-    display: none;
+    border: none;
+    padding: 0;
+    opacity: 1;
   }
   /* Detail grid stacks */
   .detail-grid {
