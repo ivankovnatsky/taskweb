@@ -9,8 +9,10 @@
     <div class="task-detail">
       <div class="detail-header">
         <span class="id">{{ task.id }}</span>
-        <span class="desc{% if task.is_completed %} done{% endif %}">{{ task.description }}{% if task.is_recurring %} ↻{% endif %}</span>
+        <span class="desc{% if task.is_completed %} done{% elif task.status == 'deleted' %} deleted{% endif %}">{{ task.description }}{% if task.is_recurring %} ↻{% endif %}</span>
         {% if task.is_active %}<span class="badge-active">active</span>{% endif %}
+        {% if task.is_completed %}<span class="badge-completed">completed</span>{% endif %}
+        {% if task.status == 'deleted' %}<span class="badge-deleted">deleted</span>{% endif %}
       </div>
 
       <div class="detail-grid">
@@ -66,14 +68,18 @@
 
       <div class="detail-actions">
         <a href="{{ url_for('edit', uuid=task.uuid) }}" class="btn-submit" id="action-edit"><kbd>E</kbd>dit</a>
+        {% if not task.is_completed and task.status != 'deleted' %}
         <form method="POST" action="{{ url_for('done', uuid=task.uuid) }}" id="action-complete" onsubmit="return confirm('Complete this task?')">
           <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
           <button type="submit" class="btn-submit"><kbd>C</kbd>omplete</button>
         </form>
+        {% endif %}
+        {% if task.status != 'deleted' %}
         <form method="POST" action="{{ url_for('delete', uuid=task.uuid) }}" id="action-delete" onsubmit="return confirm('Delete this task?')">
           <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
           <button type="submit" class="btn-submit btn-delete" title="Delete"><kbd>D</kbd>elete</button>
         </form>
+        {% endif %}
       </div>
     </div>
   </div>

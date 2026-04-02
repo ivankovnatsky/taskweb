@@ -676,6 +676,29 @@ table.tw td.desc {
   padding: 1px 6px;
   border-radius: 3px;
 }
+.badge-completed {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--dim);
+  border: 1px solid var(--dim);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+.badge-deleted {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--tw-due);
+  border: 1px solid var(--tw-due);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+/* Deleted task styling - dimmed with slight red tint, no strikethrough */
+.deleted {
+  color: var(--tw-due);
+  opacity: 0.6;
+}
 .detail-grid {
   display: grid;
   grid-template-columns: auto 1fr;

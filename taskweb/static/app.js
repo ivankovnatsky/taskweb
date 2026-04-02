@@ -98,18 +98,18 @@ function toggleNewTask() {
         return;
       }
       if (key === "c") {
-        e.preventDefault();
-        if (confirm("Complete this task?")) {
-          const form = document.getElementById("action-complete");
-          if (form) form.submit();
+        const form = document.getElementById("action-complete");
+        if (form) {
+          e.preventDefault();
+          if (confirm("Complete this task?")) form.submit();
         }
         return;
       }
       if (key === "d") {
-        e.preventDefault();
-        if (confirm("Delete this task?")) {
-          const form = document.getElementById("action-delete");
-          if (form) form.submit();
+        const form = document.getElementById("action-delete");
+        if (form) {
+          e.preventDefault();
+          if (confirm("Delete this task?")) form.submit();
         }
         return;
       }
