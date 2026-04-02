@@ -373,7 +373,13 @@ def get_task_by_uuid(uuid: str) -> Task | None:
         conn.close()
 
 
-def matches_query(query_lower: str, description: str, project: str, tags: list[str], task_id: int = 0) -> bool:
+def matches_query(
+    query_lower: str,
+    description: str,
+    project: str,
+    tags: list[str],
+    task_id: int = 0,
+) -> bool:
     """Check if a task matches a search query against description, project, tags, or ID."""
     if query_lower in description.lower():
         return True
@@ -388,7 +394,10 @@ def matches_query(query_lower: str, description: str, project: str, tags: list[s
 
 
 def search_statuses_with_matches(query: str) -> set[str]:
-    """Return set of status names that have tasks matching the query. Lightweight — no Task parsing."""
+    """Return set of status names that have tasks matching the query.
+
+    Lightweight — no Task parsing.
+    """
     query_lower = query.lower()
     conn = _connect()
     try:
@@ -402,7 +411,13 @@ def search_statuses_with_matches(query: str) -> set[str]:
             tags_str = data.get("tags", "")
             tags = [t.strip() for t in tags_str.split(",") if t.strip()] if tags_str else []
             task_id = working_set.get(uuid, 0)
-            if matches_query(query_lower, data.get("description", ""), data.get("project", ""), tags, task_id):
+            if matches_query(
+                query_lower,
+                data.get("description", ""),
+                data.get("project", ""),
+                tags,
+                task_id,
+            ):
                 statuses.add(data.get("status", "pending"))
         return statuses
     finally:

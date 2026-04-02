@@ -12,7 +12,6 @@ from flask import Flask, abort, flash, redirect, render_template, request, sessi
 from taskweb import __commit__, __commit_full__, __version__
 from taskweb.tasks import (
     DatabaseUnavailableError,
-    matches_query,
     add_task,
     complete_task,
     delete_task,
@@ -23,6 +22,7 @@ from taskweb.tasks import (
     get_pending_tasks,
     get_task_by_uuid,
     get_waiting_tasks,
+    matches_query,
     search_statuses_with_matches,
 )
 
