@@ -19,7 +19,7 @@
         {% for task in tasks %}
         <tr data-href="{{ url_for('task_detail', uuid=task.uuid) }}">
           <td class="age">{{ task.age }}</td>
-          <td class="done">{% if task.project %}<a href="{{ url_for('index', project=task.project) }}" class="project-link">{{ task.project }}</a>{% endif %}</td>
+          <td class="done">{% if task.project %}<a href="{{ url_for('deleted', project=task.project) }}" class="project-link">{{ task.project }}</a>{% endif %}</td>
           <td class="done">{% for t in task.tags %}+{{ t }}{% if not loop.last %} {% endif %}{% endfor %}</td>
           <td class="done">{{ task.description }}</td>
         </tr>
@@ -31,7 +31,7 @@
       {% if total_pages > 1 %}
       <div class="pagination">
         {% if page > 1 %}
-        <a href="{{ url_for('deleted', q=search_query or none, page=page-1) }}" class="page-arrow page-arrow-left">&larr;</a>
+        <a href="{{ url_for('deleted', q=search_query or none, project=current_project or none, page=page-1) }}" class="page-arrow page-arrow-left">&larr;</a>
         {% else %}
         <span class="page-arrow page-arrow-left"></span>
         {% endif %}
@@ -42,12 +42,12 @@
           {% elif p == page %}
           <span class="page-current">{{ p }}</span>
           {% else %}
-          <a href="{{ url_for('deleted', q=search_query or none, page=p) }}" class="page-num">{{ p }}</a>
+          <a href="{{ url_for('deleted', q=search_query or none, project=current_project or none, page=p) }}" class="page-num">{{ p }}</a>
           {% endif %}
           {% endfor %}
         </div>
         {% if page < total_pages %}
-        <a href="{{ url_for('deleted', q=search_query or none, page=page+1) }}" class="page-arrow page-arrow-right">&rarr;</a>
+        <a href="{{ url_for('deleted', q=search_query or none, project=current_project or none, page=page+1) }}" class="page-arrow page-arrow-right">&rarr;</a>
         {% else %}
         <span class="page-arrow page-arrow-right"></span>
         {% endif %}

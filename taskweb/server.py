@@ -174,8 +174,11 @@ def create_app() -> Flask:
     @app.route("/waiting")
     def waiting():
         query = request.args.get("q", "").strip()
+        project_filter = request.args.get("project", "").strip()
         page = max(1, request.args.get("page", 1, type=int))
         all_tasks = get_waiting_tasks()
+        if project_filter:
+            all_tasks = [t for t in all_tasks if t.project == project_filter]
         if query:
             all_tasks = _filter_by_query(all_tasks, query)
         total = len(all_tasks)
@@ -189,13 +192,17 @@ def create_app() -> Flask:
             page=page,
             total_pages=total_pages,
             search_query=query,
+            current_project=project_filter,
         )
 
     @app.route("/completed")
     def completed():
         query = request.args.get("q", "").strip()
+        project_filter = request.args.get("project", "").strip()
         page = max(1, request.args.get("page", 1, type=int))
         all_tasks = get_completed_tasks()
+        if project_filter:
+            all_tasks = [t for t in all_tasks if t.project == project_filter]
         if query:
             all_tasks = _filter_by_query(all_tasks, query)
         total = len(all_tasks)
@@ -209,13 +216,17 @@ def create_app() -> Flask:
             page=page,
             total_pages=total_pages,
             search_query=query,
+            current_project=project_filter,
         )
 
     @app.route("/deleted")
     def deleted():
         query = request.args.get("q", "").strip()
+        project_filter = request.args.get("project", "").strip()
         page = max(1, request.args.get("page", 1, type=int))
         all_tasks = get_deleted_tasks()
+        if project_filter:
+            all_tasks = [t for t in all_tasks if t.project == project_filter]
         if query:
             all_tasks = _filter_by_query(all_tasks, query)
         total = len(all_tasks)
@@ -229,6 +240,7 @@ def create_app() -> Flask:
             page=page,
             total_pages=total_pages,
             search_query=query,
+            current_project=project_filter,
         )
 
     @app.route("/task/<uuid>")
