@@ -186,6 +186,15 @@ function toggleNewTask() {
   });
 })();
 
+// Clickable table rows
+document.querySelectorAll("tr[data-href]").forEach(function (row) {
+  row.addEventListener("click", function (e) {
+    if (!e.target.closest("a, button, form")) {
+      window.location = row.dataset.href;
+    }
+  });
+});
+
 // Confirm delete (only for .btn-delete inside a form)
 document.querySelectorAll(".btn-delete").forEach((btn) => {
   const form = btn.closest("form");
