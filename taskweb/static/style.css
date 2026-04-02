@@ -861,9 +861,8 @@ footer a:hover {
     padding: 10px 0;
     border-bottom: 1px solid var(--border);
   }
-  /* === Pending table: hide done-btn(1), ID(2), tags(5), edit-btn(9) === */
+  /* === Pending table: hide done-btn(1), tags(5), edit-btn(9) === */
   table.tw-pending td:nth-child(1),
-  table.tw-pending td:nth-child(2),
   table.tw-pending td:nth-child(5),
   table.tw-pending td:nth-child(9) {
     display: none;
@@ -903,6 +902,7 @@ footer a:hover {
     padding: 0 0 4px;
   }
   /* Row 2: metadata cells inline */
+  table.tw-pending td:nth-child(2),
   table.tw td.age,
   table.tw td.proj,
   table.tw td.due,
