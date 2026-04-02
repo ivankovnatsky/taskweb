@@ -87,9 +87,7 @@ def main():
                     if first_link:
                         first_link.click()
                         page.wait_for_load_state("networkidle")
-                        page.screenshot(
-                            path="screenshots/mobile-task-detail.png"
-                        )
+                        page.screenshot(path="screenshots/mobile-task-detail.png")
                         print("  mobile-task-detail.png")
 
                     # Completed view
