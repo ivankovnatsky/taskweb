@@ -63,6 +63,44 @@ def main():
 
                 ctx.close()
                 browser.close()
+
+            # Mobile screenshots (iPhone-like viewport)
+            mobile_width, mobile_height = 390, 844
+            browser = p.chromium.launch(args=["--no-sandbox", "--disable-gpu"])
+
+            for scheme in ("light", "dark"):
+                ctx = browser.new_context(
+                    viewport={"width": mobile_width, "height": mobile_height},
+                    color_scheme=scheme,
+                )
+                page = ctx.new_page()
+
+                # Main pending view
+                page.goto(base)
+                page.wait_for_load_state("networkidle")
+                page.screenshot(path=f"screenshots/mobile-{scheme}-mode.png")
+                print(f"  mobile-{scheme}-mode.png")
+
+                if scheme == "light":
+                    # Task detail
+                    first_link = page.query_selector("a.task-link")
+                    if first_link:
+                        first_link.click()
+                        page.wait_for_load_state("networkidle")
+                        page.screenshot(
+                            path="screenshots/mobile-task-detail.png"
+                        )
+                        print("  mobile-task-detail.png")
+
+                    # Completed view
+                    page.goto(f"{base}/completed")
+                    page.wait_for_load_state("networkidle")
+                    page.screenshot(path="screenshots/mobile-completed.png")
+                    print("  mobile-completed.png")
+
+                ctx.close()
+
+            browser.close()
     finally:
         server.terminate()
         server.wait()
