@@ -28,6 +28,8 @@
 
         pythonEnv = pkgs.python312.withPackages (ps: (pythonPackages ps) ++ [ ps.playwright ]);
 
+        rev = self.rev or "dirty";
+
         taskwebPackage = pkgs.python312Packages.buildPythonApplication {
           pname = "taskweb";
           version = "0.1.0";
@@ -40,6 +42,11 @@
           ];
 
           dependencies = pythonPackages pkgs.python312Packages;
+
+          postPatch = ''
+            substituteInPlace taskweb/__init__.py \
+              --replace-warn "@NIX_COMMIT@" "${rev}"
+          '';
 
           meta = with pkgs.lib; {
             description = "Web interface for Taskwarrior 3";
