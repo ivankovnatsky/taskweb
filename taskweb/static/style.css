@@ -840,11 +840,23 @@ footer a:hover {
     padding: 10px 0;
     border-bottom: 1px solid var(--border);
   }
-  /* Hide: done, id, tags, edit */
-  table.tw td:nth-child(1),
-  table.tw td:nth-child(2),
-  table.tw td:nth-child(5),
-  table.tw td:nth-child(9) {
+  /* === Pending table: hide done-btn(1), ID(2), tags(5), edit-btn(9) === */
+  table.tw-pending td:nth-child(1),
+  table.tw-pending td:nth-child(2),
+  table.tw-pending td:nth-child(5),
+  table.tw-pending td:nth-child(9) {
+    display: none;
+  }
+  /* === Completed table: hide tags(3) === */
+  table.tw-completed td:nth-child(3) {
+    display: none;
+  }
+  /* === Waiting table: hide tags(3) === */
+  table.tw-waiting td:nth-child(3) {
+    display: none;
+  }
+  /* === Deleted table: hide tags(3) === */
+  table.tw-deleted td:nth-child(3) {
     display: none;
   }
   /* Row 1: description (full width, first) */
@@ -858,15 +870,32 @@ footer a:hover {
     font-size: 15px;
     padding: 0 0 4px;
   }
-  /* Row 2: age, project, due, urgency inline */
+  /* Deleted table: description has class "done" not "desc" */
+  table.tw-deleted td:nth-child(4) {
+    display: block;
+    order: -1;
+    width: 100%;
+    max-width: none;
+    overflow: visible;
+    white-space: normal;
+    font-size: 15px;
+    padding: 0 0 4px;
+  }
+  /* Row 2: metadata cells inline */
   table.tw td.age,
   table.tw td.proj,
   table.tw td.due,
   table.tw td.due-ok,
+  table.tw td.done,
   table.tw td[class^="urg"] {
     font-size: 13px;
     padding: 0;
     margin-right: 12px;
+  }
+  /* Ensure deleted description cell doesn't shrink like other .done cells */
+  table.tw-deleted td:nth-child(4) {
+    font-size: 15px;
+    margin-right: 0;
   }
   table.tw td {
     border: none;
