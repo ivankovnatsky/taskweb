@@ -175,10 +175,14 @@ def create_app() -> Flask:
     def waiting():
         query = request.args.get("q", "").strip()
         project_filter = request.args.get("project", "").strip()
+        tag_filter = request.args.get("tag", "").strip()
         page = max(1, request.args.get("page", 1, type=int))
         all_tasks = get_waiting_tasks()
+        derived = derive_from_tasks(all_tasks)
         if project_filter:
             all_tasks = [t for t in all_tasks if t.project == project_filter]
+        if tag_filter:
+            all_tasks = [t for t in all_tasks if tag_filter in t.tags]
         if query:
             all_tasks = _filter_by_query(all_tasks, query)
         total = len(all_tasks)
@@ -189,20 +193,27 @@ def create_app() -> Flask:
             "waiting.html",
             tasks=tasks,
             total=total,
+            projects=derived["projects"],
+            tags=derived["tags"],
+            current_project=project_filter,
+            current_tag=tag_filter,
             page=page,
             total_pages=total_pages,
             search_query=query,
-            current_project=project_filter,
         )
 
     @app.route("/completed")
     def completed():
         query = request.args.get("q", "").strip()
         project_filter = request.args.get("project", "").strip()
+        tag_filter = request.args.get("tag", "").strip()
         page = max(1, request.args.get("page", 1, type=int))
         all_tasks = get_completed_tasks()
+        derived = derive_from_tasks(all_tasks)
         if project_filter:
             all_tasks = [t for t in all_tasks if t.project == project_filter]
+        if tag_filter:
+            all_tasks = [t for t in all_tasks if tag_filter in t.tags]
         if query:
             all_tasks = _filter_by_query(all_tasks, query)
         total = len(all_tasks)
@@ -213,20 +224,27 @@ def create_app() -> Flask:
             "completed.html",
             tasks=tasks,
             counts={"completed": total},
+            projects=derived["projects"],
+            tags=derived["tags"],
+            current_project=project_filter,
+            current_tag=tag_filter,
             page=page,
             total_pages=total_pages,
             search_query=query,
-            current_project=project_filter,
         )
 
     @app.route("/deleted")
     def deleted():
         query = request.args.get("q", "").strip()
         project_filter = request.args.get("project", "").strip()
+        tag_filter = request.args.get("tag", "").strip()
         page = max(1, request.args.get("page", 1, type=int))
         all_tasks = get_deleted_tasks()
+        derived = derive_from_tasks(all_tasks)
         if project_filter:
             all_tasks = [t for t in all_tasks if t.project == project_filter]
+        if tag_filter:
+            all_tasks = [t for t in all_tasks if tag_filter in t.tags]
         if query:
             all_tasks = _filter_by_query(all_tasks, query)
         total = len(all_tasks)
@@ -237,10 +255,13 @@ def create_app() -> Flask:
             "deleted.html",
             tasks=tasks,
             total=total,
+            projects=derived["projects"],
+            tags=derived["tags"],
+            current_project=project_filter,
+            current_tag=tag_filter,
             page=page,
             total_pages=total_pages,
             search_query=query,
-            current_project=project_filter,
         )
 
     @app.route("/task/<uuid>")
