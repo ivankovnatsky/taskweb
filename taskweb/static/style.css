@@ -560,6 +560,16 @@ table.tw td.desc {
   max-width: none;
   margin-bottom: 16px;
 }
+.filters-label {
+  color: var(--dim);
+  font-family: "SF Mono", monospace;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: center;
+}
 .filters-row {
   display: flex;
   gap: 8px;
@@ -568,6 +578,7 @@ table.tw td.desc {
   font-family: "SF Mono", monospace;
   font-size: 10.5px;
   line-height: 1.4;
+  margin-bottom: 6px;
   -webkit-overflow-scrolling: touch;
   padding-bottom: 4px;
 }
@@ -798,6 +809,9 @@ footer a:hover {
   }
   .form-grid {
     grid-template-columns: 1fr;
+  }
+  .filters-label {
+    font-size: 13px;
   }
   .filters-row {
     font-size: 13px;
