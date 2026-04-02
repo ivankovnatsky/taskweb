@@ -45,7 +45,7 @@
         <tr data-href="{{ url_for('task_detail', uuid=task.uuid) }}">
           <td class="age">{{ task.age }}</td>
           <td class="done">{% if task.project %}<a href="{{ url_for('completed', project=task.project) }}" class="project-link">{{ task.project }}</a>{% endif %}</td>
-          <td class="done">{% for t in task.tags %}+{{ t }}{% if not loop.last %} {% endif %}{% endfor %}</td>
+          <td class="done">{% if task.tags %}+{{ task.tags[0] }}{% if task.tags|length > 1 %} <span class="tag-count">[+{{ task.tags|length - 1 }}]</span>{% endif %}{% endif %}</td>
           <td class="{% if task.is_overdue %}due{% elif task.due %}due-ok{% endif %}">{{ task.due_formatted }}</td>
           <td class="age">{{ task.end|format_timestamp }}</td>
           <td class="done desc">

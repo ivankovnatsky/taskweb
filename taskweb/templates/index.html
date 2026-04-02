@@ -55,7 +55,7 @@
           <td class="age">{{ task.age }}</td>
           <td class="proj">{% if task.project %}<a href="{{ url_for('index', project=task.project) }}" class="project-link">{{ task.project }}</a>{% endif %}</td>
           <td class="{% if 'next' in task.tags %}tag-next{% else %}tag{% endif %}">
-            {% for t in task.tags %}+{{ t }}{% if not loop.last %} {% endif %}{% endfor %}
+            {% if task.tags %}+{{ task.tags[0] }}{% if task.tags|length > 1 %} <span class="tag-count">[+{{ task.tags|length - 1 }}]</span>{% endif %}{% endif %}
           </td>
           <td class="{% if task.is_overdue %}due{% elif task.due %}due-ok{% endif %}">{{ task.due_formatted }}</td>
           <td class="desc">

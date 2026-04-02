@@ -44,7 +44,7 @@
         <tr data-href="{{ url_for('task_detail', uuid=task.uuid) }}">
           <td class="age">{{ task.age }}</td>
           <td class="proj">{% if task.project %}<a href="{{ url_for('waiting', project=task.project) }}" class="project-link">{{ task.project }}</a>{% endif %}</td>
-          <td class="tag">{% for t in task.tags %}+{{ t }}{% if not loop.last %} {% endif %}{% endfor %}</td>
+          <td class="tag">{% if task.tags %}+{{ task.tags[0] }}{% if task.tags|length > 1 %} <span class="tag-count">[+{{ task.tags|length - 1 }}]</span>{% endif %}{% endif %}</td>
           <td class="due-ok">{{ task.wait_formatted }}</td>
           <td class="desc">
             <a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="task-link">
