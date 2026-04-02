@@ -131,6 +131,7 @@ nav a.active {
 .nav-separator {
   color: var(--border);
   font-size: 11px;
+  align-self: center;
 }
 .nav-new-task {
   color: var(--tw-proj) !important;
