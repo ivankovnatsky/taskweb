@@ -826,10 +826,9 @@ footer a:hover {
     padding: 10px 0;
     border-bottom: 1px solid var(--border);
   }
-  /* Hide: done, id, age, tags, edit */
+  /* Hide: done, id, tags, edit */
   table.tw td:nth-child(1),
   table.tw td:nth-child(2),
-  table.tw td:nth-child(3),
   table.tw td:nth-child(5),
   table.tw td:nth-child(9) {
     display: none;
@@ -845,7 +844,8 @@ footer a:hover {
     font-size: 15px;
     padding: 0 0 4px;
   }
-  /* Row 2: project, due, urgency inline */
+  /* Row 2: age, project, due, urgency inline */
+  table.tw td.age,
   table.tw td.proj,
   table.tw td.due,
   table.tw td.due-ok,
