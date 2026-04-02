@@ -245,9 +245,17 @@ document.querySelectorAll(".btn-delete").forEach((btn) => {
     if (q) {
       // Determine current status from the active nav link
       const activeNav = document.querySelector("nav a.active[data-key]");
-      const keyMap = { p: "pending", w: "waiting", c: "completed", d: "deleted" };
-      const status = activeNav ? keyMap[activeNav.dataset.key] || "pending" : "pending";
-      window.location.href = "/search?q=" + encodeURIComponent(q) + "&status=" + status;
+      const keyMap = {
+        p: "pending",
+        w: "waiting",
+        c: "completed",
+        d: "deleted",
+      };
+      const status = activeNav
+        ? keyMap[activeNav.dataset.key] || "pending"
+        : "pending";
+      window.location.href =
+        "/search?q=" + encodeURIComponent(q) + "&status=" + status;
     } else {
       // Clear search: reload current page without q
       const url = new URL(window.location.href);
