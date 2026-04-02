@@ -18,7 +18,7 @@
       </thead>
       <tbody>
         {% for task in tasks %}
-        <tr>
+        <tr data-href="{{ url_for('task_detail', uuid=task.uuid) }}">
           <td class="age">{{ task.age }}</td>
           <td class="proj">{{ task.project }}</td>
           <td class="tag">{% for t in task.tags %}+{{ t }}{% if not loop.last %} {% endif %}{% endfor %}</td>

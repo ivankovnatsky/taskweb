@@ -242,6 +242,13 @@ table.tw td:last-child {
   padding-right: 0;
 }
 
+tr[data-href] {
+  cursor: pointer;
+}
+tr[data-href]:hover td {
+  opacity: 0.8;
+}
+
 tr.active-row td {
   font-weight: 700;
 }
