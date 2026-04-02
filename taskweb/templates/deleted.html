@@ -19,7 +19,7 @@
         {% for task in tasks %}
         <tr data-href="{{ url_for('task_detail', uuid=task.uuid) }}">
           <td class="age">{{ task.age }}</td>
-          <td class="done">{{ task.project }}</td>
+          <td class="done">{% if task.project %}<a href="{{ url_for('index', project=task.project) }}" class="project-link">{{ task.project }}</a>{% endif %}</td>
           <td class="done">{% for t in task.tags %}+{{ t }}{% if not loop.last %} {% endif %}{% endfor %}</td>
           <td class="done">{{ task.description }}</td>
         </tr>

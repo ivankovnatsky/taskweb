@@ -45,7 +45,7 @@
           </td>
           <td class="{% if task.is_recurring %}recur{% else %}id{% endif %}">{{ task.id }}</td>
           <td class="age">{{ task.age }}</td>
-          <td class="proj">{{ task.project }}</td>
+          <td class="proj">{% if task.project %}<a href="{{ url_for('index', project=task.project) }}" class="project-link">{{ task.project }}</a>{% endif %}</td>
           <td class="{% if 'next' in task.tags %}tag-next{% else %}tag{% endif %}">
             {% for t in task.tags %}+{{ t }}{% if not loop.last %} {% endif %}{% endfor %}
           </td>

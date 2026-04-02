@@ -17,7 +17,7 @@
         {% if task.project %}
         <div class="detail-row">
           <span class="detail-label">Project</span>
-          <span class="proj">{{ task.project }}</span>
+          <span class="proj"><a href="{{ url_for('index', project=task.project) }}" class="project-link">{{ task.project }}</a></span>
         </div>
         {% endif %}
         {% if task.tags %}
