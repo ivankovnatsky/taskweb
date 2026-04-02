@@ -9,7 +9,7 @@
     <div class="task-detail">
       <div class="detail-header">
         <span class="id">{{ task.id }}</span>
-        <span class="desc">{{ task.description }}{% if task.is_recurring %} ↻{% endif %}</span>
+        <span class="desc{% if task.is_completed %} done{% endif %}">{{ task.description }}{% if task.is_recurring %} ↻{% endif %}</span>
         {% if task.is_active %}<span class="badge-active">active</span>{% endif %}
       </div>
 
