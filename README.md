@@ -4,25 +4,29 @@ A web interface for [Taskwarrior 3](https://taskwarrior.org/).
 
 ## Screenshots
 
-### Light Mode
+### Desktop
 
-![Light Mode](screenshots/light-mode.png)
+| Light Mode | Dark Mode |
+|---|---|
+| ![Light Mode](screenshots/light-mode.png) | ![Dark Mode](screenshots/dark-mode.png) |
 
-### Dark Mode
+| Task Detail | Task Edit |
+|---|---|
+| ![Task Detail](screenshots/task-detail.png) | ![Task Edit](screenshots/task-edit.png) |
 
-![Dark Mode](screenshots/dark-mode.png)
+| Completed Tasks |
+|---|
+| ![Completed Tasks](screenshots/completed.png) |
 
-### Task Detail
+### Mobile
 
-![Task Detail](screenshots/task-detail.png)
+| Light Mode | Dark Mode |
+|---|---|
+| ![Mobile Light Mode](screenshots/mobile-light-mode.png) | ![Mobile Dark Mode](screenshots/mobile-dark-mode.png) |
 
-### Task Edit
-
-![Task Edit](screenshots/task-edit.png)
-
-### Completed Tasks
-
-![Completed Tasks](screenshots/completed.png)
+| Task Detail | Completed Tasks |
+|---|---|
+| ![Mobile Task Detail](screenshots/mobile-task-detail.png) | ![Mobile Completed](screenshots/mobile-completed.png) |
 
 ## Features
 
