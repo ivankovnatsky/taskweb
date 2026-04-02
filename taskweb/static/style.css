@@ -802,10 +802,8 @@ footer a:hover {
     padding: 0;
     opacity: 1;
   }
-  .back-link kbd {
-    border: none;
-    padding: 0;
-    opacity: 1;
+  .back-link {
+    display: none;
   }
   .form-grid {
     grid-template-columns: 1fr;
