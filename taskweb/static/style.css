@@ -128,12 +128,9 @@ nav a.active {
   border-bottom: 1px solid var(--tw-id);
 }
 
-.nav-new-task-row {
-  width: 100%;
-  max-width: none;
-  font-family: "SF Mono", monospace;
+.nav-separator {
+  color: var(--border);
   font-size: 11px;
-  margin-bottom: 8px;
 }
 .nav-new-task {
   color: var(--tw-proj) !important;
@@ -152,6 +149,8 @@ nav a.active {
 }
 .nav-search {
   margin-left: auto;
+  flex: 1;
+  min-width: 120px;
   background: transparent;
   color: var(--text);
   border: 1px solid var(--border);
@@ -159,7 +158,7 @@ nav a.active {
   padding: 4px 10px;
   font-family: "SF Mono", monospace;
   font-size: 11px;
-  width: 240px;
+  box-sizing: border-box;
 }
 .nav-search:focus {
   outline: none;
@@ -799,10 +798,8 @@ footer a:hover {
   body {
     padding: 16px 10px 36px;
   }
-  .nav-new-task-row {
-    text-align: center;
+  .nav-separator {
     font-size: 14px;
-    margin-bottom: 4px;
   }
   nav {
     gap: 10px;
@@ -814,8 +811,8 @@ footer a:hover {
     padding: 8px 0;
   }
   .nav-search {
-    margin-left: 0;
     width: 100%;
+    margin-left: 0;
     text-align: center;
     font-size: 16px;
     padding: 10px 12px;
