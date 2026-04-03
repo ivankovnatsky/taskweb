@@ -7,7 +7,7 @@ import os
 import re
 from datetime import datetime, timezone
 
-from flask import Flask, abort, flash, redirect, render_template, request, session, url_for
+from flask import Flask, abort, flash, redirect, render_template, request, send_from_directory, session, url_for
 
 from taskweb import __commit__, __commit_full__, __version__
 from taskweb.tasks import (
@@ -108,6 +108,10 @@ def create_app() -> Flask:
         """Filter tasks by search query matching description, project, tags, or ID."""
         q = query.lower()
         return [t for t in tasks if matches_query(q, t.description, t.project, t.tags, t.id)]
+
+    @app.route("/sw.js")
+    def service_worker():
+        return send_from_directory(app.static_folder, "sw.js", mimetype="application/javascript")
 
     @app.route("/search")
     def search():
