@@ -763,12 +763,10 @@ table.tw td.desc {
   display: contents;
 }
 .edit-row kbd {
-  font-family: "SF Mono", monospace;
-  font-size: inherit;
-  border: 1px solid currentColor;
-  border-radius: 2px;
-  padding: 0 2px;
-  opacity: 0.6;
+  display: none;
+}
+.form-window .form-actions kbd {
+  display: none;
 }
 .edit-row input,
 .edit-row select {
@@ -981,10 +979,6 @@ footer a:hover {
     font-size: 16px;
     padding: 8px;
   }
-  .edit-row kbd {
-    display: none;
-  }
-  .form-actions kbd,
   .detail-actions kbd {
     border: none;
     padding: 0;
