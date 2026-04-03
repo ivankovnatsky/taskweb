@@ -502,7 +502,7 @@ table.tw td.desc {
 .form-grid select {
   width: 100%;
   font-family: "SF Mono", monospace;
-  font-size: 12px;
+  font-size: 16px;
   padding: 6px 8px;
   border: 1px solid var(--border);
   border-radius: 4px;
@@ -762,7 +762,7 @@ table.tw td.desc {
   border: 1px solid var(--border);
   color: var(--text);
   font-family: "SF Mono", monospace;
-  font-size: 11px;
+  font-size: 16px;
   padding: 4px 8px;
   border-radius: 4px;
 }
@@ -960,7 +960,16 @@ footer a:hover {
     margin-bottom: 8px;
   }
   .detail-actions {
-    flex-wrap: wrap;
+    flex-direction: column;
+  }
+  .detail-actions .btn-submit,
+  .detail-actions form {
+    width: 100%;
+  }
+  .detail-actions .btn-submit {
+    width: 100%;
+    font-size: 16px;
+    padding: 14px;
   }
   .window {
     border-radius: 6px;
