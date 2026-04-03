@@ -508,7 +508,7 @@ table.tw td.desc {
   height: 32px;
   font-family: "SF Mono", monospace;
   font-size: 16px;
-  padding: 6px 8px;
+  padding: 10px 10px;
   border: 1px solid var(--border);
   border-radius: 4px;
   background: var(--bg);
@@ -554,7 +554,7 @@ table.tw td.desc {
   border: 1px solid var(--tw-proj);
   background: transparent;
   color: var(--tw-proj);
-  padding: 5px 14px;
+  padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.15s;
@@ -603,7 +603,7 @@ table.tw td.desc {
 .filter-chip {
   color: var(--dim);
   text-decoration: none;
-  padding: 3px 10px;
+  padding: 5px 12px;
   border: 1px solid var(--border);
   border-radius: 3px;
   white-space: nowrap;
@@ -778,7 +778,7 @@ table.tw td.desc {
   font-family: "SF Mono", monospace;
   font-size: 16px;
   height: 30px;
-  padding: 4px 8px;
+  padding: 8px 10px;
   border-radius: 4px;
 }
 .edit-row input[type="date"] {
@@ -885,7 +885,7 @@ footer a:hover {
     display: none;
   }
   .filter-chip {
-    padding: 6px 12px;
+    padding: 8px 14px;
     font-size: 14px;
   }
   /* Mobile: card-like two-row layout per task */
