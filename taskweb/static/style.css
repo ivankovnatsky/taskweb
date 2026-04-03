@@ -999,7 +999,9 @@ footer a:hover {
     margin-bottom: 8px;
   }
   .edit-row input,
-  .edit-row select {
+  .edit-row select,
+  .edit-row input[type="date"],
+  .edit-row input[type="time"] {
     width: 100%;
     max-width: none;
     font-size: 16px;
