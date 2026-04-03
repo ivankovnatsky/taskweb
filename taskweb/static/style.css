@@ -860,7 +860,19 @@ footer a:hover {
     opacity: 1;
   }
   .back-link {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 16px;
+    padding: 8px 0;
+    margin-bottom: 8px;
+  }
+  .back-link kbd {
     display: none;
+  }
+  .back-link .back-arrow {
+    font-size: 20px;
+    margin-right: 8px;
   }
   .form-grid {
     grid-template-columns: 1fr;
