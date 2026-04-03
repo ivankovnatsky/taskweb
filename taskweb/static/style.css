@@ -516,7 +516,8 @@ table.tw td.desc {
   transition: border-color 0.15s;
 }
 
-.form-grid input[type="date"] {
+.form-grid input[type="date"],
+.form-grid input[type="time"] {
   max-width: 180px;
 }
 
@@ -779,7 +780,8 @@ table.tw td.desc {
   padding: 8px 10px;
   border-radius: 4px;
 }
-.edit-row input[type="date"] {
+.edit-row input[type="date"],
+.edit-row input[type="time"] {
   max-width: 180px;
 }
 
@@ -887,6 +889,7 @@ footer a:hover {
     font-size: 16px;
   }
   .form-grid input[type="date"],
+  .form-grid input[type="time"],
   .form-grid select {
     max-width: none;
   }

@@ -56,7 +56,7 @@ def test_add_task(mock_add, client):
     )
     assert response.status_code == 302
     mock_add.assert_called_once_with(
-        "New task", project="test", tags=["a", "b"], priority="H", due="2026-04-01"
+        "New task", project="test", tags=["a", "b"], priority="H", due="2026-04-01", due_time=""
     )
 
 

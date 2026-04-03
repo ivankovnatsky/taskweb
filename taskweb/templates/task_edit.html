@@ -42,7 +42,12 @@
 
           <div class="edit-row">
             <label class="detail-label" for="due"><kbd>DU</kbd>e</label>
-            <input type="date" id="due" name="due" value="{{ task.due_formatted }}">
+            <input type="date" id="due" name="due" value="{{ task.due_date }}">
+          </div>
+
+          <div class="edit-row">
+            <label class="detail-label" for="due_time"><kbd>TI</kbd>me</label>
+            <input type="time" id="due_time" name="due_time" value="{{ task.due_time }}">
           </div>
 
           <div class="edit-row">
@@ -149,7 +154,7 @@
     // Two-key combo shortcuts
     var combos = {
       dd:'description', pp:'project', pr:'priority',
-      du:'due', an:'annotation', ca:'_cancel'
+      du:'due', ti:'due_time', an:'annotation', ca:'_cancel'
     };
     var now = Date.now();
     var combo = lastKey + key;

@@ -292,8 +292,9 @@ def create_app() -> Flask:
         if priority and priority not in ("H", "M", "L"):
             priority = ""
         due = request.form.get("due", "").strip()
+        due_time = request.form.get("due_time", "").strip()
 
-        if add_task(description, project=project, tags=tags, priority=priority, due=due):
+        if add_task(description, project=project, tags=tags, priority=priority, due=due, due_time=due_time):
             flash("Task added.", "success")
         else:
             flash("Failed to add task.", "error")
@@ -323,6 +324,7 @@ def create_app() -> Flask:
         if priority and priority not in ("H", "M", "L"):
             priority = ""
         due = request.form.get("due", "").strip()
+        due_time = request.form.get("due_time", "").strip()
         recur = request.form.get("recur", "").strip()
         annotation = request.form.get("annotation", "").strip()
 
@@ -333,6 +335,7 @@ def create_app() -> Flask:
             tags=tags,
             priority=priority,
             due=due,
+            due_time=due_time,
             recur=recur,
             annotation=annotation,
         ):
