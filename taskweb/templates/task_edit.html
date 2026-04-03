@@ -3,7 +3,7 @@
 {% block title_suffix %} — Edit: {{ task.description }}{% endblock %}
 
 {% block content %}
-<a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="back-link" id="back-link"><kbd>Esc</kbd> &larr; Back to task</a>
+<a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="back-link" id="back-link"><span class="back-arrow">&larr;</span> <kbd>Esc</kbd> Back to task</a>
 <div class="window form-window">
   <div class="content">
     <div class="task-detail">
