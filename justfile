@@ -45,7 +45,7 @@ update-nix-config:
     fi
     git push
     cd "$(ghq root)/github.com/ivankovnatsky/nix-config"
-    nix flake update taskweb --commit-lock-file
+    GITHUB_TOKEN=$(gh auth token) nix flake update taskweb --commit-lock-file
 
 # Increment patch version
 bump:
