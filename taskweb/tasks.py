@@ -427,14 +427,20 @@ def search_statuses_with_matches(query: str) -> set[str]:
 
 def derive_from_tasks(tasks: list[Task]) -> dict:
     """Derive projects, tags, and counts from an already-fetched task list."""
-    projects = sorted({t.project for t in tasks if t.project})
-    tags = set()
+    project_counts: dict[str, int] = {}
+    tag_counts: dict[str, int] = {}
     for t in tasks:
-        tags.update(t.tags)
+        if t.project:
+            project_counts[t.project] = project_counts.get(t.project, 0) + 1
+        for tag in t.tags:
+            tag_counts[tag] = tag_counts.get(tag, 0) + 1
+    # Sort by task count descending, then alphabetically for ties
+    projects = sorted(project_counts, key=lambda p: (-project_counts[p], p))
+    tags = sorted(tag_counts, key=lambda t: (-tag_counts[t], t))
     overdue = [t for t in tasks if t.is_overdue]
     return {
         "projects": projects,
-        "tags": sorted(tags),
+        "tags": tags,
         "counts": {
             "pending": len(tasks),
             "overdue": len(overdue),
