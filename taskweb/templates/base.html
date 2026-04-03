@@ -19,10 +19,11 @@
   <span class="nav-separator">|</span>
   {% endif %}
   {% set sq = search_query|default('', true) %}
-  <a href="{{ url_for('index', q=sq or none) }}" class="{% if request.endpoint == 'index' %}active{% endif %}" data-key="p"><kbd>P</kbd>ending</a>
-  <a href="{{ url_for('waiting', q=sq or none) }}" class="{% if request.endpoint == 'waiting' %}active{% endif %}" data-key="w"><kbd>W</kbd>aiting</a>
-  <a href="{{ url_for('completed', q=sq or none) }}" class="{% if request.endpoint == 'completed' %}active{% endif %}" data-key="c"><kbd>C</kbd>ompleted</a>
-  <a href="{{ url_for('deleted', q=sq or none) }}" class="{% if request.endpoint == 'deleted' %}active{% endif %}" data-key="d"><kbd>D</kbd>eleted</a>
+  {% set active_status = task_status|default('', true) %}
+  <a href="{{ url_for('index', q=sq or none) }}" class="{% if request.endpoint == 'index' or active_status == 'pending' %}active{% endif %}" data-key="p"><kbd>P</kbd>ending</a>
+  <a href="{{ url_for('waiting', q=sq or none) }}" class="{% if request.endpoint == 'waiting' or active_status == 'waiting' %}active{% endif %}" data-key="w"><kbd>W</kbd>aiting</a>
+  <a href="{{ url_for('completed', q=sq or none) }}" class="{% if request.endpoint == 'completed' or active_status == 'completed' %}active{% endif %}" data-key="c"><kbd>C</kbd>ompleted</a>
+  <a href="{{ url_for('deleted', q=sq or none) }}" class="{% if request.endpoint == 'deleted' or active_status == 'deleted' %}active{% endif %}" data-key="d"><kbd>D</kbd>eleted</a>
   {% if request.endpoint in ('index', 'waiting', 'completed', 'deleted') %}
   <span class="nav-separator nav-separator-search">|</span>
   <input type="text" id="search-field" class="nav-search" placeholder="Search..Project,Description" autocomplete="off" value="{{ search_query|default('', true) }}">
