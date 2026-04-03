@@ -507,7 +507,7 @@ table.tw td.desc {
   width: 100%;
   height: 32px;
   font-family: "SF Mono", monospace;
-  font-size: 16px;
+  font-size: 13px;
   padding: 10px 10px;
   border: 1px solid var(--border);
   border-radius: 4px;
@@ -776,7 +776,7 @@ table.tw td.desc {
   border: 1px solid var(--border);
   color: var(--text);
   font-family: "SF Mono", monospace;
-  font-size: 16px;
+  font-size: 13px;
   height: 30px;
   padding: 8px 10px;
   border-radius: 4px;
