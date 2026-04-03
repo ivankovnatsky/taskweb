@@ -468,7 +468,8 @@ def test_edit_task_tags(tmp_path):
 
 def test_edit_task_preserves_due_time(tmp_path):
     """Editing with due_time should preserve the time component."""
-    from datetime import datetime as dt, timezone as tz
+    from datetime import datetime as dt
+    from datetime import timezone as tz
 
     db_path = _create_test_db(tmp_path)
     now = str(int(time.time()))

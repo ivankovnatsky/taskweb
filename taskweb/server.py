@@ -7,7 +7,17 @@ import os
 import re
 from datetime import datetime, timezone
 
-from flask import Flask, abort, flash, redirect, render_template, request, send_from_directory, session, url_for
+from flask import (
+    Flask,
+    abort,
+    flash,
+    redirect,
+    render_template,
+    request,
+    send_from_directory,
+    session,
+    url_for,
+)
 
 from taskweb import __commit__, __commit_full__, __version__
 from taskweb.tasks import (
@@ -296,7 +306,9 @@ def create_app() -> Flask:
         due = request.form.get("due", "").strip()
         due_time = request.form.get("due_time", "").strip()
 
-        if add_task(description, project=project, tags=tags, priority=priority, due=due, due_time=due_time):
+        if add_task(
+            description, project=project, tags=tags, priority=priority, due=due, due_time=due_time
+        ):
             flash("Task added.", "success")
         else:
             flash("Failed to add task.", "error")
