@@ -53,6 +53,10 @@
     </table>
     <div class="tw-footer">
       {{ total }} deleted tasks
+      <form method="POST" action="{{ url_for('purge_all') }}" style="display:inline" onsubmit="return confirm('Permanently purge ALL deleted tasks? This cannot be undone.')">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn-submit btn-delete">Purge All</button>
+      </form>
       {% if total_pages > 1 %}
       <div class="pagination">
         {% if page > 1 %}

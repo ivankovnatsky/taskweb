@@ -676,6 +676,70 @@ def delete_task(uuid: str) -> bool:
         conn.close()
 
 
+def _record_delete(c: sqlite3.Cursor, task_uuid: str) -> None:
+    op = json.dumps({"Delete": {"uuid": task_uuid}})
+    c.execute("INSERT INTO operations (data) VALUES (?)", (op,))
+
+
+def purge_task(uuid: str) -> bool:
+    """Permanently remove a deleted task from the database."""
+    conn = _connect()
+    try:
+        conn.execute("BEGIN IMMEDIATE")
+        c = conn.cursor()
+        c.execute("SELECT data FROM tasks WHERE uuid = ?", (uuid,))
+        row = c.fetchone()
+        if not row:
+            conn.rollback()
+            return False
+        data = json.loads(row[0])
+        if data.get("status") != "deleted":
+            conn.rollback()
+            return False
+        _record_undo_point(c)
+        _record_delete(c, uuid)
+        c.execute("DELETE FROM tasks WHERE uuid = ?", (uuid,))
+        c.execute("DELETE FROM working_set WHERE uuid = ?", (uuid,))
+        conn.commit()
+        return True
+    except Exception:
+        conn.rollback()
+        logger.exception("Failed to purge task %s", uuid)
+        return False
+    finally:
+        conn.close()
+
+
+def purge_all_deleted() -> int:
+    """Permanently remove all deleted tasks. Returns count of purged tasks."""
+    conn = _connect()
+    try:
+        conn.execute("BEGIN IMMEDIATE")
+        c = conn.cursor()
+        c.execute("SELECT uuid, data FROM tasks")
+        deleted_uuids = []
+        for task_uuid, data_str in c.fetchall():
+            data = json.loads(data_str)
+            if data.get("status") == "deleted":
+                deleted_uuids.append(task_uuid)
+        if not deleted_uuids:
+            conn.rollback()
+            return 0
+        _record_undo_point(c)
+        for task_uuid in deleted_uuids:
+            _record_delete(c, task_uuid)
+            c.execute("DELETE FROM tasks WHERE uuid = ?", (task_uuid,))
+            c.execute("DELETE FROM working_set WHERE uuid = ?", (task_uuid,))
+        conn.commit()
+        return len(deleted_uuids)
+    except Exception:
+        conn.rollback()
+        logger.exception("Failed to purge all deleted tasks")
+        return 0
+    finally:
+        conn.close()
+
+
 def edit_task(
     uuid: str,
     description: str = "",
