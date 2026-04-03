@@ -33,6 +33,7 @@
         <tr>
           <th></th>
           <th>ID</th>
+          <th>St</th>
           <th>Age</th>
           <th>Project</th>
           <th>Tags</th>
@@ -52,6 +53,7 @@
             </form>
           </td>
           <td class="{% if task.is_recurring %}recur{% else %}id{% endif %}">{{ task.id }}</td>
+          <td class="status-{{ task.status }}">{{ task.status[:1] | upper }}</td>
           <td class="age">{{ task.age }}</td>
           <td class="proj">{% if task.project %}<a href="{{ url_for('index', project=task.project) }}" class="project-link">{{ task.project }}</a>{% endif %}</td>
           <td class="{% if 'next' in task.tags %}tag-next{% else %}tag{% endif %}">

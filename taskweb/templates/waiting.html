@@ -32,6 +32,7 @@
     <table class="tw tw-waiting">
       <thead>
         <tr>
+          <th>St</th>
           <th>Age</th>
           <th>Project</th>
           <th>Tags</th>
@@ -42,6 +43,7 @@
       <tbody>
         {% for task in tasks %}
         <tr data-href="{{ url_for('task_detail', uuid=task.uuid) }}">
+          <td class="status-{{ task.status }}">{{ task.status[:1] | upper }}</td>
           <td class="age">{{ task.age }}</td>
           <td class="proj">{% if task.project %}<a href="{{ url_for('waiting', project=task.project) }}" class="project-link">{{ task.project }}</a>{% endif %}</td>
           <td class="tag">{% if task.tags %}+{{ task.tags[0] }}{% if task.tags|length > 1 %} <span class="tag-count">[+{{ task.tags|length - 1 }}]</span>{% endif %}{% endif %}</td>

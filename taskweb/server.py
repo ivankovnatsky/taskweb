@@ -276,7 +276,7 @@ def create_app() -> Flask:
         if not task:
             flash("Task not found.", "error")
             return redirect(url_for("index"))
-        return render_template("task_detail.html", task=task)
+        return render_template("task_detail.html", task=task, task_status=task.status)
 
     @app.route("/add", methods=["POST"])
     def add():
@@ -310,7 +310,7 @@ def create_app() -> Flask:
             return redirect(url_for("index"))
 
         if request.method == "GET":
-            return render_template("task_edit.html", task=task)
+            return render_template("task_edit.html", task=task, task_status=task.status)
 
         description = request.form.get("description", "").strip()
         if not description:

@@ -16,6 +16,10 @@
       </div>
 
       <div class="detail-grid">
+        <div class="detail-row">
+          <span class="detail-label">Status</span>
+          <span class="status-{{ task.status }}">{{ task.status }}</span>
+        </div>
         {% if task.project %}
         <div class="detail-row">
           <span class="detail-label">Project</span>
