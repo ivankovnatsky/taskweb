@@ -65,9 +65,41 @@ class Task:
             return ""
         try:
             due_ts = int(self.due)
+            dt = datetime.fromtimestamp(due_ts, tz=timezone.utc)
+            # Show time only when it's not midnight
+            if dt.hour == 0 and dt.minute == 0:
+                return dt.strftime("%Y-%m-%d")
+            return dt.strftime("%Y-%m-%d %H:%M")
+        except (ValueError, TypeError):
+            return self.due
+
+    @property
+    def due_date(self) -> str:
+        """Return just the date portion of due (YYYY-MM-DD) for form fields."""
+        if not self.due:
+            return ""
+        try:
+            due_ts = int(self.due)
             return datetime.fromtimestamp(due_ts, tz=timezone.utc).strftime("%Y-%m-%d")
         except (ValueError, TypeError):
             return self.due
+
+    @property
+    def due_time(self) -> str:
+        """Return just the time portion of due (HH:MM) for form fields.
+
+        Returns empty string if time is midnight (00:00).
+        """
+        if not self.due:
+            return ""
+        try:
+            due_ts = int(self.due)
+            dt = datetime.fromtimestamp(due_ts, tz=timezone.utc)
+            if dt.hour == 0 and dt.minute == 0:
+                return ""
+            return dt.strftime("%H:%M")
+        except (ValueError, TypeError):
+            return ""
 
     @property
     def is_overdue(self) -> bool:
@@ -519,6 +551,7 @@ def add_task(
     tags: list[str] | None = None,
     priority: str = "",
     due: str = "",
+    due_time: str = "",
 ) -> bool:
     conn = _connect()
     try:
@@ -541,7 +574,14 @@ def add_task(
             data["priority"] = priority
         if due:
             try:
-                due_dt = datetime.strptime(due, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                if due_time:
+                    due_dt = datetime.strptime(
+                        f"{due} {due_time}", "%Y-%m-%d %H:%M"
+                    ).replace(tzinfo=timezone.utc)
+                else:
+                    due_dt = datetime.strptime(due, "%Y-%m-%d").replace(
+                        tzinfo=timezone.utc
+                    )
                 data["due"] = str(int(due_dt.timestamp()))
             except ValueError:
                 data["due"] = due
@@ -643,6 +683,7 @@ def edit_task(
     tags: list[str] | None = None,
     priority: str = "",
     due: str = "",
+    due_time: str = "",
     recur: str = "",
     annotation: str = "",
 ) -> bool:
@@ -704,25 +745,20 @@ def edit_task(
             else:
                 data.pop("priority", None)
 
-        # Due — preserve existing timestamp if only the date portion matches
+        # Due — combine date and time fields
         old_due = data.get("due", "")
-        if due and old_due:
+        if due:
             try:
-                old_date = datetime.fromtimestamp(int(old_due), tz=timezone.utc).strftime(
-                    "%Y-%m-%d"
-                )
-                if due == old_date:
-                    new_due = old_due  # preserve original timestamp with time component
+                if due_time:
+                    due_dt = datetime.strptime(
+                        f"{due} {due_time}", "%Y-%m-%d %H:%M"
+                    ).replace(tzinfo=timezone.utc)
                 else:
-                    due_dt = datetime.strptime(due, "%Y-%m-%d").replace(tzinfo=timezone.utc)
-                    new_due = str(int(due_dt.timestamp()))
-            except (ValueError, TypeError):
-                new_due = due
-        elif due:
-            try:
-                due_dt = datetime.strptime(due, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                    due_dt = datetime.strptime(due, "%Y-%m-%d").replace(
+                        tzinfo=timezone.utc
+                    )
                 new_due = str(int(due_dt.timestamp()))
-            except ValueError:
+            except (ValueError, TypeError):
                 new_due = due
         else:
             new_due = ""

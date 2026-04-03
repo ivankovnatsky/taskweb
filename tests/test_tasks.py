@@ -78,9 +78,51 @@ def test_task_due_formatted():
     assert task.due_formatted == "2026-03-15"
 
 
+def test_task_due_formatted_with_time():
+    from datetime import datetime, timezone
+
+    dt = datetime(2026, 3, 15, 14, 30, tzinfo=timezone.utc)
+    task = Task(uuid="test", due=str(int(dt.timestamp())))
+    assert task.due_formatted == "2026-03-15 14:30"
+
+
 def test_task_due_formatted_empty():
     task = Task(uuid="test", due="")
     assert task.due_formatted == ""
+
+
+def test_task_due_date_property():
+    from datetime import datetime, timezone
+
+    dt = datetime(2026, 3, 15, 14, 30, tzinfo=timezone.utc)
+    task = Task(uuid="test", due=str(int(dt.timestamp())))
+    assert task.due_date == "2026-03-15"
+
+
+def test_task_due_date_empty():
+    task = Task(uuid="test", due="")
+    assert task.due_date == ""
+
+
+def test_task_due_time_property():
+    from datetime import datetime, timezone
+
+    dt = datetime(2026, 3, 15, 14, 30, tzinfo=timezone.utc)
+    task = Task(uuid="test", due=str(int(dt.timestamp())))
+    assert task.due_time == "14:30"
+
+
+def test_task_due_time_midnight():
+    from datetime import datetime, timezone
+
+    dt = datetime(2026, 3, 15, 0, 0, tzinfo=timezone.utc)
+    task = Task(uuid="test", due=str(int(dt.timestamp())))
+    assert task.due_time == ""
+
+
+def test_task_due_time_empty():
+    task = Task(uuid="test", due="")
+    assert task.due_time == ""
 
 
 def test_task_is_overdue():
@@ -120,8 +162,8 @@ def test_derive_from_tasks():
         Task(uuid="3", project="infra", tags=["a"]),
     ]
     derived = derive_from_tasks(tasks)
-    assert derived["projects"] == ["home", "infra"]
-    assert derived["tags"] == ["a", "b", "c"]
+    assert derived["projects"] == ["infra", "home"]  # sorted by count descending
+    assert derived["tags"] == ["a", "b", "c"]  # a:2, b:2, c:1 — ties broken alphabetically
     assert derived["counts"]["pending"] == 3
     assert derived["counts"]["overdue"] == 1
 
@@ -236,6 +278,27 @@ def test_add_task(tmp_path):
     assert data["project"] == "test"
     assert data["priority"] == "H"
     assert data["tags"] == "a,b"
+
+
+def test_add_task_with_due_time(tmp_path):
+    from datetime import datetime, timezone
+
+    db_path = _create_test_db(tmp_path)
+    with patch("taskweb.tasks._db_path", return_value=db_path):
+        result = add_task("Timed task", due="2026-04-01", due_time="15:30")
+    assert result is True
+
+    conn = sqlite3.connect(str(db_path))
+    c = conn.cursor()
+    c.execute("SELECT data FROM tasks")
+    row = c.fetchone()
+    conn.close()
+    data = json.loads(row[0])
+    due_ts = int(data["due"])
+    dt = datetime.fromtimestamp(due_ts, tz=timezone.utc)
+    assert dt.hour == 15
+    assert dt.minute == 30
+    assert dt.strftime("%Y-%m-%d") == "2026-04-01"
 
 
 def test_complete_task(tmp_path):
@@ -404,11 +467,14 @@ def test_edit_task_tags(tmp_path):
 
 
 def test_edit_task_preserves_due_time(tmp_path):
-    """Editing without changing due date should preserve the original timestamp."""
+    """Editing with due_time should preserve the time component."""
+    from datetime import datetime as dt, timezone as tz
+
     db_path = _create_test_db(tmp_path)
     now = str(int(time.time()))
     # Due at 2026-04-01 15:30:00 UTC (not midnight)
-    due_ts = str(int(time.mktime(time.strptime("2026-04-01 15:30:00", "%Y-%m-%d %H:%M:%S"))))
+    due_dt = dt(2026, 4, 1, 15, 30, tzinfo=tz.utc)
+    due_ts = str(int(due_dt.timestamp()))
     _insert_task(
         db_path,
         "uuid-due",
@@ -417,7 +483,7 @@ def test_edit_task_preserves_due_time(tmp_path):
     )
 
     with patch("taskweb.tasks._db_path", return_value=db_path):
-        result = edit_task("uuid-due", description="Timed", due="2026-04-01")
+        result = edit_task("uuid-due", description="Timed", due="2026-04-01", due_time="15:30")
     assert result is True
 
     conn = sqlite3.connect(str(db_path))
@@ -425,7 +491,7 @@ def test_edit_task_preserves_due_time(tmp_path):
         conn.execute("SELECT data FROM tasks WHERE uuid = ?", ("uuid-due",)).fetchone()[0]
     )
     conn.close()
-    assert data["due"] == due_ts  # preserved, not rewritten to midnight
+    assert data["due"] == due_ts  # preserved with time component
 
 
 def test_edit_task_not_found(tmp_path):
