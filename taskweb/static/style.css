@@ -590,12 +590,13 @@ table.tw td.desc {
 .filter-chip {
   color: var(--dim);
   text-decoration: none;
-  padding: 1px 8px;
+  padding: 3px 10px;
   border: 1px solid var(--border);
   border-radius: 3px;
   white-space: nowrap;
   flex-shrink: 0;
   transition: all 0.15s;
+  font-size: 11.5px;
 }
 
 .filter-chip:hover {
@@ -810,6 +811,10 @@ footer a:hover {
     width: 100%;
     text-align: center;
     order: -2;
+    font-size: 16px;
+    padding: 10px 0;
+    border: 1px solid var(--tw-proj);
+    border-radius: 6px;
   }
   nav {
     gap: 10px;
@@ -851,7 +856,8 @@ footer a:hover {
     display: none;
   }
   .filter-chip {
-    padding: 4px 10px;
+    padding: 6px 12px;
+    font-size: 14px;
   }
   /* Mobile: card-like two-row layout per task */
   table.tw,
@@ -970,6 +976,12 @@ footer a:hover {
     width: 100%;
     font-size: 16px;
     padding: 14px;
+  }
+  .btn-submit,
+  .btn-cancel {
+    font-size: 14px;
+    padding: 10px 18px;
+    border-radius: 6px;
   }
   .window {
     border-radius: 6px;
