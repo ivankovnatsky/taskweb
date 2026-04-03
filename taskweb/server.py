@@ -23,6 +23,8 @@ from taskweb.tasks import (
     get_task_by_uuid,
     get_waiting_tasks,
     matches_query,
+    purge_all_deleted,
+    purge_task,
     search_statuses_with_matches,
 )
 
@@ -363,6 +365,25 @@ def create_app() -> Flask:
         else:
             flash("Failed to delete task.", "error")
         return redirect(url_for("index"))
+
+    @app.route("/task/<uuid>/purge", methods=["POST"])
+    def purge(uuid):
+        if not _validate_uuid(uuid):
+            abort(404)
+        if purge_task(uuid):
+            flash("Task purged permanently.", "success")
+        else:
+            flash("Failed to purge task. Only deleted tasks can be purged.", "error")
+        return redirect(url_for("deleted"))
+
+    @app.route("/purge-all", methods=["POST"])
+    def purge_all():
+        count = purge_all_deleted()
+        if count > 0:
+            flash(f"{count} deleted task(s) purged permanently.", "success")
+        else:
+            flash("No deleted tasks to purge.", "error")
+        return redirect(url_for("deleted"))
 
     @app.errorhandler(DatabaseUnavailableError)
     def db_unavailable(e):

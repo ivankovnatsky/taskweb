@@ -84,6 +84,12 @@
           <button type="submit" class="btn-submit btn-delete" title="Delete"><kbd>D</kbd>elete</button>
         </form>
         {% endif %}
+        {% if task.status == 'deleted' %}
+        <form method="POST" action="{{ url_for('purge', uuid=task.uuid) }}" id="action-purge" onsubmit="return confirm('Permanently purge this task? This cannot be undone.')">
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn-submit btn-delete" title="Purge"><kbd>P</kbd>urge</button>
+        </form>
+        {% endif %}
       </div>
     </div>
   </div>
