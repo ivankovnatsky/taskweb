@@ -480,12 +480,16 @@ table.tw td.desc {
 
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 10px;
 }
 
 .form-grid .full {
   grid-column: 1 / -1;
+}
+
+.form-grid .span-2 {
+  grid-column: span 2;
 }
 
 .form-grid label {
@@ -501,6 +505,7 @@ table.tw td.desc {
 .form-grid input,
 .form-grid select {
   width: 100%;
+  height: 32px;
   font-family: "SF Mono", monospace;
   font-size: 16px;
   padding: 6px 8px;
@@ -509,6 +514,14 @@ table.tw td.desc {
   background: var(--bg);
   color: var(--text);
   transition: border-color 0.15s;
+}
+
+.form-grid input[type="date"] {
+  max-width: 180px;
+}
+
+.form-grid select {
+  max-width: 180px;
 }
 
 .form-grid input:focus,
@@ -764,9 +777,18 @@ table.tw td.desc {
   color: var(--text);
   font-family: "SF Mono", monospace;
   font-size: 16px;
+  height: 30px;
   padding: 4px 8px;
   border-radius: 4px;
 }
+.edit-row input[type="date"] {
+  max-width: 180px;
+}
+
+.edit-row select {
+  max-width: 180px;
+}
+
 .edit-row input:focus,
 .edit-row select:focus {
   outline: none;
@@ -844,6 +866,13 @@ footer a:hover {
   }
   .form-grid {
     grid-template-columns: 1fr;
+  }
+  .form-grid .span-2 {
+    grid-column: span 1;
+  }
+  .form-grid input[type="date"],
+  .form-grid select {
+    max-width: none;
   }
   .filters-label {
     font-size: 13px;
@@ -942,6 +971,7 @@ footer a:hover {
   .edit-row input,
   .edit-row select {
     width: 100%;
+    max-width: none;
     font-size: 16px;
     padding: 8px;
   }
