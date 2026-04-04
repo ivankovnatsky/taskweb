@@ -195,10 +195,10 @@ document.querySelectorAll("tr[data-href]").forEach(function (row) {
   });
 });
 
-// Confirm delete (only for .btn-delete inside a form)
+// Confirm delete (only for .btn-delete inside a form without its own onsubmit)
 document.querySelectorAll(".btn-delete").forEach((btn) => {
   const form = btn.closest("form");
-  if (!form) return;
+  if (!form || form.hasAttribute("onsubmit")) return;
   form.addEventListener("submit", (e) => {
     if (!confirm("Delete this task?")) {
       e.preventDefault();
