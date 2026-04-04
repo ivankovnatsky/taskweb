@@ -10,18 +10,9 @@
       <div class="detail-header">
         <span class="id">{{ task.id }}</span>
         <span class="desc{% if task.is_completed %} done{% elif task.status == 'deleted' %} deleted{% endif %}">{{ task.description }}{% if task.is_recurring %} ↻{% endif %}</span>
-        {% if task.is_active %}<span class="badge-active">active</span>{% endif %}
-        {% if task.status == 'pending' %}<span class="badge-pending">pending</span>{% endif %}
-        {% if task.status == 'waiting' %}<span class="badge-waiting">waiting</span>{% endif %}
-        {% if task.is_completed %}<span class="badge-completed">completed</span>{% endif %}
-        {% if task.status == 'deleted' %}<span class="badge-deleted">deleted</span>{% endif %}
       </div>
 
       <div class="detail-grid">
-        <div class="detail-row">
-          <span class="detail-label">Status</span>
-          <span class="status-{{ task.status }}">{{ task.status }}</span>
-        </div>
         {% if task.project %}
         <div class="detail-row">
           <span class="detail-label">Project</span>
