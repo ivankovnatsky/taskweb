@@ -104,6 +104,8 @@ nav {
   width: 100%;
   max-width: none;
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 16px;
   margin-bottom: 20px;
   font-family: "SF Mono", monospace;
@@ -129,16 +131,19 @@ nav a.active {
 }
 
 .nav-separator {
-  color: var(--border);
-  font-size: 11px;
-  align-self: center;
+  display: none;
 }
 .nav-new-task {
+  width: 100%;
+  text-align: center;
+  order: -2;
   color: var(--tw-proj) !important;
   text-decoration: none;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  padding: 4px 0;
+  padding: 6px 0;
+  border: 1px solid var(--tw-proj);
+  border-radius: 4px;
   transition: color 0.15s;
 }
 .nav-new-task:hover {
@@ -149,9 +154,9 @@ nav a.active {
   color: var(--tw-proj) !important;
 }
 .nav-search {
-  margin-left: auto;
-  flex: 1;
-  min-width: 120px;
+  width: 100%;
+  flex-basis: 100%;
+  order: 10;
   background: transparent;
   color: var(--text);
   border: 1px solid var(--border);
@@ -859,32 +864,19 @@ footer a:hover {
   body {
     padding: 16px 10px 36px;
   }
-  .nav-separator {
-    display: none;
-  }
   .nav-new-task {
-    width: 100%;
-    text-align: center;
-    order: -2;
     font-size: 16px;
     padding: 10px 0;
-    border: 1px solid var(--tw-proj);
     border-radius: 6px;
   }
   nav {
     gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
     font-size: 14px;
   }
   nav a {
     padding: 8px 0;
   }
   .nav-search {
-    width: 100%;
-    margin-left: 0;
-    order: 10;
-    flex-basis: 100%;
     text-align: center;
     font-size: 16px;
     padding: 10px 12px;
