@@ -1,4 +1,4 @@
-const CACHE_NAME = "taskweb-v4";
+const CACHE_NAME = "taskweb-v5";
 const PRECACHE_URLS = [
   "/static/style.css",
   "/static/app.js",
