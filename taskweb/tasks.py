@@ -66,9 +66,6 @@ class Task:
         try:
             due_ts = int(self.due)
             dt = datetime.fromtimestamp(due_ts, tz=timezone.utc)
-            # Show time only when it's not midnight
-            if dt.hour == 0 and dt.minute == 0:
-                return dt.strftime("%Y-%m-%d")
             return dt.strftime("%Y-%m-%d %H:%M")
         except (ValueError, TypeError):
             return self.due
@@ -86,17 +83,12 @@ class Task:
 
     @property
     def due_time(self) -> str:
-        """Return just the time portion of due (HH:MM) for form fields.
-
-        Returns empty string if time is midnight (00:00).
-        """
+        """Return just the time portion of due (HH:MM) for form fields."""
         if not self.due:
             return ""
         try:
             due_ts = int(self.due)
             dt = datetime.fromtimestamp(due_ts, tz=timezone.utc)
-            if dt.hour == 0 and dt.minute == 0:
-                return ""
             return dt.strftime("%H:%M")
         except (ValueError, TypeError):
             return ""
@@ -552,6 +544,7 @@ def add_task(
     priority: str = "",
     due: str = "",
     due_time: str = "",
+    wait: str = "",
 ) -> bool:
     conn = _connect()
     try:
@@ -583,6 +576,14 @@ def add_task(
                 data["due"] = str(int(due_dt.timestamp()))
             except ValueError:
                 data["due"] = due
+
+        if wait:
+            try:
+                wait_dt = datetime.strptime(wait, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                data["wait"] = str(int(wait_dt.timestamp()))
+                data["status"] = "waiting"
+            except ValueError:
+                pass
 
         c = conn.cursor()
 
@@ -747,6 +748,7 @@ def edit_task(
     due: str = "",
     due_time: str = "",
     recur: str = "",
+    wait: str = "",
     annotation: str = "",
     status: str = "",
 ) -> bool:
@@ -839,19 +841,31 @@ def edit_task(
             else:
                 data.pop("recur", None)
 
+        # Wait date
+        old_wait = data.get("wait", "")
+        if wait:
+            try:
+                wait_dt = datetime.strptime(wait, "%Y-%m-%d").replace(
+                    tzinfo=timezone.utc
+                )
+                new_wait = str(int(wait_dt.timestamp()))
+            except (ValueError, TypeError):
+                new_wait = wait
+        else:
+            new_wait = ""
+        if new_wait != old_wait:
+            _record_update(c, uuid, "wait", old_wait or None, new_wait or None)
+            if new_wait:
+                data["wait"] = new_wait
+            else:
+                data.pop("wait", None)
+
         # Status — only allow transitions between pending and waiting
         old_status = data.get("status", "pending")
         if status and status in ("pending", "waiting") and old_status in ("pending", "waiting"):
             if status != old_status:
                 _record_update(c, uuid, "status", old_status, status)
                 data["status"] = status
-                if status == "waiting" and "wait" not in data:
-                    now_ts = str(int(time.time()))
-                    _record_update(c, uuid, "wait", None, now_ts)
-                    data["wait"] = now_ts
-                elif status == "pending" and "wait" in data:
-                    _record_update(c, uuid, "wait", data["wait"], None)
-                    del data["wait"]
 
         # Annotation (add new if provided)
         if annotation:

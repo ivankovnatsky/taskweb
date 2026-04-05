@@ -13,6 +13,7 @@
 </head>
 <body>
 
+{% if request.endpoint not in ('edit', 'task_detail') %}
 <nav>
   {% if request.endpoint == 'index' %}
   <a href="#" id="new-task-toggle" class="nav-new-task"><kbd>N</kbd>ew Task</a>
@@ -29,6 +30,7 @@
   <input type="text" id="search-field" class="nav-search" placeholder="Search..ID,Proj,Tag,Desc" autocomplete="off" value="{{ search_query|default('', true) }}">
   {% endif %}
 </nav>
+{% endif %}
 
 {% if request.endpoint == 'index' %}
 <div class="add-form" id="add-form" style="display:none">
@@ -59,12 +61,16 @@
             </select>
           </div>
           <div>
-            <label for="due">Due</label>
+            <label for="due">Due Date</label>
             <input type="date" id="due" name="due">
           </div>
           <div>
-            <label for="due_time">Time</label>
+            <label for="due_time">Due Time</label>
             <input type="time" id="due_time" name="due_time">
+          </div>
+          <div>
+            <label for="wait">Wait Until</label>
+            <input type="date" id="wait" name="wait">
           </div>
         </div>
         <div class="form-actions">

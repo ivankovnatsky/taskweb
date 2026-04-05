@@ -305,14 +305,21 @@ def create_app() -> Flask:
             priority = ""
         due = request.form.get("due", "").strip()
         due_time = request.form.get("due_time", "").strip()
+        wait = request.form.get("wait", "").strip()
 
         if add_task(
-            description, project=project, tags=tags, priority=priority, due=due, due_time=due_time
+            description,
+            project=project,
+            tags=tags,
+            priority=priority,
+            due=due,
+            due_time=due_time,
+            wait=wait,
         ):
             flash("Task added.", "success")
         else:
             flash("Failed to add task.", "error")
-        return redirect(url_for("index"))
+        return redirect(url_for("waiting") if wait else url_for("index"))
 
     @app.route("/task/<uuid>/edit", methods=["GET", "POST"])
     def edit(uuid):
@@ -340,10 +347,19 @@ def create_app() -> Flask:
         due = request.form.get("due", "").strip()
         due_time = request.form.get("due_time", "").strip()
         recur = request.form.get("recur", "").strip()
+        wait = request.form.get("wait", "").strip()
         annotation = request.form.get("annotation", "").strip()
+
+        # Auto-switch status based on wait date
         status = request.form.get("status", "").strip()
         if status and status not in ("pending", "waiting"):
             status = ""
+        if wait and status != "pending":
+            status = "waiting"
+        elif not wait and task.status == "waiting":
+            status = "pending"
+        elif status == "pending" and wait:
+            wait = ""  # Clear wait when explicitly set to pending
 
         if edit_task(
             uuid,
@@ -354,12 +370,24 @@ def create_app() -> Flask:
             due=due,
             due_time=due_time,
             recur=recur,
+            wait=wait,
             annotation=annotation,
             status=status,
         ):
             flash("Task updated.", "success")
         else:
             flash("Failed to update task.", "error")
+        return redirect(url_for("task_detail", uuid=uuid))
+
+    @app.route("/task/<uuid>/wait", methods=["POST"])
+    def wait(uuid):
+        if not _validate_uuid(uuid):
+            abort(404)
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        if edit_task(uuid, wait=today, status="waiting"):
+            flash("Task moved to waiting.", "success")
+        else:
+            flash("Failed to set task to waiting.", "error")
         return redirect(url_for("task_detail", uuid=uuid))
 
     @app.route("/task/<uuid>/done", methods=["POST"])

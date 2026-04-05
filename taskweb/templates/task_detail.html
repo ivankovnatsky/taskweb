@@ -33,7 +33,7 @@
         {% endif %}
         {% if task.due %}
         <div class="detail-row">
-          <span class="detail-label">Due</span>
+          <span class="detail-label">Due Date</span>
           <span class="{% if task.is_overdue %}due{% else %}due-ok{% endif %}">{{ task.due_formatted }}</span>
         </div>
         {% endif %}
@@ -65,6 +65,12 @@
 
       <div class="detail-actions">
         <a href="{{ url_for('edit', uuid=task.uuid) }}" class="btn-submit" id="action-edit"><kbd>E</kbd>dit</a>
+        {% if task.status == 'pending' %}
+        <form method="POST" action="{{ url_for('wait', uuid=task.uuid) }}" id="action-wait" onsubmit="return confirm('Move this task to waiting?')">
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn-submit"><kbd>W</kbd>ait</button>
+        </form>
+        {% endif %}
         {% if not task.is_completed and task.status != 'deleted' %}
         <form method="POST" action="{{ url_for('done', uuid=task.uuid) }}" id="action-complete" onsubmit="return confirm('Complete this task?')">
           <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">

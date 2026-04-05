@@ -105,6 +105,14 @@ function toggleNewTask() {
         }
         return;
       }
+      if (key === "w") {
+        const form = document.getElementById("action-wait");
+        if (form) {
+          e.preventDefault();
+          if (confirm("Move this task to waiting?")) form.submit();
+        }
+        return;
+      }
       if (key === "d") {
         const form = document.getElementById("action-delete");
         if (form) {
