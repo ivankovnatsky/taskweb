@@ -351,15 +351,12 @@ def create_app() -> Flask:
         annotation = request.form.get("annotation", "").strip()
 
         # Auto-switch status based on wait date
-        status = request.form.get("status", "").strip()
-        if status and status not in ("pending", "waiting"):
-            status = ""
-        if wait and status != "pending":
+        if wait:
             status = "waiting"
         elif not wait and task.status == "waiting":
             status = "pending"
-        elif status == "pending" and wait:
-            wait = ""  # Clear wait when explicitly set to pending
+        else:
+            status = ""
 
         if edit_task(
             uuid,
