@@ -75,7 +75,7 @@ def test_task_due_formatted():
 
     dt = datetime(2026, 3, 15, tzinfo=timezone.utc)
     task = Task(uuid="test", due=str(int(dt.timestamp())))
-    assert task.due_formatted == "2026-03-15"
+    assert task.due_formatted == "2026-03-15 00:00"
 
 
 def test_task_due_formatted_with_time():
@@ -117,7 +117,7 @@ def test_task_due_time_midnight():
 
     dt = datetime(2026, 3, 15, 0, 0, tzinfo=timezone.utc)
     task = Task(uuid="test", due=str(int(dt.timestamp())))
-    assert task.due_time == ""
+    assert task.due_time == "00:00"
 
 
 def test_task_due_time_empty():

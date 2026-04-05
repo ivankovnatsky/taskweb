@@ -845,9 +845,7 @@ def edit_task(
         old_wait = data.get("wait", "")
         if wait:
             try:
-                wait_dt = datetime.strptime(wait, "%Y-%m-%d").replace(
-                    tzinfo=timezone.utc
-                )
+                wait_dt = datetime.strptime(wait, "%Y-%m-%d").replace(tzinfo=timezone.utc)
                 new_wait = str(int(wait_dt.timestamp()))
             except (ValueError, TypeError):
                 new_wait = wait
