@@ -16,22 +16,22 @@
         <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
         <div class="edit-grid">
           <div class="edit-row">
-            <label class="detail-label" for="description">Description <kbd>DD</kbd></label>
+            <label class="detail-label" for="description"><kbd>D</kbd>escription</label>
             <input type="text" id="description" name="description" value="{{ task.description }}" required>
           </div>
 
           <div class="edit-row">
-            <label class="detail-label" for="project">Project <kbd>PP</kbd></label>
+            <label class="detail-label" for="project"><kbd>P</kbd>roject</label>
             <input type="text" id="project" name="project" value="{{ task.project }}">
           </div>
 
           <div class="edit-row">
-            <label class="detail-label" for="tags">Tags <kbd>T</kbd></label>
+            <label class="detail-label" for="tags"><kbd>T</kbd>ags</label>
             <input type="text" id="tags" name="tags" value="{{ task.tags | join(', ') }}" placeholder="comma,separated">
           </div>
 
           <div class="edit-row">
-            <label class="detail-label" for="priority">Priority <kbd>PR</kbd></label>
+            <label class="detail-label" for="priority"><kbd>P</kbd>riority</label>
             <select id="priority" name="priority">
               <option value="">None</option>
               <option value="H" {% if task.priority == 'H' %}selected{% endif %}>High</option>
@@ -41,17 +41,17 @@
           </div>
 
           <div class="edit-row">
-            <label class="detail-label" for="due">Due <kbd>DU</kbd></label>
+            <label class="detail-label" for="due"><kbd>D</kbd>ue</label>
             <input type="date" id="due" name="due" value="{{ task.due_date }}">
           </div>
 
           <div class="edit-row">
-            <label class="detail-label" for="due_time">Time <kbd>TI</kbd></label>
+            <label class="detail-label" for="due_time"><kbd>T</kbd>ime</label>
             <input type="time" id="due_time" name="due_time" value="{{ task.due_time }}">
           </div>
 
           <div class="edit-row">
-            <label class="detail-label" for="recur">Recur <kbd>R</kbd></label>
+            <label class="detail-label" for="recur"><kbd>R</kbd>ecur</label>
             <input type="text" id="recur" name="recur" value="{{ task.recur }}" placeholder="e.g. weekly, monthly">
           </div>
 
@@ -70,7 +70,7 @@
           {% endif %}
 
           <div class="edit-row">
-            <label class="detail-label" for="annotation">Annotation <kbd>AN</kbd></label>
+            <label class="detail-label" for="annotation"><kbd>A</kbd>nnotation</label>
             <input type="text" id="annotation" name="annotation" placeholder="New annotation text">
           </div>
 
@@ -91,8 +91,8 @@
         </div>
 
         <div class="form-actions">
-          <button type="submit" class="btn-submit" id="edit-save">Save <kbd>S</kbd></button>
-          <a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="btn btn-cancel" id="edit-cancel">Cancel <kbd>CA</kbd></a>
+          <button type="submit" class="btn-submit" id="edit-save"><kbd>S</kbd>ave</button>
+          <a href="{{ url_for('task_detail', uuid=task.uuid) }}" class="btn btn-cancel" id="edit-cancel"><kbd>C</kbd>ancel</a>
         </div>
       </form>
     </div>

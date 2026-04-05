@@ -785,12 +785,23 @@ table.tw td.desc {
 .edit-row {
   display: contents;
 }
-.edit-row kbd {
-  display: none;
-}
+.edit-row kbd,
 .form-window .form-actions kbd {
-  display: none;
+  font-family: "SF Mono", monospace;
+  font-size: inherit;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  padding: 0 2px;
+  opacity: 0.6;
 }
+/* Extra hint letters for two-key shortcuts via ::after */
+label[for="description"] kbd::after { content: "D"; }
+label[for="project"] kbd::after { content: "P"; }
+label[for="priority"] kbd::after { content: "R"; }
+label[for="due"] kbd::after { content: "U"; }
+label[for="due_time"] kbd::after { content: "I"; }
+label[for="annotation"] kbd::after { content: "N"; }
+#edit-cancel kbd::after { content: "A"; }
 .edit-row input,
 .edit-row select {
   background: var(--bg);
@@ -1015,6 +1026,21 @@ footer a:hover {
     flex-direction: column;
     gap: 2px;
     margin-bottom: 8px;
+  }
+  .edit-row kbd,
+  .form-window .form-actions kbd {
+    display: contents;
+    all: unset;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    -webkit-text-fill-color: initial;
+  }
+  .edit-row kbd::after,
+  .form-window .form-actions kbd::after {
+    content: none !important;
   }
   .edit-row input,
   .edit-row select,
