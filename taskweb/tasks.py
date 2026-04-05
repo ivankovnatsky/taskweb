@@ -748,6 +748,7 @@ def edit_task(
     due_time: str = "",
     recur: str = "",
     annotation: str = "",
+    status: str = "",
 ) -> bool:
     """Edit a task's fields. Empty strings clear the field."""
     conn = _connect()
@@ -837,6 +838,20 @@ def edit_task(
                 data["recur"] = recur
             else:
                 data.pop("recur", None)
+
+        # Status — only allow transitions between pending and waiting
+        old_status = data.get("status", "pending")
+        if status and status in ("pending", "waiting") and old_status in ("pending", "waiting"):
+            if status != old_status:
+                _record_update(c, uuid, "status", old_status, status)
+                data["status"] = status
+                if status == "waiting" and "wait" not in data:
+                    now_ts = str(int(time.time()))
+                    _record_update(c, uuid, "wait", None, now_ts)
+                    data["wait"] = now_ts
+                elif status == "pending" and "wait" in data:
+                    _record_update(c, uuid, "wait", data["wait"], None)
+                    del data["wait"]
 
         # Annotation (add new if provided)
         if annotation:

@@ -80,8 +80,15 @@
           </div>
 
           <div class="edit-row edit-meta">
-            <span class="detail-label">Status</span>
+            <label class="detail-label" for="status">Status</label>
+            {% if task.status in ['pending', 'waiting'] %}
+            <select id="status" name="status">
+              <option value="pending" {% if task.status == 'pending' %}selected{% endif %}>pending</option>
+              <option value="waiting" {% if task.status == 'waiting' %}selected{% endif %}>waiting</option>
+            </select>
+            {% else %}
             <span>{{ task.status }}</span>
+            {% endif %}
           </div>
 
           <div class="edit-row edit-meta">

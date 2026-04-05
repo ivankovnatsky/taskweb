@@ -341,6 +341,9 @@ def create_app() -> Flask:
         due_time = request.form.get("due_time", "").strip()
         recur = request.form.get("recur", "").strip()
         annotation = request.form.get("annotation", "").strip()
+        status = request.form.get("status", "").strip()
+        if status and status not in ("pending", "waiting"):
+            status = ""
 
         if edit_task(
             uuid,
@@ -352,6 +355,7 @@ def create_app() -> Flask:
             due_time=due_time,
             recur=recur,
             annotation=annotation,
+            status=status,
         ):
             flash("Task updated.", "success")
         else:
