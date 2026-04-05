@@ -60,6 +60,30 @@
   padding: 0;
 }
 
+/* Safari temporal input normalization (fixes iOS date/time sizing) */
+::-webkit-datetime-edit,
+::-webkit-datetime-edit-fields-wrapper,
+::-webkit-datetime-edit-text,
+::-webkit-datetime-edit-day-field,
+::-webkit-datetime-edit-month-field,
+::-webkit-datetime-edit-year-field,
+::-webkit-datetime-edit-hour-field,
+::-webkit-datetime-edit-minute-field,
+::-webkit-datetime-edit-second-field,
+::-webkit-datetime-edit-meridiem-field {
+  padding: 0;
+}
+::-webkit-datetime-edit {
+  display: inline-flex;
+}
+::-webkit-date-and-time-value {
+  min-height: 1.5em;
+  text-align: left;
+}
+input::-webkit-inner-spin-button {
+  height: auto;
+}
+
 body {
   background: var(--bg);
   color: var(--text);
@@ -527,7 +551,10 @@ table.tw td.desc {
 
 .form-grid input[type="date"],
 .form-grid input[type="time"] {
+  -webkit-appearance: none;
+  appearance: none;
   max-width: 180px;
+  min-width: 0;
 }
 
 .form-grid select {
@@ -820,7 +847,10 @@ label[for="annotation"] kbd::after { content: "N"; }
 }
 .edit-row input[type="date"],
 .edit-row input[type="time"] {
+  -webkit-appearance: none;
+  appearance: none;
   max-width: 180px;
+  min-width: 0;
 }
 
 .edit-row select {
@@ -914,7 +944,13 @@ footer a:hover {
     font-size: 16px;
   }
   .form-grid input[type="date"],
-  .form-grid input[type="time"],
+  .form-grid input[type="time"] {
+    -webkit-appearance: none;
+    appearance: none;
+    max-width: none;
+    min-width: 0;
+    box-sizing: border-box;
+  }
   .form-grid select {
     max-width: none;
     box-sizing: border-box;
@@ -1036,9 +1072,7 @@ footer a:hover {
     content: none !important;
   }
   .edit-row input,
-  .edit-row select,
-  .edit-row input[type="date"],
-  .edit-row input[type="time"] {
+  .edit-row select {
     width: 100%;
     max-width: none;
     font-size: 16px;
@@ -1047,7 +1081,14 @@ footer a:hover {
   }
   .edit-row input[type="date"],
   .edit-row input[type="time"] {
-    height: 44px;
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    font-size: 16px;
+    padding: 8px;
+    box-sizing: border-box;
   }
   .detail-actions kbd {
     border: none;
