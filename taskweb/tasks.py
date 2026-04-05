@@ -575,13 +575,11 @@ def add_task(
         if due:
             try:
                 if due_time:
-                    due_dt = datetime.strptime(
-                        f"{due} {due_time}", "%Y-%m-%d %H:%M"
-                    ).replace(tzinfo=timezone.utc)
-                else:
-                    due_dt = datetime.strptime(due, "%Y-%m-%d").replace(
+                    due_dt = datetime.strptime(f"{due} {due_time}", "%Y-%m-%d %H:%M").replace(
                         tzinfo=timezone.utc
                     )
+                else:
+                    due_dt = datetime.strptime(due, "%Y-%m-%d").replace(tzinfo=timezone.utc)
                 data["due"] = str(int(due_dt.timestamp()))
             except ValueError:
                 data["due"] = due
@@ -814,13 +812,11 @@ def edit_task(
         if due:
             try:
                 if due_time:
-                    due_dt = datetime.strptime(
-                        f"{due} {due_time}", "%Y-%m-%d %H:%M"
-                    ).replace(tzinfo=timezone.utc)
-                else:
-                    due_dt = datetime.strptime(due, "%Y-%m-%d").replace(
+                    due_dt = datetime.strptime(f"{due} {due_time}", "%Y-%m-%d %H:%M").replace(
                         tzinfo=timezone.utc
                     )
+                else:
+                    due_dt = datetime.strptime(due, "%Y-%m-%d").replace(tzinfo=timezone.utc)
                 new_due = str(int(due_dt.timestamp()))
             except (ValueError, TypeError):
                 new_due = due
