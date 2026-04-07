@@ -335,10 +335,18 @@ table.tw td.desc {
 .recur {
   color: var(--tw-recur);
 }
-.status-pending { color: var(--tw-proj); }
-.status-waiting { color: var(--tw-due-ok); }
-.status-completed { color: var(--tw-done); }
-.status-deleted { color: var(--tw-due); }
+.status-pending {
+  color: var(--tw-proj);
+}
+.status-waiting {
+  color: var(--tw-due-ok);
+}
+.status-completed {
+  color: var(--tw-done);
+}
+.status-deleted {
+  color: var(--tw-due);
+}
 .done {
   color: var(--tw-done);
   text-decoration: line-through;
@@ -505,6 +513,10 @@ table.tw td.desc {
   width: 100%;
   max-width: none;
   margin-bottom: 24px;
+}
+
+.form-window {
+  overflow: visible;
 }
 
 .form-window .content {
@@ -827,13 +839,27 @@ table.tw td.desc {
   opacity: 0.6;
 }
 /* Extra hint letters for two-key shortcuts via ::after */
-label[for="description"] kbd::after { content: "D"; }
-label[for="project"] kbd::after { content: "P"; }
-label[for="priority"] kbd::after { content: "R"; }
-label[for="due"] kbd::after { content: "U"; }
-label[for="due_time"] kbd::after { content: "I"; }
-label[for="annotation"] kbd::after { content: "N"; }
-#edit-cancel kbd::after { content: "A"; }
+label[for="description"] kbd::after {
+  content: "D";
+}
+label[for="project"] kbd::after {
+  content: "P";
+}
+label[for="priority"] kbd::after {
+  content: "R";
+}
+label[for="due"] kbd::after {
+  content: "U";
+}
+label[for="due_time"] kbd::after {
+  content: "I";
+}
+label[for="annotation"] kbd::after {
+  content: "N";
+}
+#edit-cancel kbd::after {
+  content: "A";
+}
 .edit-row input,
 .edit-row select {
   background: var(--bg);
@@ -1116,7 +1142,9 @@ footer a:hover {
     padding: 10px 12px;
   }
   /* Prevent iOS Safari auto-zoom on focus */
-  input, select, textarea {
+  input,
+  select,
+  textarea {
     font-size: 16px !important;
   }
   footer {
