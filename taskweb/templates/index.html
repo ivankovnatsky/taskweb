@@ -72,7 +72,7 @@
       </tbody>
     </table>
     <div class="tw-footer">
-      {% if total_pages > 1 %}{{ (page - 1) * 40 + 1 }}–{{ [page * 40, counts.pending] | min }} of {% endif %}{{ counts.pending }} tasks · urgency sorted
+      {% if total_pages > 1 %}{{ (page - 1) * 40 + 1 }}–{{ [page * 40, counts.pending] | min }} of {% endif %}{{ counts.pending }} tasks
       {% if counts.overdue %} · <span class="due">overdue: {{ counts.overdue }}</span>{% endif %}
       {% if total_pages > 1 %}
       <div class="pagination">
