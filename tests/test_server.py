@@ -193,3 +193,20 @@ def test_wait_preserves_project(mock_get, mock_edit, client):
     assert call_kwargs["project"] == "MyProject"
     assert call_kwargs["tags"] == ["important"]
     assert call_kwargs["status"] == "waiting"
+
+
+@patch("taskweb.server.edit_task", return_value=True)
+@patch("taskweb.server.get_task_by_uuid")
+def test_wait_preserves_due_seconds(mock_get, mock_edit, client):
+    from taskweb.tasks import Task
+
+    mock_get.return_value = Task(
+        uuid="abc12345-1234-5678-9abc-def012345678",
+        id=1,
+        description="Test task",
+        due="1717459325",
+    )
+    response = client.post("/task/abc12345-1234-5678-9abc-def012345678/wait")
+    assert response.status_code == 302
+    call_kwargs = mock_edit.call_args[1]
+    assert call_kwargs["due"] == "1717459325"
