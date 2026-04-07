@@ -119,7 +119,7 @@ def create_app() -> Flask:
     def _filter_by_query(tasks: list, query: str) -> list:
         """Filter tasks by search query matching description, project, tags, or ID."""
         q = query.lower()
-        return [t for t in tasks if matches_query(q, t.description, t.project, t.tags, t.id)]
+        return [t for t in tasks if matches_query(q, t.description, t.project, t.tags, t.id, t.uuid)]
 
     @app.route("/sw.js")
     def service_worker():

@@ -17,6 +17,7 @@ from taskweb.tasks import (
     get_completed_tasks,
     get_pending_tasks,
     get_task_by_uuid,
+    matches_query,
 )
 
 
@@ -648,3 +649,15 @@ def test_urgency_combined():
     )
     # due 12.0 + priority 6.0 + active 4.0 + tag 0.8 + project 1.0 + age ~0
     assert u > 23.0
+
+
+def test_matches_query_uuid():
+    assert matches_query("abc12345", "desc", "proj", ["tag"], 1, "abc12345-1234-5678-9abc-def012345678") is True
+
+
+def test_matches_query_uuid_partial():
+    assert matches_query("def012", "desc", "proj", ["tag"], 1, "abc12345-1234-5678-9abc-def012345678") is True
+
+
+def test_matches_query_uuid_no_match():
+    assert matches_query("zzz999", "desc", "proj", ["tag"], 1, "abc12345-1234-5678-9abc-def012345678") is False

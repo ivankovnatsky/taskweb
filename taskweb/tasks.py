@@ -403,8 +403,9 @@ def matches_query(
     project: str,
     tags: list[str],
     task_id: int = 0,
+    uuid: str = "",
 ) -> bool:
-    """Check if a task matches a search query against description, project, tags, or ID."""
+    """Check if a task matches a search query against description, project, tags, ID, or UUID."""
     if query_lower in description.lower():
         return True
     if query_lower in project.lower():
@@ -413,6 +414,8 @@ def matches_query(
         return True
     # For numeric queries, also match task ID
     if task_id and query_lower.isdigit() and str(task_id) == query_lower:
+        return True
+    if uuid and query_lower in uuid.lower():
         return True
     return False
 
@@ -441,6 +444,7 @@ def search_statuses_with_matches(query: str) -> set[str]:
                 data.get("project", ""),
                 tags,
                 task_id,
+                uuid,
             ):
                 statuses.add(data.get("status", "pending"))
         return statuses
