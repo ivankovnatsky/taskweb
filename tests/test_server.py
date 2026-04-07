@@ -129,6 +129,27 @@ def test_task_detail_not_found(mock_get, client):
     assert response.status_code == 302
 
 
+@patch("taskweb.server.get_waiting_tasks", return_value=[])
+def test_waiting_has_new_task_button(mock_tasks, client):
+    response = client.get("/waiting")
+    assert response.status_code == 200
+    assert b"new-task-toggle" in response.data
+
+
+@patch("taskweb.server.get_completed_tasks", return_value=[])
+def test_completed_has_new_task_button(mock_tasks, client):
+    response = client.get("/completed")
+    assert response.status_code == 200
+    assert b"new-task-toggle" in response.data
+
+
+@patch("taskweb.server.get_deleted_tasks", return_value=[])
+def test_deleted_has_new_task_button(mock_tasks, client):
+    response = client.get("/deleted")
+    assert response.status_code == 200
+    assert b"new-task-toggle" in response.data
+
+
 def test_csrf_rejects_missing_token():
     """POST without CSRF token is rejected when TESTING is off."""
     from taskweb.server import create_app
