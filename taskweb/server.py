@@ -107,6 +107,7 @@ def create_app() -> Flask:
                 abort(403)
 
     PER_PAGE = 40
+    app.jinja_env.globals["per_page"] = PER_PAGE
 
     # Map status names to route endpoints
     STATUS_ROUTES = {
