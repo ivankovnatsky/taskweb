@@ -151,3 +151,24 @@ def test_csrf_rejects_wrong_token():
             sess["_csrf_token"] = "correct-token"
         response = c.post("/add", data={"description": "test", "_csrf_token": "wrong"})
         assert response.status_code == 403
+
+
+@patch("taskweb.server.edit_task", return_value=True)
+@patch("taskweb.server.get_task_by_uuid")
+def test_wait_preserves_project(mock_get, mock_edit, client):
+    from taskweb.tasks import Task
+
+    mock_get.return_value = Task(
+        uuid="abc12345-1234-5678-9abc-def012345678",
+        id=1,
+        description="Test task",
+        project="MyProject",
+        tags=["important"],
+        priority="H",
+    )
+    response = client.post("/task/abc12345-1234-5678-9abc-def012345678/wait")
+    assert response.status_code == 302
+    call_kwargs = mock_edit.call_args[1]
+    assert call_kwargs["project"] == "MyProject"
+    assert call_kwargs["tags"] == ["important"]
+    assert call_kwargs["status"] == "waiting"
