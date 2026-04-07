@@ -380,8 +380,23 @@ def create_app() -> Flask:
     def wait(uuid):
         if not _validate_uuid(uuid):
             abort(404)
+        task = get_task_by_uuid(uuid)
+        if not task:
+            flash("Task not found.", "error")
+            return redirect(url_for("index"))
         today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-        if edit_task(uuid, wait=today, status="waiting"):
+        if edit_task(
+            uuid,
+            description=task.description,
+            project=task.project,
+            tags=task.tags,
+            priority=task.priority,
+            due=task.due_date,
+            due_time=task.due_time,
+            recur=task.recur,
+            wait=today,
+            status="waiting",
+        ):
             flash("Task moved to waiting.", "success")
         else:
             flash("Failed to set task to waiting.", "error")
