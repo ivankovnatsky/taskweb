@@ -242,7 +242,8 @@ document.querySelectorAll(".btn-delete").forEach((btn) => {
           match = row.textContent.toLowerCase().includes(q);
         }
       } else {
-        match = row.textContent.toLowerCase().includes(q);
+        match = row.textContent.toLowerCase().includes(q) ||
+          (row.dataset.uuid && row.dataset.uuid.toLowerCase().includes(q));
       }
       row.style.display = match ? "" : "none";
     });

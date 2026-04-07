@@ -42,7 +42,7 @@
       </thead>
       <tbody>
         {% for task in tasks %}
-        <tr data-href="{{ url_for('task_detail', uuid=task.uuid) }}">
+        <tr data-href="{{ url_for('task_detail', uuid=task.uuid) }}" data-uuid="{{ task.uuid }}">
           <td class="status-{{ task.status }}">{{ task.status[:1] | upper }}</td>
           <td class="age">{{ task.age }}</td>
           <td class="proj">{% if task.project %}<a href="{{ url_for('waiting', project=task.project) }}" class="project-link">{{ task.project }}</a>{% endif %}</td>
