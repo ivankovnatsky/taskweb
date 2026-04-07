@@ -45,7 +45,12 @@
           </div>
           <div class="span-2">
             <label for="project">Project</label>
-            <input type="text" id="project" name="project" placeholder="e.g. infra.kafka">
+            <input type="text" id="project" name="project" placeholder="e.g. infra.kafka" list="project-suggestions">
+            <datalist id="project-suggestions">
+              {% for p in projects|default([], true) %}
+              <option value="{{ p }}">
+              {% endfor %}
+            </datalist>
           </div>
           <div class="span-2">
             <label for="tags">Tags</label>
