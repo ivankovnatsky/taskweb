@@ -652,12 +652,15 @@ def test_urgency_combined():
 
 
 def test_matches_query_uuid():
-    assert matches_query("abc12345", "desc", "proj", ["tag"], 1, "abc12345-1234-5678-9abc-def012345678") is True
+    uuid = "abc12345-1234-5678-9abc-def012345678"
+    assert matches_query("abc12345", "desc", "proj", ["tag"], 1, uuid) is True
 
 
 def test_matches_query_uuid_partial():
-    assert matches_query("def012", "desc", "proj", ["tag"], 1, "abc12345-1234-5678-9abc-def012345678") is True
+    uuid = "abc12345-1234-5678-9abc-def012345678"
+    assert matches_query("def012", "desc", "proj", ["tag"], 1, uuid) is True
 
 
 def test_matches_query_uuid_no_match():
-    assert matches_query("zzz999", "desc", "proj", ["tag"], 1, "abc12345-1234-5678-9abc-def012345678") is False
+    uuid = "abc12345-1234-5678-9abc-def012345678"
+    assert matches_query("zzz999", "desc", "proj", ["tag"], 1, uuid) is False
