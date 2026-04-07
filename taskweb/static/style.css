@@ -1073,6 +1073,7 @@ footer a:hover {
     max-width: none;
     font-size: 16px;
     padding: 8px;
+    height: 44px;
   }
   .detail-actions kbd {
     border: none;
