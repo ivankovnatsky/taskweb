@@ -157,10 +157,15 @@ nav a.active {
 .nav-separator {
   display: none;
 }
-.nav-new-task {
+.nav-actions {
+  display: flex;
+  gap: 8px;
   width: 100%;
-  text-align: center;
   order: -2;
+}
+.nav-new-task {
+  flex: 1;
+  text-align: center;
   color: var(--tw-proj) !important;
   text-decoration: none;
   letter-spacing: 0.05em;
@@ -195,25 +200,16 @@ nav a.active {
   border-color: var(--tw-id);
 }
 .nav-refresh {
-  display: none;
-  order: 11;
+  text-align: center;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--dim) !important;
+  transition: color 0.15s;
 }
-
-@media (max-width: 768px) {
-  .nav-refresh {
-    display: block;
-    width: 100%;
-    text-align: center;
-    padding: 10px 0;
-    font-size: 16px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--dim) !important;
-  }
-  .nav-refresh:hover {
-    border-color: var(--tw-id);
-    color: var(--tw-id) !important;
-  }
+.nav-refresh:hover {
+  border-color: var(--tw-id);
+  color: var(--tw-id) !important;
 }
 
 nav kbd {
@@ -987,6 +983,11 @@ footer a:hover {
     padding: 10px 0;
     border-radius: 6px;
   }
+  .nav-refresh {
+    font-size: 16px;
+    padding: 10px 12px;
+    border-radius: 6px;
+  }
   nav {
     gap: 10px;
     font-size: 14px;
@@ -1181,6 +1182,10 @@ footer a:hover {
   .detail-grid {
     grid-template-columns: 1fr;
     gap: 2px;
+    font-size: 16px;
+  }
+  .detail-annotations .annotation {
+    font-size: 16px;
   }
   .detail-row {
     display: flex;
