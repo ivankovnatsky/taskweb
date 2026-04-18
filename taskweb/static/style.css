@@ -456,6 +456,11 @@ table.tw td.desc {
   border-left: 2px solid var(--border);
   margin-top: 2px;
   display: flex;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.annotation-text {
+  min-width: 0;
 }
 .annotation-date {
   font-style: normal;
