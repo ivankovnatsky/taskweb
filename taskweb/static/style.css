@@ -201,8 +201,9 @@ nav a.active {
   border-color: var(--tw-id);
 }
 .nav-refresh {
+  flex: 1;
   text-align: center;
-  padding: 6px 12px;
+  padding: 6px 0;
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--dim) !important;
@@ -996,7 +997,7 @@ footer a:hover {
   }
   .nav-refresh {
     font-size: 16px;
-    padding: 10px 12px;
+    padding: 10px 0;
     border-radius: 6px;
   }
   nav {
