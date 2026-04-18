@@ -313,6 +313,11 @@ tr.active-row .id {
   color: var(--tw-age);
   font-size: 11px;
 }
+.detail-grid .age,
+.edit-grid .age {
+  font-size: inherit;
+  word-break: break-all;
+}
 .proj {
   color: var(--tw-proj);
 }
