@@ -453,6 +453,25 @@ def search_statuses_with_matches(query: str) -> set[str]:
         conn.close()
 
 
+def get_all_projects() -> list[str]:
+    """Get all unique project names across all task statuses."""
+    conn = _connect()
+    try:
+        conn.execute("BEGIN DEFERRED")
+        c = conn.cursor()
+        c.execute("SELECT data FROM tasks")
+        projects: set[str] = set()
+        for (data_str,) in c.fetchall():
+            data = json.loads(data_str)
+            proj = data.get("project", "")
+            if proj:
+                projects.add(proj)
+        return sorted(projects)
+    finally:
+        conn.rollback()
+        conn.close()
+
+
 def derive_from_tasks(tasks: list[Task]) -> dict:
     """Derive projects, tags, and counts from an already-fetched task list."""
     project_counts: dict[str, int] = {}

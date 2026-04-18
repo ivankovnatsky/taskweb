@@ -3,18 +3,20 @@
 from unittest.mock import patch
 
 
+@patch("taskweb.server.get_all_projects", return_value=[])
 @patch(
     "taskweb.server.get_pending_tasks",
     return_value=[],
 )
-def test_index_empty(mock_tasks, client):
+def test_index_empty(mock_tasks, mock_projects, client):
     response = client.get("/")
     assert response.status_code == 200
     assert b"No pending tasks" in response.data
 
 
+@patch("taskweb.server.get_all_projects", return_value=[])
 @patch("taskweb.server.get_pending_tasks")
-def test_index_with_tasks(mock_tasks, client):
+def test_index_with_tasks(mock_tasks, mock_projects, client):
     from taskweb.tasks import Task
 
     mock_tasks.return_value = [
@@ -34,9 +36,10 @@ def test_index_with_tasks(mock_tasks, client):
     assert b"proj1" in response.data
 
 
+@patch("taskweb.server.get_all_projects", return_value=[])
 @patch("taskweb.server.get_pending_tasks", return_value=[])
 @patch("taskweb.server.get_completed_tasks", return_value=[])
-def test_completed_empty(mock_completed, mock_pending, client):
+def test_completed_empty(mock_completed, mock_pending, mock_projects, client):
     response = client.get("/completed")
     assert response.status_code == 200
     assert b"No completed tasks" in response.data
@@ -85,16 +88,18 @@ def test_delete(mock_delete, client):
     mock_delete.assert_called_once_with("abc12345-1234-5678-9abc-def012345678")
 
 
+@patch("taskweb.server.get_all_projects", return_value=[])
 @patch("taskweb.server.get_pending_tasks", return_value=[])
-def test_filter_by_project(mock_tasks, client):
+def test_filter_by_project(mock_tasks, mock_projects, client):
     response = client.get("/?project=infra")
     assert response.status_code == 200
     mock_tasks.assert_any_call("project:infra")
     mock_tasks.assert_any_call()
 
 
+@patch("taskweb.server.get_all_projects", return_value=[])
 @patch("taskweb.server.get_pending_tasks", return_value=[])
-def test_filter_by_tag(mock_tasks, client):
+def test_filter_by_tag(mock_tasks, mock_projects, client):
     response = client.get("/?tag=next")
     assert response.status_code == 200
     mock_tasks.assert_any_call("+next")
@@ -129,22 +134,25 @@ def test_task_detail_not_found(mock_get, client):
     assert response.status_code == 302
 
 
+@patch("taskweb.server.get_all_projects", return_value=[])
 @patch("taskweb.server.get_waiting_tasks", return_value=[])
-def test_waiting_has_new_task_button(mock_tasks, client):
+def test_waiting_has_new_task_button(mock_tasks, mock_projects, client):
     response = client.get("/waiting")
     assert response.status_code == 200
     assert b"new-task-toggle" in response.data
 
 
+@patch("taskweb.server.get_all_projects", return_value=[])
 @patch("taskweb.server.get_completed_tasks", return_value=[])
-def test_completed_has_new_task_button(mock_tasks, client):
+def test_completed_has_new_task_button(mock_tasks, mock_projects, client):
     response = client.get("/completed")
     assert response.status_code == 200
     assert b"new-task-toggle" in response.data
 
 
+@patch("taskweb.server.get_all_projects", return_value=[])
 @patch("taskweb.server.get_deleted_tasks", return_value=[])
-def test_deleted_has_new_task_button(mock_tasks, client):
+def test_deleted_has_new_task_button(mock_tasks, mock_projects, client):
     response = client.get("/deleted")
     assert response.status_code == 200
     assert b"new-task-toggle" in response.data

@@ -48,7 +48,7 @@
             <label for="project">Project</label>
             <input type="text" id="project" name="project" placeholder="e.g. infra.kafka" list="project-suggestions" value="{{ current_project|default('', true) }}">
             <datalist id="project-suggestions">
-              {% for p in projects|default([], true) %}
+              {% for p in all_projects|default([], true) %}
               <option value="{{ p }}">
               {% endfor %}
             </datalist>
