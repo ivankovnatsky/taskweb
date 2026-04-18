@@ -194,6 +194,27 @@ nav a.active {
   outline: none;
   border-color: var(--tw-id);
 }
+.nav-refresh {
+  display: none;
+  order: 11;
+}
+
+@media (max-width: 768px) {
+  .nav-refresh {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--dim) !important;
+  }
+  .nav-refresh:hover {
+    border-color: var(--tw-id);
+    color: var(--tw-id) !important;
+  }
+}
 
 nav kbd {
   font-family: "SF Mono", monospace;

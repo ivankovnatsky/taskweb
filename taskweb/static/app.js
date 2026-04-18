@@ -30,6 +30,16 @@ function toggleNewTask() {
     });
 })();
 
+// Refresh button
+(function () {
+  const btn = document.querySelector(".nav-refresh");
+  if (btn)
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+      location.reload();
+    });
+})();
+
 // Keyboard navigation
 (function () {
   let idBuffer = "";
@@ -135,6 +145,12 @@ function toggleNewTask() {
     if (key === "n") {
       e.preventDefault();
       toggleNewTask();
+      return;
+    }
+
+    if (key === "r" && document.querySelector(".nav-refresh")) {
+      e.preventDefault();
+      location.reload();
       return;
     }
 
