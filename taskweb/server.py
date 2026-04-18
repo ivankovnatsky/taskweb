@@ -339,7 +339,8 @@ def create_app() -> Flask:
             return redirect(url_for("index"))
 
         if request.method == "GET":
-            return render_template("task_edit.html", task=task, task_status=task.status)
+            all_projects = get_all_projects()
+            return render_template("task_edit.html", task=task, task_status=task.status, all_projects=all_projects)
 
         description = request.form.get("description", "").strip()
         if not description:

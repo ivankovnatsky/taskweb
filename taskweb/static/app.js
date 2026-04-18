@@ -238,6 +238,99 @@ document.querySelectorAll(".btn-delete").forEach((btn) => {
   });
 });
 
+// Project autocomplete dropdown
+(function () {
+  document.querySelectorAll('input[data-projects]').forEach(function (input) {
+    var raw = input.getAttribute('data-projects');
+    if (!raw) return;
+    var allProjects;
+    try { allProjects = JSON.parse(raw); } catch (e) { allProjects = raw.split(',').filter(function (s) { return s.length > 0; }); }
+    if (!allProjects.length) return;
+
+    var list = input.parentElement.querySelector('.autocomplete-list');
+    if (!list) return;
+    var activeIdx = -1;
+    var justSelected = false;
+
+    function render(filter) {
+      var q = (filter || '').toLowerCase();
+      var matches = allProjects.filter(function (p) {
+        return !q || p.toLowerCase().indexOf(q) !== -1;
+      });
+      list.innerHTML = '';
+      activeIdx = -1;
+      if (!matches.length) {
+        list.classList.remove('open');
+        return;
+      }
+      matches.forEach(function (p) {
+        var div = document.createElement('div');
+        div.className = 'autocomplete-item';
+        div.textContent = p;
+        div.addEventListener('mousedown', function (e) {
+          e.preventDefault(); // prevent blur
+        });
+        div.addEventListener('click', function () {
+          input.value = p;
+          justSelected = true;
+          close();
+        });
+        list.appendChild(div);
+      });
+      list.classList.add('open');
+    }
+
+    function close() {
+      list.classList.remove('open');
+      activeIdx = -1;
+    }
+
+    function setActive(idx) {
+      var items = list.querySelectorAll('.autocomplete-item');
+      items.forEach(function (el) { el.classList.remove('active'); });
+      if (idx >= 0 && idx < items.length) {
+        activeIdx = idx;
+        items[idx].classList.add('active');
+        items[idx].scrollIntoView({ block: 'nearest' });
+      }
+    }
+
+    input.addEventListener('focus', function () {
+      render(input.value);
+    });
+
+    input.addEventListener('input', function () {
+      if (justSelected) { justSelected = false; return; }
+      render(input.value);
+    });
+
+    input.addEventListener('blur', function () {
+      // Small delay so click on item registers
+      setTimeout(close, 150);
+    });
+
+    input.addEventListener('keydown', function (e) {
+      if (!list.classList.contains('open')) return;
+      var items = list.querySelectorAll('.autocomplete-item');
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setActive(activeIdx < items.length - 1 ? activeIdx + 1 : 0);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setActive(activeIdx > 0 ? activeIdx - 1 : items.length - 1);
+      } else if (e.key === 'Enter' && activeIdx >= 0) {
+        e.preventDefault();
+        input.value = items[activeIdx].textContent;
+        close();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        close();
+      }
+    });
+  });
+})();
+
 // Search field — client-side filtering with server-side cross-status search on Enter
 (function () {
   const field = document.getElementById("search-field");

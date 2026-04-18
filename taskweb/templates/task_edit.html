@@ -22,7 +22,10 @@
 
           <div class="edit-row">
             <label class="detail-label" for="project"><kbd>P</kbd>roject</label>
-            <input type="text" id="project" name="project" value="{{ task.project }}">
+            <div class="autocomplete-wrap">
+              <input type="text" id="project" name="project" value="{{ task.project }}" autocomplete="off" data-projects="{{ all_projects|default([], true)|tojson }}">
+              <div class="autocomplete-list" id="project-autocomplete"></div>
+            </div>
           </div>
 
           <div class="edit-row">

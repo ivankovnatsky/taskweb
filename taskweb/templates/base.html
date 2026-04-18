@@ -44,14 +44,10 @@
             <label for="description">Description</label>
             <input type="text" id="description" name="description" placeholder="What needs to be done?" required>
           </div>
-          <div class="span-2">
+          <div class="span-2 autocomplete-wrap">
             <label for="project">Project</label>
-            <input type="text" id="project" name="project" placeholder="e.g. infra.kafka" list="project-suggestions" value="{{ current_project|default('', true) }}">
-            <datalist id="project-suggestions">
-              {% for p in all_projects|default([], true) %}
-              <option value="{{ p }}">
-              {% endfor %}
-            </datalist>
+            <input type="text" id="project" name="project" placeholder="e.g. infra.kafka" autocomplete="off" value="{{ current_project|default('', true) }}" data-projects="{{ all_projects|default([], true)|tojson }}">
+            <div class="autocomplete-list" id="project-autocomplete"></div>
           </div>
           <div class="span-2">
             <label for="tags">Tags</label>
