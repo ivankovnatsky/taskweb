@@ -917,6 +917,42 @@ label[for="annotation"] kbd::after {
 .edit-annotations {
   padding: 0;
 }
+.annotation-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.annotation-edit-input {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: "SF Mono", monospace;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  height: 28px;
+}
+.annotation-edit-input:focus {
+  outline: none;
+  border-color: var(--tw-proj);
+}
+.annotation-delete-label {
+  cursor: pointer;
+  color: var(--dim);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.annotation-delete-label input[type="checkbox"] {
+  cursor: pointer;
+}
+.annotation-delete-label:has(input:checked) {
+  color: var(--tw-due);
+}
 .edit-meta span:last-child {
   font-size: 11px;
 }
@@ -1126,6 +1162,15 @@ footer a:hover {
     font-size: 16px;
     padding: 8px;
     height: 44px;
+  }
+  .annotation-edit-row {
+    flex-wrap: wrap;
+  }
+  .annotation-edit-input {
+    width: 100%;
+    font-size: 16px !important;
+    height: 44px;
+    padding: 8px;
   }
   .detail-actions kbd {
     border: none;

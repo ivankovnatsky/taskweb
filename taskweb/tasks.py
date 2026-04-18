@@ -774,6 +774,8 @@ def edit_task(
     wait: str = "",
     annotation: str = "",
     status: str = "",
+    annotation_updates: dict[str, str] | None = None,
+    annotation_deletes: list[str] | None = None,
 ) -> bool:
     """Edit a task's fields. Empty strings clear the field."""
     conn = _connect()
@@ -887,6 +889,24 @@ def edit_task(
             if status != old_status:
                 _record_update(c, uuid, "status", old_status, status)
                 data["status"] = status
+
+        # Delete existing annotations
+        if annotation_deletes:
+            for ts in annotation_deletes:
+                ann_key = f"annotation_{ts}"
+                if ann_key in data:
+                    _record_update(c, uuid, ann_key, data[ann_key], None)
+                    del data[ann_key]
+
+        # Edit existing annotations
+        if annotation_updates:
+            for ts, new_text in annotation_updates.items():
+                ann_key = f"annotation_{ts}"
+                if ann_key in data:
+                    old_text = data[ann_key]
+                    if new_text != old_text:
+                        _record_update(c, uuid, ann_key, old_text, new_text)
+                        data[ann_key] = new_text
 
         # Annotation (add new if provided)
         if annotation:

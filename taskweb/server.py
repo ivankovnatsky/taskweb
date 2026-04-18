@@ -358,6 +358,22 @@ def create_app() -> Flask:
         wait = request.form.get("wait", "").strip()
         annotation = request.form.get("annotation", "").strip()
 
+        annotation_updates = {}
+        annotation_deletes = []
+        for key in request.form:
+            if key.startswith("annotation_") and key != "annotation":
+                ts = key[len("annotation_"):]
+                if not ts.isdigit():
+                    continue
+                if request.form.get(f"delete_annotation_{ts}"):
+                    annotation_deletes.append(ts)
+                else:
+                    new_text = request.form.get(key, "").strip()
+                    if new_text:
+                        annotation_updates[ts] = new_text
+                    else:
+                        annotation_deletes.append(ts)
+
         # Auto-switch status based on wait date
         if wait:
             status = "waiting"
@@ -378,6 +394,8 @@ def create_app() -> Flask:
             wait=wait,
             annotation=annotation,
             status=status,
+            annotation_updates=annotation_updates,
+            annotation_deletes=annotation_deletes,
         ):
             flash("Task updated.", "success")
         else:

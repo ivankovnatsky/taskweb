@@ -65,9 +65,12 @@
             <span class="detail-label">Annotations</span>
             <div class="edit-annotations">
               {% for ann in task.annotations %}
-              <div class="annotation">
+              <div class="annotation-edit-row">
                 <span class="annotation-date">{{ ann.entry | format_timestamp }}</span>
-                <span class="annotation-text">{{ ann.description }}</span>
+                <input type="text" name="annotation_{{ ann.entry }}" value="{{ ann.description }}" class="annotation-edit-input">
+                <label class="annotation-delete-label">
+                  <input type="checkbox" name="delete_annotation_{{ ann.entry }}" value="1"> ✕
+                </label>
               </div>
               {% endfor %}
             </div>
