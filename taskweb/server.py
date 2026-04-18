@@ -107,8 +107,20 @@ def create_app() -> Flask:
             if not token or not expected or not hmac.compare_digest(token, expected):
                 abort(403)
 
-    PER_PAGE = 40
-    app.jinja_env.globals["per_page"] = PER_PAGE
+    PER_PAGE_DESKTOP = 40
+    PER_PAGE_MOBILE = 10
+    _MOBILE_RE = re.compile(r"Mobi|Android|iPhone|iPad|iPod", re.IGNORECASE)
+
+    def _get_per_page():
+        ua = request.headers.get("User-Agent", "")
+        if _MOBILE_RE.search(ua):
+            return PER_PAGE_MOBILE
+        return PER_PAGE_DESKTOP
+
+    @app.after_request
+    def _vary_user_agent(response):
+        response.headers.setdefault("Vary", "User-Agent")
+        return response
 
     # Map status names to route endpoints
     STATUS_ROUTES = {
@@ -174,9 +186,10 @@ def create_app() -> Flask:
             derived["counts"] = filtered_derived["counts"]
 
         total = len(all_tasks)
-        total_pages = max(1, (total + PER_PAGE - 1) // PER_PAGE)
+        per_page = _get_per_page()
+        total_pages = max(1, (total + per_page - 1) // per_page)
         page = min(page, total_pages)
-        tasks = all_tasks[(page - 1) * PER_PAGE : page * PER_PAGE]
+        tasks = all_tasks[(page - 1) * per_page : page * per_page]
 
         return render_template(
             "index.html",
@@ -187,6 +200,7 @@ def create_app() -> Flask:
             counts=derived["counts"],
             current_project=project_filter,
             current_tag=tag_filter,
+            per_page=per_page,
             page=page,
             total_pages=total_pages,
             search_query=query,
@@ -207,9 +221,10 @@ def create_app() -> Flask:
         if query:
             all_tasks = _filter_by_query(all_tasks, query)
         total = len(all_tasks)
-        total_pages = max(1, (total + PER_PAGE - 1) // PER_PAGE)
+        per_page = _get_per_page()
+        total_pages = max(1, (total + per_page - 1) // per_page)
         page = min(page, total_pages)
-        tasks = all_tasks[(page - 1) * PER_PAGE : page * PER_PAGE]
+        tasks = all_tasks[(page - 1) * per_page : page * per_page]
         return render_template(
             "waiting.html",
             tasks=tasks,
@@ -219,6 +234,7 @@ def create_app() -> Flask:
             tags=derived["tags"],
             current_project=project_filter,
             current_tag=tag_filter,
+            per_page=per_page,
             page=page,
             total_pages=total_pages,
             search_query=query,
@@ -239,9 +255,10 @@ def create_app() -> Flask:
         if query:
             all_tasks = _filter_by_query(all_tasks, query)
         total = len(all_tasks)
-        total_pages = max(1, (total + PER_PAGE - 1) // PER_PAGE)
+        per_page = _get_per_page()
+        total_pages = max(1, (total + per_page - 1) // per_page)
         page = min(page, total_pages)
-        tasks = all_tasks[(page - 1) * PER_PAGE : page * PER_PAGE]
+        tasks = all_tasks[(page - 1) * per_page : page * per_page]
         return render_template(
             "completed.html",
             tasks=tasks,
@@ -251,6 +268,7 @@ def create_app() -> Flask:
             tags=derived["tags"],
             current_project=project_filter,
             current_tag=tag_filter,
+            per_page=per_page,
             page=page,
             total_pages=total_pages,
             search_query=query,
@@ -271,9 +289,10 @@ def create_app() -> Flask:
         if query:
             all_tasks = _filter_by_query(all_tasks, query)
         total = len(all_tasks)
-        total_pages = max(1, (total + PER_PAGE - 1) // PER_PAGE)
+        per_page = _get_per_page()
+        total_pages = max(1, (total + per_page - 1) // per_page)
         page = min(page, total_pages)
-        tasks = all_tasks[(page - 1) * PER_PAGE : page * PER_PAGE]
+        tasks = all_tasks[(page - 1) * per_page : page * per_page]
         return render_template(
             "deleted.html",
             tasks=tasks,
@@ -283,6 +302,7 @@ def create_app() -> Flask:
             tags=derived["tags"],
             current_project=project_filter,
             current_tag=tag_filter,
+            per_page=per_page,
             page=page,
             total_pages=total_pages,
             search_query=query,
