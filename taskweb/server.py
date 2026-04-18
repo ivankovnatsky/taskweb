@@ -405,6 +405,31 @@ def create_app() -> Flask:
             flash("Failed to set task to waiting.", "error")
         return redirect(url_for("task_detail", uuid=uuid))
 
+    @app.route("/task/<uuid>/pending", methods=["POST"])
+    def pending(uuid):
+        if not _validate_uuid(uuid):
+            abort(404)
+        task = get_task_by_uuid(uuid)
+        if not task:
+            flash("Task not found.", "error")
+            return redirect(url_for("index"))
+        if edit_task(
+            uuid,
+            description=task.description,
+            project=task.project,
+            tags=task.tags,
+            priority=task.priority,
+            due=task.due,
+            due_time="",
+            recur=task.recur,
+            wait="",
+            status="pending",
+        ):
+            flash("Task moved to pending.", "success")
+        else:
+            flash("Failed to set task to pending.", "error")
+        return redirect(url_for("task_detail", uuid=uuid))
+
     @app.route("/task/<uuid>/done", methods=["POST"])
     def done(uuid):
         if not _validate_uuid(uuid):

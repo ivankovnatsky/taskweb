@@ -105,6 +105,14 @@ function toggleNewTask() {
         }
         return;
       }
+      if (key === "p") {
+        const form = document.getElementById("action-pending");
+        if (form) {
+          e.preventDefault();
+          if (confirm("Move this task to pending?")) form.submit();
+        }
+        return;
+      }
       if (key === "w") {
         const form = document.getElementById("action-wait");
         if (form) {

@@ -65,6 +65,12 @@
 
       <div class="detail-actions">
         <a href="{{ url_for('edit', uuid=task.uuid) }}" class="btn-submit" id="action-edit"><kbd>E</kbd>dit</a>
+        {% if task.status == 'waiting' %}
+        <form method="POST" action="{{ url_for('pending', uuid=task.uuid) }}" id="action-pending" onsubmit="return confirm('Move this task to pending?')">
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn-submit"><kbd>P</kbd>ending</button>
+        </form>
+        {% endif %}
         {% if task.status == 'pending' %}
         <form method="POST" action="{{ url_for('wait', uuid=task.uuid) }}" id="action-wait" onsubmit="return confirm('Move this task to waiting?')">
           <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
