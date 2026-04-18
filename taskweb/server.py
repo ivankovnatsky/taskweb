@@ -340,7 +340,12 @@ def create_app() -> Flask:
 
         if request.method == "GET":
             all_projects = get_all_projects()
-            return render_template("task_edit.html", task=task, task_status=task.status, all_projects=all_projects)
+            return render_template(
+                "task_edit.html",
+                task=task,
+                task_status=task.status,
+                all_projects=all_projects,
+            )
 
         description = request.form.get("description", "").strip()
         if not description:
@@ -363,7 +368,7 @@ def create_app() -> Flask:
         annotation_deletes = []
         for key in request.form:
             if key.startswith("annotation_") and key != "annotation":
-                ts = key[len("annotation_"):]
+                ts = key[len("annotation_") :]
                 if not ts.isdigit():
                     continue
                 if request.form.get(f"delete_annotation_{ts}"):
