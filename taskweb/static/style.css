@@ -160,7 +160,8 @@ nav a.active {
 .nav-actions {
   display: flex;
   gap: 8px;
-  flex-basis: 100%;
+  width: 100%;
+  flex: 0 0 100%;
   order: -2;
 }
 .nav-new-task {
