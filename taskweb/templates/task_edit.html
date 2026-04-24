@@ -142,9 +142,15 @@
   window.addEventListener('beforeunload', onBeforeUnload);
 
   document.getElementById('edit-cancel').addEventListener('click', function (e) {
-    if (isDirty() && !confirm('You have unsaved changes. Discard them?')) {
-      e.preventDefault();
-    }
+    if (!isDirty()) return;
+    e.preventDefault();
+    var href = this.href;
+    showConfirm('You have unsaved changes. Discard them?').then(function (ok) {
+      if (ok) {
+        window.removeEventListener('beforeunload', onBeforeUnload);
+        window.location.href = href;
+      }
+    });
   });
 
   form.addEventListener('submit', function () {
@@ -152,6 +158,7 @@
   });
 
   document.addEventListener('keydown', function (e) {
+    if (typeof confirmDialogOpen !== 'undefined' && confirmDialogOpen) return;
     // Escape works from anywhere (including inputs)
     if (e.key === 'Escape') {
       e.preventDefault();

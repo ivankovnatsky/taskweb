@@ -94,6 +94,14 @@
 
 {% block content %}{% endblock %}
 
+<dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-message-text">
+  <div class="confirm-message" id="confirm-message-text"></div>
+  <div class="confirm-actions">
+    <button type="button" class="btn-cancel" data-action="cancel">Cancel</button>
+    <button type="button" class="btn-submit" data-action="ok" autofocus>OK</button>
+  </div>
+</dialog>
+
 <footer>
   TaskWeb v{{ version }}{% if commit %} (<a href="https://github.com/ivankovnatsky/taskweb/commit/{{ commit_full }}">{{ commit }}</a>){% endif %} &middot; Taskwarrior web interface
 </footer>

@@ -1,3 +1,52 @@
+// Custom confirm dialog using <dialog> — returns Promise<boolean>
+let confirmDialogOpen = false;
+
+function showConfirm(message, opts) {
+  return new Promise((resolve) => {
+    const dlg = document.getElementById("confirm-dialog");
+    if (!dlg || typeof dlg.showModal !== "function") {
+      resolve(window.confirm(message));
+      return;
+    }
+    dlg.querySelector(".confirm-message").textContent = message;
+    const okBtn = dlg.querySelector('[data-action="ok"]');
+    const cancelBtn = dlg.querySelector('[data-action="cancel"]');
+    const danger = !!(opts && opts.danger);
+    okBtn.classList.toggle("btn-delete", danger);
+    let result = false;
+    function onOk() { result = true; dlg.close(); }
+    function onCancel() { result = false; dlg.close(); }
+    function onClose() {
+      okBtn.removeEventListener("click", onOk);
+      cancelBtn.removeEventListener("click", onCancel);
+      dlg.removeEventListener("close", onClose);
+      confirmDialogOpen = false;
+      resolve(result);
+    }
+    okBtn.addEventListener("click", onOk);
+    cancelBtn.addEventListener("click", onCancel);
+    dlg.addEventListener("close", onClose);
+    confirmDialogOpen = true;
+    dlg.showModal();
+  });
+}
+
+// Generic data-confirm handler for forms
+document.querySelectorAll("form[data-confirm]").forEach((form) => {
+  let confirmed = false;
+  form.addEventListener("submit", (e) => {
+    if (confirmed) return;
+    e.preventDefault();
+    const danger = !!form.querySelector(".btn-delete");
+    showConfirm(form.dataset.confirm, { danger }).then((ok) => {
+      if (ok) {
+        confirmed = true;
+        form.submit();
+      }
+    });
+  });
+});
+
 // Auto-dismiss flash messages
 document.querySelectorAll(".flash").forEach((el) => {
   setTimeout(() => {
@@ -77,6 +126,8 @@ function toggleNewTask() {
   }
 
   document.addEventListener("keydown", function (e) {
+    // Skip all shortcuts while confirm dialog is open
+    if (confirmDialogOpen) return;
     // Skip if user is typing in an input/select/textarea
     const tag = e.target.tagName;
     if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") {
@@ -107,35 +158,12 @@ function toggleNewTask() {
         window.location.href = editLink.href;
         return;
       }
-      if (key === "c") {
-        const form = document.getElementById("action-complete");
+      const actionMap = { c: "action-complete", p: "action-pending", w: "action-wait", d: "action-delete" };
+      if (actionMap[key]) {
+        const form = document.getElementById(actionMap[key]);
         if (form) {
           e.preventDefault();
-          if (confirm("Complete this task?")) form.submit();
-        }
-        return;
-      }
-      if (key === "p") {
-        const form = document.getElementById("action-pending");
-        if (form) {
-          e.preventDefault();
-          if (confirm("Move this task to pending?")) form.submit();
-        }
-        return;
-      }
-      if (key === "w") {
-        const form = document.getElementById("action-wait");
-        if (form) {
-          e.preventDefault();
-          if (confirm("Move this task to waiting?")) form.submit();
-        }
-        return;
-      }
-      if (key === "d") {
-        const form = document.getElementById("action-delete");
-        if (form) {
-          e.preventDefault();
-          if (confirm("Delete this task?")) form.submit();
+          form.requestSubmit();
         }
         return;
       }
@@ -223,17 +251,6 @@ document.querySelectorAll("tr[data-href]").forEach(function (row) {
   row.addEventListener("click", function (e) {
     if (!e.target.closest("a, button, form")) {
       window.location = row.dataset.href;
-    }
-  });
-});
-
-// Confirm delete (only for .btn-delete inside a form without its own onsubmit)
-document.querySelectorAll(".btn-delete").forEach((btn) => {
-  const form = btn.closest("form");
-  if (!form || form.hasAttribute("onsubmit")) return;
-  form.addEventListener("submit", (e) => {
-    if (!confirm("Delete this task?")) {
-      e.preventDefault();
     }
   });
 });
@@ -404,6 +421,7 @@ document.querySelectorAll(".btn-delete").forEach((btn) => {
 
   // "/" focuses search, Escape clears and blurs it
   document.addEventListener("keydown", function (e) {
+    if (confirmDialogOpen) return;
     if (
       e.target.tagName === "INPUT" ||
       e.target.tagName === "TEXTAREA" ||

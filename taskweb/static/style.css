@@ -537,6 +537,42 @@ table.tw td.desc {
   padding-left: 8px;
 }
 
+/* Confirm dialog */
+.confirm-dialog {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  padding: 0;
+  max-width: 420px;
+  width: calc(100% - 32px);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.25);
+  font-family: "SF Mono", monospace;
+}
+.confirm-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+}
+.confirm-message {
+  padding: 20px 20px 16px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 0 16px 16px;
+}
+.confirm-actions .btn-cancel {
+  border-color: var(--border);
+  color: var(--dim);
+}
+.confirm-actions .btn-cancel:hover {
+  background: var(--chrome);
+  color: var(--text);
+}
+
 /* Add task form */
 .add-form {
   width: 100%;

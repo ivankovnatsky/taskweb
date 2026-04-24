@@ -47,7 +47,7 @@
         {% for task in tasks %}
         <tr class="{% if task.is_active %}active-row{% endif %}" data-href="{{ url_for('task_detail', uuid=task.uuid) }}" data-uuid="{{ task.uuid }}">
           <td class="action-col">
-            <form method="POST" action="{{ url_for('done', uuid=task.uuid) }}" onsubmit="return confirm('Complete this task?')">
+            <form method="POST" action="{{ url_for('done', uuid=task.uuid) }}" data-confirm="Complete this task?">
               <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
               <button type="submit" class="btn btn-done" title="Complete">✓</button>
             </form>
